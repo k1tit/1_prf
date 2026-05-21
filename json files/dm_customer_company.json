@@ -1,0 +1,46 @@
+{
+    "dm_customer_company": [
+      {
+        "type": "DM",
+        "place": "KNB1",
+        "alias": "knb",
+        "filtering": "combination BUKRS - Cluster in available in config file AND (LOEVM <> 'X' AND NODEL <> 'X')"
+      },
+      {
+        "type": "DM",
+        "place": "T052U",
+        "alias": "t52",
+        "filtering": "SPRAS = 'E'"
+      },
+      {
+        "type": "DM",
+        "place": "T035T",
+        "alias": "t35",
+        "filtering": "SPRAS = 'E'"
+      },
+      {
+        "type": "DM",
+        "place": "company_code_cluster_config",
+        "alias": "cc",
+        "filtering": null
+      },
+      {
+        "type": "DM",
+        "place": "KNB5",
+        "alias": "k5",
+        "filtering": null
+      },
+      {
+        "type": "DM",
+        "place": "T040T",
+        "alias": "a6",
+        "filtering": "SPRAS = 'E'"
+      },
+      {
+        "type": "DM",
+        "place": "T047T",
+        "alias": "a7",
+        "filtering": "SPRAS = 'E'"
+      }
+    ]
+  }

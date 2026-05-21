@@ -1,0 +1,46 @@
+{
+  "RCCONF_18.2": {
+    "description": "Valid Street with No Special Characters",
+    "forbidden_chars": [
+      ","
+    ],
+    "forbidden_chars_from_config": true,
+    "consecutive_chars": ";.-_&[]{}()\"':`|~+",
+    "quote_char": "\"",
+    "bracket_pairs": [
+      [
+        "[",
+        "]"
+      ],
+      [
+        "{",
+        "}"
+      ],
+      [
+        "(",
+        ")"
+      ]
+    ],
+    "check_space": false
+  },
+  "RCCONF_22.2": {
+    "description": "Valid City with no Special Characters",
+    "forbidden_chars": [
+      ","
+    ],
+    "forbidden_chars_from_config": true,
+    "consecutive_chars": ".;-&()/:[]_`+\\",
+    "quote_char": "'",
+    "bracket_pairs": [
+      [
+        "[",
+        "]"
+      ],
+      [
+        "(",
+        ")"
+      ]
+    ],
+    "check_space": false
+  }
+}

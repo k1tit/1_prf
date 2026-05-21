@@ -1,0 +1,2938 @@
+{
+  "KNA1": [
+    {
+      "rule_code": "RCCOMP_103.1",
+      "rule_description": "Missing Customer Activity Cluster",
+      "technical_definition_RU": "IF account_group_code != '9038' THEN '' ELSE IF customer_activity_cluster_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "customer_activity_cluster_code",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Completeness",
+      "sub_domain": "Segmentation",
+      "type_of_check": "Availability",
+      "table_name_checked": "KNA1",
+      "column_name_checked": "KATR1",
+      "business_attribute_name": "Customer Activity Cluster",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_108.1",
+      "rule_description": "Missing Trade Channel",
+      "technical_definition_RU": "IF account_group_code != '9038' THEN '' ELSE IF trade_channel_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "trade_channel_code",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Completeness",
+      "sub_domain": "Segmentation",
+      "type_of_check": "Availability",
+      "table_name_checked": "KNA1",
+      "column_name_checked": "KATR6",
+      "business_attribute_name": "Trade Channel",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_109.1",
+      "rule_description": "Missing Sub-Trade Channel",
+      "technical_definition_RU": "IF account_group_code != '9038' THEN '' ELSE IF sub_trade_channel_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "sub_trade_channel_code",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Completeness",
+      "sub_domain": "Segmentation",
+      "type_of_check": "Availability",
+      "table_name_checked": "KNA1",
+      "column_name_checked": "KATR7",
+      "business_attribute_name": "Sub-Trade Channel",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_70.1",
+      "rule_description": "Valid Industry Code 1 per Ref. data(Sub-Demand area)",
+      "technical_definition_RU": "IF industry_code1 IS NULL THEN '' ELSE IF industry_code1_map_flag = '1' THEN '1' ELSE '0'",
+      "value_checked": "industry_code1",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Geographical",
+      "type_of_check": "TBD",
+      "table_name_checked": "KNA1",
+      "column_name_checked": "BRAN1",
+      "business_attribute_name": "Sub-Demand area",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_187.1",
+      "rule_description": "Missing Hierarchy Assignment",
+      "technical_definition_RU": "IF assignment_hierrarchy_level IS NULL THEN '0' ELSE '1'",
+      "value_checked": "assignment_hierrarchy_level",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Completeness",
+      "sub_domain": "Grouping",
+      "type_of_check": "Availability",
+      "table_name_checked": "KNA1",
+      "column_name_checked": "HZUOR",
+      "business_attribute_name": "Hierarchy Assignment",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_103.4",
+      "rule_description": "Consistency between CAC TC and STC is used consistently",
+      "technical_definition_RU": "IF customer_activity_cluster_code IS NULL OR trade_channel_code IS NULL OR sub_trade_channel_code IS NULL THEN '' ELSE IF customer_activity_cluster_code + trade_channel_code + sub_trade_channel_code found in mapping file THEN '1' ELSE '0'",
+      "value_checked": "customer_activity_cluster_code + trade_channel_code + sub_trade_channel_code",
+      "datamart_or_reference_table_used": "dm_customer_general; conf_cac_tc_stc_mapping",
+      "quality_category": "Conformity",
+      "sub_domain": "Segmentation",
+      "type_of_check": "Consistency",
+      "table_name_checked": "KNA1",
+      "column_name_checked": "KATR1",
+      "business_attribute_name": "Customer Activity Cluster",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_70.1",
+      "rule_description": "Missing Industry Code 1 (Sub-Demand area)",
+      "technical_definition_RU": "IF industry_code1 IS NULL THEN '0' ELSE '1'",
+      "value_checked": "industry_code1",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Completeness",
+      "sub_domain": "Geographical",
+      "type_of_check": "Availability",
+      "table_name_checked": "KNA1",
+      "column_name_checked": "BRAN1",
+      "business_attribute_name": "Sub-Demand area",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_106.1",
+      "rule_description": "Missing Distribution Type",
+      "technical_definition_RU": "IF distribution_type_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "distribution_type_code",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Completeness",
+      "sub_domain": "Segmentation",
+      "type_of_check": "Availability",
+      "table_name_checked": "KNA1",
+      "column_name_checked": "KATR4",
+      "business_attribute_name": "Distribution Type",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_68.1",
+      "rule_description": "Missing Customer Classification",
+      "technical_definition_RU": "IF customer_classification_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "customer_classification_code",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Completeness",
+      "sub_domain": "Segmentation",
+      "type_of_check": "Availability",
+      "table_name_checked": "KNA1",
+      "column_name_checked": "KUKLA",
+      "business_attribute_name": "Customer Classification",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_173.1",
+      "rule_description": "Order Block Assignment Date",
+      "technical_definition_RU": "IF b.central_order_block_code IS NULL OR a.central_order_block_assignment_date IS NULL THEN '' ELSE IF sysdate - a.central_order_block_assignment_date (in months) <= b.max_months THEN '1' ELSE '0'",
+      "value_checked": "central_order_block_assignment_date",
+      "datamart_or_reference_table_used": "dm_customer_general (a); conf_order_block_time (b); a LEFT b ON a.central_order_block_code = b.central_order_block_code",
+      "quality_category": "Conformity",
+      "sub_domain": "Distribution",
+      "type_of_check": "Consistency",
+      "table_name_checked": "KNA1",
+      "column_name_checked": "AUFSD",
+      "business_attribute_name": "Assignment Date",
+      "exclude_from_score_calculation": false
+    }
+  ],
+  "BUT000": [
+    {
+      "rule_code": "RCCONF_13.2",
+      "rule_description": "NAME_ORG2 cannot be the same as Name 1 field",
+      "technical_definition_RU": [
+        "IF organization_1_name IS NULL OR organization_2_name IS NULL THEN '' ELSE IF",
+        "organization_2_name = organization_1_name THEN '0' ELSE '1'"
+      ],
+      "value_checked": "organization_2_name",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "TBD",
+      "table_name_checked": "BUT000",
+      "column_name_checked": "NAME_ORG2",
+      "business_attribute_name": "Name 2",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_12.6.1",
+      "rule_description": "Check if Name 1 equals Name 2",
+      "technical_definition_RU": [
+        "IF organization_1_name IS NULL OR organization_2_name IS NULL THEN '' ELSE IF",
+        "organization_1_name = organization_2_name THEN '0' ELSE '1'"
+      ],
+      "value_checked": "organization_1_name",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "TBD",
+      "table_name_checked": "BUT000",
+      "column_name_checked": "NAME_ORG1",
+      "business_attribute_name": "Organization Name",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_12.6.2",
+      "rule_description": "Check if Name 1 equals Name 4",
+      "technical_definition_RU": [
+        "IF organization_1_name IS NULL OR organization_4_name IS NULL THEN '' ELSE IF",
+        "organization_1_name = organization_4_name THEN '0' ELSE '1'"
+      ],
+      "value_checked": "organization_1_name",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "TBD",
+      "table_name_checked": "BUT000",
+      "column_name_checked": "NAME_ORG1",
+      "business_attribute_name": "Organization Name",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_12.6.3",
+      "rule_description": "Check if Name 1 equals Name 3",
+      "technical_definition_RU": [
+        "IF organization_1_name IS NULL OR organization_3_name IS NULL THEN '' ELSE IF",
+        "organization_1_name = organization_3_name THEN '0' ELSE '1'"
+      ],
+      "value_checked": "organization_1_name",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "TBD",
+      "table_name_checked": "BUT000",
+      "column_name_checked": "NAME_ORG1",
+      "business_attribute_name": "Organization Name",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_12.4",
+      "rule_description": "Name 1 should be in capital letters",
+      "technical_definition_RU": [
+        "IF country_code IN ('AM','BY','CZ','SK') OR organization_1_name IS NULL THEN ''",
+        "ELSE IF organization_1_name is not in capital letters THEN '0' ELSE '1'"
+      ],
+      "value_checked": "organization_1_name",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "Spelling",
+      "table_name_checked": "BUT000",
+      "column_name_checked": "NAME_ORG1",
+      "business_attribute_name": "Name 1",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_15.4",
+      "rule_description": "NAME_ORG4 Two or more consecutive space characters are not allowed",
+      "technical_definition_RU": [
+        "IF organization_4_name IS NULL THEN '' IF in organization_4_name two or more",
+        "consecutive space characters THEN '0' ELSE '1'"
+      ],
+      "value_checked": "organization_4_name",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "Spelling",
+      "table_name_checked": "BUT000",
+      "column_name_checked": "NAME_ORG4",
+      "business_attribute_name": "Name 4",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_14.1.1",
+      "rule_description": "NAME_ORG3 cannot be the same as Name 1 field",
+      "technical_definition_RU": [
+        "IF organization_1_name IS NULL OR organization_3_name IS NULL THEN '' ELSE IF",
+        "organization_3_name = organization_1_name THEN '0' ELSE '1'"
+      ],
+      "value_checked": "organization_3_name",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "TBD",
+      "table_name_checked": "BUT000",
+      "column_name_checked": "NAME_ORG3",
+      "business_attribute_name": "Name 3",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_15.2.3",
+      "rule_description": "NAME_ORG4 cannot be the same as Name 3 field",
+      "technical_definition_RU": [
+        "IF organization_4_name IS NULL OR organization_3_name IS NULL THEN '' ELSE IF",
+        "organization_4_name = organization_3_name THEN '0' ELSE '1'"
+      ],
+      "value_checked": "organization_4_name",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "TBD",
+      "table_name_checked": "BUT000",
+      "column_name_checked": "NAME_ORG4",
+      "business_attribute_name": "Name 4",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_14.3",
+      "rule_description": "NAME_ORG3 Two or more consecutive space characters are not allowed",
+      "technical_definition_RU": [
+        "IF organization_3_name IS NULL THEN '' IF in organization_3_name two or more",
+        "consecutive space characters THEN '0' ELSE '1'"
+      ],
+      "value_checked": "organization_3_name",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "Spelling",
+      "table_name_checked": "BUT000",
+      "column_name_checked": "NAME_ORG3",
+      "business_attribute_name": "Name 3",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_15.1",
+      "rule_description": "NAME_ORG4 can only be used if Name 3 is filled to maximum capacity",
+      "technical_definition_RU": [
+        "IF organization_4_name IS NULL OR organization_3_name IS NULL THEN ''",
+        "ELSE IF len(organization_3_name) < 34 AND organization_4_name IS NOT NULL THEN '0'",
+        "(длина по полному значению поля: ведущий пробел не снимается; только U+FEFF в начале отбрасывается)",
+        "ELSE '1'"
+      ],
+      "value_checked": "organization_4_name",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "TBD",
+      "table_name_checked": "BUT000",
+      "column_name_checked": "NAME_ORG4",
+      "business_attribute_name": "Name 4",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_15.2.2",
+      "rule_description": "NAME_ORG4 cannot be the same as Name 2 field",
+      "technical_definition_RU": [
+        "IF organization_4_name IS NULL OR organization_2_name IS NULL THEN '' ELSE IF",
+        "organization_4_name = organization_2_name THEN '0' ELSE '1'"
+      ],
+      "value_checked": "organization_4_name",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "TBD",
+      "table_name_checked": "BUT000",
+      "column_name_checked": "NAME_ORG4",
+      "business_attribute_name": "Name 4",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_14.1.2",
+      "rule_description": "NAME_ORG3 cannot be a the same as Name 2 field",
+      "technical_definition_RU": [
+        "IF organization_2_name IS NULL OR organization_3_name IS NULL THEN '' ELSE IF",
+        "organization_3_name = organization_2_name THEN '0' ELSE '1'"
+      ],
+      "value_checked": "organization_3_name",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "TBD",
+      "table_name_checked": "BUT000",
+      "column_name_checked": "NAME_ORG3",
+      "business_attribute_name": "Name 3",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_15.2.1",
+      "rule_description": "NAME_ORG4 cannot be the same as Name 1 field",
+      "technical_definition_RU": [
+        "IF organization_1_name IS NULL OR organization_4_name IS NULL THEN '' ELSE IF",
+        "organization_4_name = organization_1_name THEN '0' ELSE '1'"
+      ],
+      "value_checked": "organization_4_name",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "TBD",
+      "table_name_checked": "BUT000",
+      "column_name_checked": "NAME_ORG4",
+      "business_attribute_name": "Name 4",
+      "exclude_from_score_calculation": false
+    }
+  ],
+  "AUSP_143": [
+    {
+      "rule_code": "RCCOMP_248.1",
+      "rule_description": "Missing CCAF",
+      "technical_definition_RU": [
+        "IF account_group_code != '9038' THEN '' ELSE IF central_order_block_code IN (S,",
+        "SP, E, G, S2, S3, S4, S5, S9, R, U, M, NR) OR natural_person_flag = 'X' THEN ''",
+        "ELSE IF ccaf_code IS NULL THEN '0' ELSE '1'"
+      ],
+      "value_checked": "ccaf_code (for non-eg) l4_customer_name (for eg)",
+      "datamart_or_reference_table_used": "dm_customer_general, dm_customer_hierarchy",
+      "quality_category": "Completeness",
+      "sub_domain": "Segmentation",
+      "type_of_check": "Availability",
+      "table_name_checked": "AUSP_143",
+      "column_name_checked": "CCAF",
+      "business_attribute_name": "CCAF",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_248.1",
+      "rule_description": "Valid CCAF",
+      "technical_definition_RU": [
+        "IF ccaf_code is NULL OR central_order_block_code IN (S, SP, E, G, S2, S3, S4, S5,",
+        "S9, R, U, M, NR) OR natural_person_flag = 'X' THEN '' ELSE IF ccaf_code has",
+        "format as defined THEN '1' ELSE '0'"
+      ],
+      "value_checked": "ccaf_code",
+      "datamart_or_reference_table_used": "dm_customer_general, conf_ccaf_format",
+      "quality_category": "Conformity",
+      "sub_domain": "Segmentation",
+      "type_of_check": "Data Format",
+      "table_name_checked": "AUSP_143",
+      "column_name_checked": "CCAF",
+      "business_attribute_name": "CCAF",
+      "exclude_from_score_calculation": false
+    }
+  ],
+  "AUSP_604": [
+    {
+      "rule_code": "RCCONF_282.1",
+      "rule_description": "Valid Red Outlet flag (X)",
+      "technical_definition_RU": [
+        "IF red_outlet_flag IS NULL THEN '' ELSE IF red_outlet_flag = 'X' OR",
+        "red_outlet_flag = 'N' THEN '1' ELSE '0'"
+      ],
+      "value_checked": "red_outlet_flag",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Segmentation",
+      "type_of_check": "Availability",
+      "table_name_checked": "AUSP_604",
+      "column_name_checked": "RED_OUTLET",
+      "business_attribute_name": "Red Outlet",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_282.1",
+      "rule_description": "Missing Red Outlet",
+      "technical_definition_RU": "IF red_outlet_flag IS NULL THEN '0' ELSE '1'",
+      "value_checked": "red_outlet_flag",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Completeness",
+      "sub_domain": "Segmentation",
+      "type_of_check": "Availability",
+      "table_name_checked": "AUSP_604",
+      "column_name_checked": "RED_OUTLET",
+      "business_attribute_name": "Red Outlet",
+      "exclude_from_score_calculation": false
+    }
+  ],
+  "AUSP_148": [
+    {
+      "rule_code": "RCCONF_244.4",
+      "rule_description": "Consistency Between The global key customer and trade name",
+      "technical_definition_RU": [
+        "IF central_order_block_code IN ('S1', 'E', 'G', 'R', 'U', 'S', 'S3', 'S4', 'SP',",
+        "'SY', 'IA', 'IB', 'RN', 'S2', 'S5', 'S9') OR account_group_code LIKE '7%' OR",
+        "(a.trading_group_code IS NULL OR c.trading_group_code IS NULL OR",
+        "a.global_customer_code IS NULL OR c.global_customer_code IS NULL OR",
+        "d.global_customer_code IS NULL) THEN '' ELSE IF a.trading_standard_name IS NOT",
+        "NULL AND c.trading_standard_name IS NOT NULL AND d.trading_standard_name IS NOT",
+        "NULL THEN '1' ELSE IF a.trading_standard_name IS NOT NULL AND",
+        "c.trading_standard_name IS NOT NULL AND ((a.trading_group_code =",
+        "c.trading_group_code = d.trading_group_code) OR (a.trading_group_code =",
+        "c.trading_group_code AND d.trading_group_code IS NULL AND (c.global_customer_code",
+        "IS NOT NULL AND d.global_customer_code IS NOT NULL AND a.global_customer_code =",
+        "c.global_customer_code = d.global_customer_code) AND check if more than one",
+        "c.trading_group_code assigned to d.global_customer_code",
+        "count(c.trading_group_code)> 1 group by d.global_customer_code)) THEN '1' ELSE '0'"
+      ],
+      "value_checked": "a.global_customer_code + '_' + a.trading_group_code",
+      "datamart_or_reference_table_used": "dm_customer_general (a) where global_customer_code IN ('9007699', '9001157', '9000896', '9000017', '9000010', '9000013', '9001331', '9001332', '9001333', '9000981', '9000902', '9001202', '9001394', '9001351', '9001503', '9000030', '9000031', '9001176', '9001372', '9000004', '9000034', '9000901', '9000037', '9000040', '9000042', '9002255', '9001399', '9000045', '9001178', '9006012', '9000018', '9001408', '9001927', '9000023', '9001337', '9005552', '9005555', '9001359', '9000007', '9007123'), dm_customer_hierarchy (b), dm_customer_high_level (c) (CPL_DIV), dm_customer_high_level (d) (CPL); a LEFT b on a.customer_code = b.l7_customer_code, b LEFT c on b.l6_customer_code = c.customer_code, b LEFT d on b.l5_customer_code = d.customer_code",
+      "quality_category": "Conformity",
+      "sub_domain": "Grouping",
+      "type_of_check": "Consistency",
+      "table_name_checked": "AUSP_148",
+      "column_name_checked": "ZGLOBAL_CUSTOMER",
+      "business_attribute_name": "Global Customer",
+      "exclude_from_score_calculation": false
+    }
+  ],
+  "AUSP_151": [
+    {
+      "rule_code": "RCCONF_246.2",
+      "rule_description": "Valid Trade Name",
+      "technical_definition_RU": [
+        "IF central_order_block_code IN ('S1', 'E', 'G', 'R', 'U', 'S', 'S3', 'S4', 'SP',",
+        "'SY', 'IA', 'IB', 'RN', 'S2', 'S5', 'S9') OR account_group_code LIKE '7%' OR",
+        "(a.trading_group_code IS NULL OR c.trading_group_code IS NULL) THEN '' ELSE IF",
+        "a.trading_group_code = c.trading_group_code = d.trading_group_code THEN '1' ELSE",
+        "IF a.trading_group_code = c.trading_group_code AND d.trading_group_code IS NULL",
+        "AND (c.global_customer_code IS NOT NULL AND d.global_customer_code IS NOT NULL",
+        "AND a.global_customer_code = c.global_customer_code = d.global_customer_code) AND",
+        "check if more than one c.trading_group_code assigned to d.global_customer_code",
+        "(count(c.trading_group_code)> 1 group by d.global_customer_code) THEN '1' ELSE '0'"
+      ],
+      "value_checked": "a.trading_group_code",
+      "datamart_or_reference_table_used": "dm_customer_general (a) where global_customer_code IN ('9007699', '9001157', '9000896', '9000017', '9000010', '9000013', '9001331', '9001332', '9001333', '9000981', '9000902', '9001202', '9001394', '9001351', '9001503', '9000030', '9000031', '9001176', '9001372', '9000004', '9000034', '9000901', '9000037', '9000040', '9000042', '9002255', '9001399', '9000045', '9001178', '9006012', '9000018', '9001408', '9001927', '9000023', '9001337', '9005552', '9005555', '9001359', '9000007', '9007123'), dm_customer_hierarchy (b), dm_customer_high_level (c) (CPL_DIV), dm_customer_high_level (d) (CPL); a LEFT b on a.customer_code = b.l7_customer_code, b LEFT c on b.l6_customer_code = c.customer_code, b LEFT d on b.l5_customer_code = d.customer_code",
+      "quality_category": "Conformity",
+      "sub_domain": "Grouping",
+      "type_of_check": "Consistency",
+      "table_name_checked": "AUSP_151",
+      "column_name_checked": "ZTRADE_NAME",
+      "business_attribute_name": "Trading Group",
+      "exclude_from_score_calculation": false
+    }
+  ],
+  "DFKKBPTAXNUM1": [
+      {
+        "rule_code": "RCCONF_50.1",
+        "rule_description": "TAXNUM1-Check the Tax Number 1 accuracy against country standards",
+        "technical_definition_RU": [
+          "IF tax_1_value IS NULL or reference format not defined THEN ''",
+          "ELSE IF tax_1_value has correct format THEN '1' ELSE '0'"
+        ],
+        "value_checked": "tax_1_value",
+        "datamart_or_reference_table_used": "dm_customer_general, conf_tax_number_format",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM1",
+        "business_attribute_name": "Tax Number 1",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCOMP_50.1",
+        "rule_description": "Missing TAX0 OR TAX1",
+        "technical_definition_RU": [
+          "IF b.tax_1 = '0' and a.county_code = b.country_code in configuration file THEN ''",
+          "ELSE IF b.legal_form_code LIKE 'X%' THEN ''",
+          "ELSE IF a.tax_1_value IS NULL AND a.tax_0_value IS NULL THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_1_value",
+        "datamart_or_reference_table_used": "dm_customer_general (a), conf_tax_standard (b)",
+        "quality_category": "Completeness",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM1",
+        "business_attribute_name": "Tax Number 1",
+        "is_active": 1,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "STEWARDS"
+      },
+      {
+        "rule_code": "RCCONF_50.11",
+        "rule_description": "TAXNUM1-Check for how many customers has the same value as other VAT/Tax number (Taxnum1=Taxnum5)",
+        "technical_definition_RU": [
+          "IF tax_0_value IS NULL OR tax_1_value IS NULL OR tax_2_value IS NULL OR",
+          "tax_3_value IS NULL OR tax_4_value IS NULL OR tax_5_value IS NULL OR",
+          "tax_6_value IS NULL THEN ''",
+          "ELSE IF tax_1_value = tax_0_value OR tax_1_value = tax_2_value OR",
+          "tax_1_value = tax_3_value OR tax_1_value = tax_4_value OR",
+          "tax_1_value = tax_5_value OR tax_1_value = tax_6_value THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_1_value",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM1",
+        "business_attribute_name": "Tax Number 1",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_50.10",
+        "rule_description": "TAXNUM1-Check for how many customers is xxxxxxxx",
+        "technical_definition_RU": [
+          "IF tax_1_value IS NULL THEN ''",
+          "ELSE IF tax_1_value = 'xxxxxxxx' THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_1_value",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM1",
+        "business_attribute_name": "Tax Number 1",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCOMP_49.1",
+        "rule_description": "Missing TAXTYPE1 AND TAXTYPE0 in DFKKBPTAXNUM View",
+        "technical_definition_RU": [
+          "IF b.tax_1 = '0' and a.county_code = b.country_code in configuration file THEN ''",
+          "ELSE IF a.tax_1_type IS NULL AND a.tax_0_type IS NULL THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_1_type",
+        "datamart_or_reference_table_used": "dm_customer_general (a), conf_tax_standard (b)",
+        "quality_category": "Completeness",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXTYPE1",
+        "business_attribute_name": "Tax Type 1",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_49.1",
+        "rule_description": "TaxType1 used is corresponding to the country",
+        "technical_definition_RU": [
+          "IF tax_1_type IS NULL THEN ''",
+          "ELSE IF is_allowed_tax_1_country_code = '1' THEN '1' ELSE '0'"
+        ],
+        "value_checked": "tax_1_type",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXTYPE1",
+        "business_attribute_name": "Tax Type 1",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_49.2",
+        "rule_description": "TaxType1 Last digit is from 0 to 6 means should be 1",
+        "technical_definition_RU": [
+          "IF tax_1_type IS NULL OR SUBSTR(tax_1_value, -1) NOT IN ('0','1','2','3','4','5','6','7','8','9') THEN ''",
+          "ELSE IF SUBSTR(tax_1_value, -1) IN ('0','1','2','3','4','5','6') THEN '1' ELSE '0'"
+        ],
+        "value_checked": "tax_1_value",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXTYPE1",
+        "business_attribute_name": "Tax Type 1",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_49.3",
+        "rule_description": "If TaxType1 is Tax Category 1 is not null, then TaxNum1 should not be null",
+        "technical_definition_RU": [
+          "IF tax_1_type IS NULL THEN ''",
+          "ELSE IF tax_1_value IS NULL AND tax_1_type IS NOT NULL THEN '0'",
+          "ELSE IF tax_1_value IS NOT NULL AND tax_1_type IS NOT NULL THEN '1' ELSE ''"
+        ],
+        "value_checked": "tax_1_type, tax_1_value",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXTYPE1",
+        "business_attribute_name": "Tax Type 1",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_52.4",
+        "rule_description": "Tax Conformity against Country Standards (Duplicate Values)",
+        "technical_definition_RU": ["IF tax_1_value includes same digit/char or sequential THEN '0' ELSE '1'"],
+        "value_checked": "tax_1_value",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM1",
+        "business_attribute_name": "Tax Number 1",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_52.3",
+        "rule_description": "Tax Conformity against Country Standards (Format Validation)",
+        "technical_definition_RU": ["IF tax_1_value has format as in conf THEN '1' ELSE '0'"],
+        "value_checked": "tax_1_value",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM1",
+        "business_attribute_name": "Tax Number 1",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_52.2",
+        "rule_description": "Tax Numbers < 3 digits",
+        "technical_definition_RU": ["IF LENGTH(tax_1_value) < 3 AND LENGTH(tax_1_value) > 0 THEN '0' ELSE '1'"],
+        "value_checked": "tax_1_value",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM1",
+        "business_attribute_name": "Tax Number 1",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCOMP_52.2",
+        "rule_description": "Missing TAX0 OR TAX1 OR TAX2",
+        "technical_definition_RU": ["IF tax_1_value IS NULL THEN '0' ELSE '1'"],
+        "value_checked": "tax_1_value",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM1",
+        "business_attribute_name": "Tax Number 1",
+        "quality_category": "Completeness",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "is_active": 1,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "STEWARDS"
+      }
+    ],
+    "DFKKBPTAXNUM2": [
+      {
+        "rule_code": "RCCONF_52.1",
+        "rule_description": "TAXNUM2-Check the Tax Number 2 accuracy against country standards",
+        "technical_definition_RU": [
+          "IF tax_2_value IS NULL or reference format not defined THEN ''",
+          "ELSE IF tax_2_value has correct format THEN '1' ELSE '0'"
+        ],
+        "value_checked": "tax_2_value",
+        "datamart_or_reference_table_used": "dm_customer_general, conf_tax_number_format",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM2",
+        "business_attribute_name": "Tax Number 2",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCOMP_52.1",
+        "rule_description": "Missing TAX2 OR TAX0",
+        "technical_definition_RU": [
+          "IF b.tax_2 = '0' and a.county_code = b.country_code in configuration file THEN ''",
+          "ELSE IF b.legal_form_code LIKE 'X%' THEN ''",
+          "ELSE IF a.tax_2_value IS NULL AND a.tax_0_value IS NULL THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_2_value",
+        "datamart_or_reference_table_used": "dm_customer_general (a), conf_tax_standard (b)",
+        "quality_category": "Completeness",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM2",
+        "business_attribute_name": "Tax Number 2",
+        "is_active": 1,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "STEWARDS"
+      },
+      {
+        "rule_code": "RCCONF_52.11",
+        "rule_description": "TAXNUM2-Check for how many customers has the same value as other VAT/Tax number (Taxnum2=Taxnum6)",
+        "technical_definition_RU": [
+          "IF tax_0_value IS NULL OR tax_1_value IS NULL OR tax_2_value IS NULL OR",
+          "tax_3_value IS NULL OR tax_4_value IS NULL OR tax_5_value IS NULL OR",
+          "tax_6_value IS NULL THEN ''",
+          "ELSE IF tax_2_value = tax_0_value OR tax_2_value = tax_1_value OR",
+          "tax_2_value = tax_3_value OR tax_2_value = tax_4_value OR",
+          "tax_2_value = tax_5_value OR tax_2_value = tax_6_value THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_2_value",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM2",
+        "business_attribute_name": "Tax Number 2",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_52.9",
+        "rule_description": "TAXNUM2-Check for how many customers is \"9999999\"",
+        "technical_definition_RU": [
+          "IF tax_2_value IS NULL THEN ''",
+          "ELSE IF tax_2_value = '9999999' THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_2_value",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM2",
+        "business_attribute_name": "Tax Number 2",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCOMP_51.1",
+        "rule_description": "Missing TAXTYPE2 AND TAXTYPE0 in DFKKBPTAXNUM View",
+        "technical_definition_RU": [
+          "IF b.tax_2 = '0' and a.county_code = b.country_code in configuration file THEN ''",
+          "ELSE IF a.tax_2_type IS NULL AND a.tax_0_type IS NULL THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_2_type",
+        "datamart_or_reference_table_used": "dm_customer_general (a), conf_tax_standard (b)",
+        "quality_category": "Completeness",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXTYPE2",
+        "business_attribute_name": "Tax Type 2",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_51.1",
+        "rule_description": "TaxType2 used is corresponding to the country",
+        "technical_definition_RU": [
+          "IF tax_2_type IS NULL THEN ''",
+          "ELSE IF is_allowed_tax_2_country_code = '1' THEN '1' ELSE '0'"
+        ],
+        "value_checked": "tax_2_type",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXTYPE2",
+        "business_attribute_name": "Tax Type 2",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_51.2",
+        "rule_description": "TaxType2 Last digit is from 0 to 6 means should be 1",
+        "technical_definition_RU": [
+          "IF tax_2_type IS NULL OR SUBSTR(tax_2_value, -1) NOT IN ('0','1','2','3','4','5','6','7','8','9') THEN ''",
+          "ELSE IF SUBSTR(tax_2_value, -1) IN ('0','1','2','3','4','5','6') THEN '1' ELSE '0'"
+        ],
+        "value_checked": "tax_2_type",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXTYPE2",
+        "business_attribute_name": "Tax Type 2",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_51.3",
+        "rule_description": "If TaxType2 is Tax Category 2 is not null, then TaxNum2 should not be null or 0",
+        "technical_definition_RU": [
+          "IF tax_2_type IS NULL THEN ''",
+          "ELSE IF tax_2_value IS NULL AND tax_2_type IS NOT NULL THEN '0'",
+          "ELSE IF tax_2_value IS NOT NULL AND tax_2_type IS NOT NULL THEN '1' ELSE ''"
+        ],
+        "value_checked": "tax_2_type, tax_2_value",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXTYPE2",
+        "business_attribute_name": "Tax Type 2",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_52.4",
+        "rule_description": "Tax Conformity against Country Standards (Duplicate Values)",
+        "technical_definition_RU": ["IF tax_2_value includes same digit/char or sequential THEN '0' ELSE '1'"],
+        "value_checked": "tax_2_value",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM2",
+        "business_attribute_name": "Tax Number 2",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_52.3",
+        "rule_description": "Tax Conformity against Country Standards (Format Validation)",
+        "technical_definition_RU": ["IF tax_2_value has format as in conf THEN '1' ELSE '0'"],
+        "value_checked": "tax_2_value",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM2",
+        "business_attribute_name": "Tax Number 2",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_52.2",
+        "rule_description": "Tax Numbers < 3 digits",
+        "technical_definition_RU": ["IF LENGTH(tax_2_value) < 3 AND LENGTH(tax_2_value) > 0 THEN '0' ELSE '1'"],
+        "value_checked": "tax_2_value",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM2",
+        "business_attribute_name": "Tax Number 2",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCOMP_52.2",
+        "rule_description": "Missing TAX0 OR TAX1 OR TAX2",
+        "technical_definition_RU": ["IF tax_2_value IS NULL THEN '0' ELSE '1'"],
+        "value_checked": "tax_2_value",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM2",
+        "business_attribute_name": "Tax Number 2",
+        "quality_category": "Completeness",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "is_active": 1,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "STEWARDS"
+      }
+    ],
+    "DFKKBPTAXNUM3": [
+      {
+        "rule_code": "RCCONF_54.1",
+        "rule_description": "TAXNUM3-Check the Tax Number 3 accuracy against country standards",
+        "technical_definition_RU": [
+          "IF tax_3_value IS NULL or reference format not defined THEN ''",
+          "ELSE IF tax_3_value has correct format THEN '1' ELSE '0'"
+        ],
+        "value_checked": "tax_3_value",
+        "datamart_or_reference_table_used": "dm_customer_general, conf_tax_number_format",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM3",
+        "business_attribute_name": "Tax Number 3",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCOMP_54.1",
+        "rule_description": "Missing TAX3 OR TAX0",
+        "technical_definition_RU": [
+          "IF b.tax_3 = '0' and a.county_code = b.country_code in configuration file THEN ''",
+          "ELSE IF b.legal_form_code LIKE 'X%' THEN ''",
+          "ELSE IF a.tax_3_value IS NULL AND a.tax_0_value IS NULL THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_3_value",
+        "datamart_or_reference_table_used": "dm_customer_general (a), conf_tax_standard (b)",
+        "quality_category": "Completeness",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM3",
+        "business_attribute_name": "Tax Number 3",
+        "is_active": 1,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "STEWARDS"
+      },
+      {
+        "rule_code": "RCCONF_54.9",
+        "rule_description": "TAXNUM3-Check for how many customers has the same value as other VAT/Tax number (Taxnum3=Taxnum6)",
+        "technical_definition_RU": [
+          "IF tax_0_value IS NULL OR tax_1_value IS NULL OR tax_2_value IS NULL OR",
+          "tax_3_value IS NULL OR tax_4_value IS NULL OR tax_5_value IS NULL OR",
+          "tax_6_value IS NULL THEN ''",
+          "ELSE IF tax_3_value = tax_0_value OR tax_3_value = tax_1_value OR",
+          "tax_3_value = tax_2_value OR tax_3_value = tax_4_value OR",
+          "tax_3_value = tax_5_value OR tax_3_value = tax_6_value THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_3_value",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM3",
+        "business_attribute_name": "Tax Number 3",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_54.7",
+        "rule_description": "TAXNUM3-Check for how many customers is \"9999999\"",
+        "technical_definition_RU": [
+          "IF tax_3_value IS NULL THEN ''",
+          "ELSE IF tax_3_value = '9999999' THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_3_value",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM3",
+        "business_attribute_name": "Tax Number 3",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCOMP_53.1",
+        "rule_description": "Missing TAXTYPE3 AND TAXTYPE0 in DFKKBPTAXNUM View",
+        "technical_definition_RU": [
+          "IF b.tax_3 = '0' and a.county_code = b.country_code in configuration file THEN ''",
+          "ELSE IF a.tax_3_type IS NULL AND a.tax_0_type IS NULL THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_3_type",
+        "datamart_or_reference_table_used": "dm_customer_general (a), conf_tax_standard (b)",
+        "quality_category": "Completeness",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXTYPE3",
+        "business_attribute_name": "Tax Type 3",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_53.1",
+        "rule_description": "TaxType3 used is corresponding to the country",
+        "technical_definition_RU": [
+          "IF tax_3_type IS NULL THEN ''",
+          "ELSE IF is_allowed_tax_3_country_code = '1' THEN '1' ELSE '0'"
+        ],
+        "value_checked": "tax_3_type",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXTYPE3",
+        "business_attribute_name": "Tax Type 3",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_53.2",
+        "rule_description": "TaxType3 Last digit is from 0 to 6 means should be 1",
+        "technical_definition_RU": [
+          "IF tax_3_type IS NULL OR SUBSTR(tax_3_value, -1) NOT IN ('0','1','2','3','4','5','6','7','8','9') THEN ''",
+          "ELSE IF SUBSTR(tax_3_value, -1) IN ('0','1','2','3','4','5','6') THEN '1' ELSE '0'"
+        ],
+        "value_checked": "tax_3_type",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXTYPE3",
+        "business_attribute_name": "Tax Type 3",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_53.3",
+        "rule_description": "If TaxType3 is Tax Category 3 is not null, then TaxNum3 should not be null or 0",
+        "technical_definition_RU": [
+          "IF tax_3_type IS NULL THEN ''",
+          "ELSE IF tax_3_value IS NULL AND tax_3_type IS NOT NULL THEN '0'",
+          "ELSE IF tax_3_value IS NOT NULL AND tax_3_type IS NOT NULL THEN '1' ELSE ''"
+        ],
+        "value_checked": "tax_3_type, tax_3_value",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXTYPE3",
+        "business_attribute_name": "Tax Type 3",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_52.4",
+        "rule_description": "Tax Conformity against Country Standards (Duplicate Values)",
+        "technical_definition_RU": ["IF tax_3_value includes same digit/char or sequential THEN '0' ELSE '1'"],
+        "value_checked": "tax_3_value",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM3",
+        "business_attribute_name": "Tax Number 3",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_52.3",
+        "rule_description": "Tax Conformity against Country Standards (Format Validation)",
+        "technical_definition_RU": ["IF tax_3_value has format as in conf THEN '1' ELSE '0'"],
+        "value_checked": "tax_3_value",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM3",
+        "business_attribute_name": "Tax Number 3",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_52.2",
+        "rule_description": "Tax Numbers < 3 digits",
+        "technical_definition_RU": ["IF LENGTH(tax_3_value) < 3 AND LENGTH(tax_3_value) > 0 THEN '0' ELSE '1'"],
+        "value_checked": "tax_3_value",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM3",
+        "business_attribute_name": "Tax Number 3",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCOMP_52.2",
+        "rule_description": "Missing TAX0 OR TAX1 OR TAX2",
+        "technical_definition_RU": ["IF tax_3_value IS NULL THEN '0' ELSE '1'"],
+        "value_checked": "tax_3_value",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM3",
+        "business_attribute_name": "Tax Number 3",
+        "quality_category": "Completeness",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "is_active": 1,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "STEWARDS"
+      }
+    ],
+    "DFKKBPTAXNUM5": [
+      {
+        "rule_code": "RCCONF_63.1",
+        "rule_description": "TAXNUM5-Check the Tax Number 5 accuracy against country standards",
+        "technical_definition_RU": [
+          "IF tax_5_value IS NULL or reference format not defined THEN ''",
+          "ELSE IF tax_5_value has correct format THEN '1' ELSE '0'"
+        ],
+        "value_checked": "tax_5_value",
+        "datamart_or_reference_table_used": "dm_customer_general, conf_tax_number_format",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM5",
+        "business_attribute_name": "Tax Number 5",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Optional",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCOMP_63.1",
+        "rule_description": "Missing TAXNUM5 in DFKKBPTAXNUM View",
+        "technical_definition_RU": [
+          "IF tax_5_value IS NULL THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_5_value",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Completeness",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM5",
+        "business_attribute_name": "Tax Number 5",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Optional",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_63.7",
+        "rule_description": "TAXNUM5-Check for how many customers has the same value as other VAT/Tax number (Taxnum5=Taxnum2)",
+        "technical_definition_RU": [
+          "IF tax_0_value IS NULL OR tax_1_value IS NULL OR tax_2_value IS NULL OR",
+          "tax_3_value IS NULL OR tax_4_value IS NULL OR tax_5_value IS NULL OR",
+          "tax_6_value IS NULL THEN ''",
+          "ELSE IF tax_5_value = tax_0_value OR tax_5_value = tax_1_value OR",
+          "tax_5_value = tax_2_value OR tax_5_value = tax_3_value OR",
+          "tax_5_value = tax_4_value OR tax_5_value = tax_6_value THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_5_value",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM5",
+        "business_attribute_name": "Tax Number 5",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Optional",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_63.5",
+        "rule_description": "TAXNUM5-Check for how many customers is \"9999999\"",
+        "technical_definition_RU": [
+          "IF tax_5_value IS NULL THEN ''",
+          "ELSE IF tax_5_value = '9999999' THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_5_value",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM5",
+        "business_attribute_name": "Tax Number 5",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Optional",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_63.6",
+        "rule_description": "TAXNUM5-Check for how many customers is xxxxxxxx",
+        "technical_definition_RU": [
+          "IF tax_5_value IS NULL THEN ''",
+          "ELSE IF tax_5_value = 'xxxxxxxx' THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_5_value",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM5",
+        "business_attribute_name": "Tax Number 5",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Optional",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCOMP_59.1",
+        "rule_description": "Missing TAXTYPE5 in DFKKBPTAXNUM View",
+        "technical_definition_RU": [
+          "IF tax_5_type IS NULL THEN '0' ELSE '1'"
+        ],
+        "value_checked": "tax_5_type",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Completeness",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXTYPE5",
+        "business_attribute_name": "Tax Type 5",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Optional",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_62.1",
+        "rule_description": "TaxType5 used is corresponding to the country",
+        "technical_definition_RU": [
+          "IF tax_5_type IS NULL THEN ''",
+          "ELSE IF is_allowed_tax_5_country_code = '1' THEN '1' ELSE '0'"
+        ],
+        "value_checked": "tax_5_type",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXTYPE5",
+        "business_attribute_name": "Tax Type 5",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Optional",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_62.2",
+        "rule_description": "TaxType5 Last digit is from 0 to 6 means should be 1",
+        "technical_definition_RU": [
+          "IF tax_5_type IS NULL OR SUBSTR(tax_5_value, -1) NOT IN ('0','1','2','3','4','5','6','7','8','9') THEN ''",
+          "ELSE IF SUBSTR(tax_5_value, -1) IN ('0','1','2','3','4','5','6') THEN '1' ELSE '0'"
+        ],
+        "value_checked": "tax_5_type",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXTYPE5",
+        "business_attribute_name": "Tax Type 5",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Optional",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_62.3",
+        "rule_description": "If TaxType5 is Tax Category 5 is not null, then TaxNum5 should not be null or 0",
+        "technical_definition_RU": [
+          "IF tax_5_type IS NULL THEN ''",
+          "ELSE IF tax_5_value IS NULL AND tax_5_type IS NOT NULL THEN '0'",
+          "ELSE IF tax_5_value IS NOT NULL AND tax_5_type IS NOT NULL THEN '1' ELSE ''"
+        ],
+        "value_checked": "tax_5_type, tax_5_value",
+        "datamart_or_reference_table_used": "dm_customer_general",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "TBD",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXTYPE5",
+        "business_attribute_name": "Tax Type 5",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Optional",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_52.4",
+        "rule_description": "Tax Conformity against Country Standards (Duplicate Values)",
+        "technical_definition_RU": ["IF tax_5_value includes same digit/char or sequential THEN '0' ELSE '1'"],
+        "value_checked": "tax_5_value",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM5",
+        "business_attribute_name": "Tax Number 5",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_52.3",
+        "rule_description": "Tax Conformity against Country Standards (Format Validation)",
+        "technical_definition_RU": ["IF tax_5_value has format as in conf THEN '1' ELSE '0'"],
+        "value_checked": "tax_5_value",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM5",
+        "business_attribute_name": "Tax Number 5",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCONF_52.2",
+        "rule_description": "Tax Numbers < 3 digits",
+        "technical_definition_RU": ["IF LENGTH(tax_5_value) < 3 AND LENGTH(tax_5_value) > 0 THEN '0' ELSE '1'"],
+        "value_checked": "tax_5_value",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM5",
+        "business_attribute_name": "Tax Number 5",
+        "quality_category": "Conformity",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "is_active": 0,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "#N/A"
+      },
+      {
+        "rule_code": "RCCOMP_52.2",
+        "rule_description": "Missing TAX0 OR TAX1 OR TAX2",
+        "technical_definition_RU": ["IF tax_5_value IS NULL THEN '0' ELSE '1'"],
+        "value_checked": "tax_5_value",
+        "table_name_checked": "DFKKBPTAXNUM",
+        "column_name_checked": "TAXNUM5",
+        "business_attribute_name": "Tax Number 5",
+        "quality_category": "Completeness",
+        "sub_domain": "Company",
+        "type_of_check": "Availability",
+        "is_active": 1,
+        "severity": 1,
+        "is_field_mandatory": "Mandatory",
+        "exclude_from_score_calculation": 0,
+        "responsible": "STEWARDS"
+      }
+    ],
+  "KNVH": [
+    {
+      "rule_code": "RCCONF_236.2",
+      "rule_description": "Valid Format for Start of validity period",
+      "technical_definition_RU": [
+        "IF DATAB IS NULL THEN '' ELSE IF TO_DATE(DATAB, 'YYYYMMDD') IS NOT NULL THEN '1'",
+        "ELSE '0'"
+      ],
+      "value_checked": "DATAB",
+      "datamart_or_reference_table_used": "dm_customer_hierarchy",
+      "quality_category": "Conformity",
+      "sub_domain": "Grouping",
+      "type_of_check": "Data Format",
+      "column_name_checked": "DATAB",
+      "business_attribute_name": "Start of validity period",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_236.3",
+      "rule_description": "Valid Start of validity period for assignment",
+      "technical_definition_RU": [
+        "IF DATAB IS NULL THEN '' ELSE IF TO_DATE(DATAB, 'YYYYMMDD') >",
+        "ADD_MONTHS(CURRENT_DATE, 2) THEN '0' ELSE '1'"
+      ],
+      "value_checked": "DATAB",
+      "datamart_or_reference_table_used": "dm_customer_hierarchy",
+      "quality_category": "Conformity",
+      "sub_domain": "Grouping",
+      "type_of_check": "TBD",
+      "column_name_checked": "DATAB",
+      "business_attribute_name": "Start of validity period",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_236.1",
+      "rule_description": "Missing Start of validity period",
+      "technical_definition_RU": "IF DATAB IS NULL THEN '0' ELSE '1'",
+      "value_checked": "DATAB",
+      "datamart_or_reference_table_used": "dm_customer_hierarchy",
+      "quality_category": "Completeness",
+      "sub_domain": "Grouping",
+      "type_of_check": "Availability",
+      "column_name_checked": "DATAB",
+      "business_attribute_name": "Start of validity period",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_237.1",
+      "rule_description": "Missing End of validity period",
+      "technical_definition_RU": "IF DATBI IS NULL THEN '0' ELSE '1'",
+      "value_checked": "DATBI",
+      "datamart_or_reference_table_used": "dm_customer_hierarchy",
+      "quality_category": "Completeness",
+      "sub_domain": "Grouping",
+      "type_of_check": "Availability",
+      "column_name_checked": "DATBI",
+      "business_attribute_name": "End of validity period",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_238.1",
+      "rule_description": "Missing Hierarchy level 6 (CPL Division)",
+      "technical_definition_RU": "IF HKUNNR IS NULL THEN '0' ELSE '1'",
+      "value_checked": "HKUNNR",
+      "datamart_or_reference_table_used": "dm_customer_hierarchy",
+      "quality_category": "Completeness",
+      "sub_domain": "Grouping",
+      "type_of_check": "Availability",
+      "column_name_checked": "HKUNNR",
+      "business_attribute_name": "CPL Division",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_239.1",
+      "rule_description": "Missing Sales Org. at CPL Division Level",
+      "technical_definition_RU": "IF HVKORG IS NULL THEN '0' ELSE '1'",
+      "value_checked": "HVKORG",
+      "datamart_or_reference_table_used": "dm_customer_hierarchy",
+      "quality_category": "Completeness",
+      "sub_domain": "Grouping",
+      "type_of_check": "Availability",
+      "column_name_checked": "HVKORG",
+      "business_attribute_name": "Sales Org.",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_240.1",
+      "rule_description": "Missing Distr. Channel at CPL Division Level",
+      "technical_definition_RU": "IF HVTWEG IS NULL THEN '0' ELSE '1'",
+      "value_checked": "HVTWEG",
+      "datamart_or_reference_table_used": "dm_customer_hierarchy",
+      "quality_category": "Completeness",
+      "sub_domain": "Grouping",
+      "type_of_check": "Availability",
+      "column_name_checked": "HVTWEG",
+      "business_attribute_name": "Distr. Channel",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_241.1",
+      "rule_description": "Missing Sales Division at CPL Division Level",
+      "technical_definition_RU": "IF HSPART IS NULL THEN '0' ELSE '1'",
+      "value_checked": "HSPART",
+      "datamart_or_reference_table_used": "dm_customer_hierarchy",
+      "quality_category": "Completeness",
+      "sub_domain": "Grouping",
+      "type_of_check": "Availability",
+      "column_name_checked": "HSPART",
+      "business_attribute_name": "Sales Division",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_237.2",
+      "rule_description": "Valid End of validity period for the assignments",
+      "technical_definition_RU": [
+        "IF DATBI IS NULL THEN '' ELSE IF DATBI != '99991231' OR TO_DATE(DATBI,",
+        "'YYYYMMDD') < TO_DATE(DATAB, 'YYYYMMDD') THEN '0' ELSE '1'"
+      ],
+      "value_checked": "DATBI",
+      "datamart_or_reference_table_used": "dm_customer_hierarchy",
+      "quality_category": "Conformity",
+      "sub_domain": "Grouping",
+      "type_of_check": "Data Format",
+      "column_name_checked": "DATBI",
+      "business_attribute_name": "End of validity period",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_233.1",
+      "rule_description": "Valid Sales Org.",
+      "technical_definition_RU": [
+        "IF VKORG IS NULL OR VTWEG IS NULL OR SPART IS NULL THEN '' ELSE IF",
+        "l7_is_allowed_assignment = '1' THEN '1' ELSE '0'"
+      ],
+      "value_checked": "VKORG",
+      "datamart_or_reference_table_used": "dm_customer_hierarchy",
+      "quality_category": "Conformity",
+      "sub_domain": "Grouping",
+      "type_of_check": "TBD",
+      "column_name_checked": "VKORG",
+      "business_attribute_name": "Sales Org.",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_233.1",
+      "rule_description": "Missing Sales Org. at Customer Level",
+      "technical_definition_RU": "IF VKORG IS NULL THEN '0' ELSE '1'",
+      "value_checked": "VKORG",
+      "datamart_or_reference_table_used": "dm_customer_hierarchy",
+      "quality_category": "Completeness",
+      "sub_domain": "Grouping",
+      "type_of_check": "Availability",
+      "column_name_checked": "VKORG",
+      "business_attribute_name": "Sales Org.",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_234.1",
+      "rule_description": "Missing Distr. Channel at Customer Level",
+      "technical_definition_RU": "IF VTWEG IS NULL THEN '0' ELSE '1'",
+      "value_checked": "VTWEG",
+      "datamart_or_reference_table_used": "dm_customer_hierarchy",
+      "quality_category": "Completeness",
+      "sub_domain": "Grouping",
+      "type_of_check": "Availability",
+      "column_name_checked": "VTWEG",
+      "business_attribute_name": "Distr. Channel",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_235.1",
+      "rule_description": "Missing Sales Division at Customer Level",
+      "technical_definition_RU": "IF SPART IS NULL THEN '0' ELSE '1'",
+      "value_checked": "SPART",
+      "datamart_or_reference_table_used": "dm_customer_hierarchy",
+      "quality_category": "Completeness",
+      "sub_domain": "Grouping",
+      "type_of_check": "Availability",
+      "column_name_checked": "SPART",
+      "business_attribute_name": "Sales Division",
+      "exclude_from_score_calculation": false
+    }
+  ],
+  "KNVV": [
+    {
+      "rule_code": "RCCOMP_142.1",
+      "rule_description": "Missing Sales Office",
+      "technical_definition_RU": [
+        "IF account_group_code != '9038' THEN '' ELSE IF sales_office_code IS NULL THEN",
+        "'0' ELSE '1'"
+      ],
+      "value_checked": "sales_office_code",
+      "datamart_or_reference_table_used": "dm_customer_sales_org",
+      "quality_category": "Completeness",
+      "sub_domain": "Geographical",
+      "type_of_check": "Availability",
+      "column_name_checked": "VKBUR",
+      "business_attribute_name": "Sales Office",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_143.1",
+      "rule_description": "Missing Sales Group",
+      "technical_definition_RU": [
+        "IF account_group_code != '9038' THEN '' ELSE IF sales_group_code IS NULL THEN '0'",
+        "ELSE '1'"
+      ],
+      "value_checked": "sales_group_code",
+      "datamart_or_reference_table_used": "dm_customer_sales_org",
+      "quality_category": "Completeness",
+      "sub_domain": "Geographical",
+      "type_of_check": "Availability",
+      "column_name_checked": "VKGRP",
+      "business_attribute_name": "Sales Group",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_144.1",
+      "rule_description": "Missing Customer Group",
+      "technical_definition_RU": "IF customer_group_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "customer_group_code",
+      "datamart_or_reference_table_used": "dm_customer_sales_org",
+      "quality_category": "Completeness",
+      "sub_domain": "Geographical",
+      "type_of_check": "Availability",
+      "column_name_checked": "KDGRP",
+      "business_attribute_name": "Customer Group",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_153.1",
+      "rule_description": "Missing Shipping Conditions",
+      "technical_definition_RU": "IF shipping_condition_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "shipping_condition_code",
+      "datamart_or_reference_table_used": "dm_customer_sales_org",
+      "quality_category": "Completeness",
+      "sub_domain": "Distribution",
+      "type_of_check": "Availability",
+      "column_name_checked": "VSBED",
+      "business_attribute_name": "Shipping Conditions",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_154.1",
+      "rule_description": "Missing Delivering Plant",
+      "technical_definition_RU": "IF delivering_plant_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "delivering_plant_code",
+      "datamart_or_reference_table_used": "dm_customer_sales_org",
+      "quality_category": "Completeness",
+      "sub_domain": "Distribution",
+      "type_of_check": "Availability",
+      "column_name_checked": "VWERK",
+      "business_attribute_name": "Delivering Plant",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_163.1",
+      "rule_description": "Missing Terms Of Payment In KNVV View",
+      "technical_definition_RU": "IF terms_of_payment_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "terms_of_payment_code",
+      "datamart_or_reference_table_used": "dm_customer_sales_org",
+      "quality_category": "Completeness",
+      "sub_domain": "Distribution",
+      "type_of_check": "Availability",
+      "column_name_checked": "ZTERM",
+      "business_attribute_name": "Terms Of Payment",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_164.1",
+      "rule_description": "Missing Account Assignment Group",
+      "technical_definition_RU": "IF account_assignment_group_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "account_assignment_group_code",
+      "datamart_or_reference_table_used": "dm_customer_sales_org",
+      "quality_category": "Completeness",
+      "sub_domain": "Company",
+      "type_of_check": "Availability",
+      "column_name_checked": "KTGRD",
+      "business_attribute_name": "Account Assignment Group",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_170.1",
+      "rule_description": "Missing Customer group 4",
+      "technical_definition_RU": [
+        "IF customer_group_4_code IS NULL OR customer_group_4_code IS = '-1' /*empty value",
+        "replaced by -1 in data mart*/ THEN '0' ELSE '1'"
+      ],
+      "value_checked": "customer_group_4_code",
+      "datamart_or_reference_table_used": "dm_customer_sales_org",
+      "quality_category": "Completeness",
+      "sub_domain": "Distribution",
+      "type_of_check": "Availability",
+      "column_name_checked": "KVGR4",
+      "business_attribute_name": "Customer Group 4",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_143.7",
+      "rule_description": "Consistency Between Sales Group and Sales Office",
+      "technical_definition_RU": [
+        "IF sales_group_code IS NULL THEN '' ELSE IF IF is_sales_group_office_allowed =",
+        "'1' THEN '1' ELSE '0'"
+      ],
+      "value_checked": "sales_group_code",
+      "datamart_or_reference_table_used": "dm_customer_sales_org",
+      "quality_category": "Conformity",
+      "sub_domain": "Geographical",
+      "type_of_check": "Consistency",
+      "column_name_checked": "VKGRP",
+      "business_attribute_name": "Sales Group",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_153.4",
+      "rule_description": "VSBED-If Distribution Channel (VTWEG) = 04 and Division (SPART) = 02,\nthen Shipping Conditions (VSBED) must be 05",
+      "technical_definition_RU": [
+        "IF shipping_condition_code IS NULL THEN '' ELSE IF distribution_channel_code =",
+        "'04' AND division_code = '02' AND shipping_condition_code = '05' THEN '1' ELSE IF",
+        "distribution_channel_code = '04' AND division_code = '02' AND",
+        "shipping_condition_code != '05' THEN '0' ELSE ''"
+      ],
+      "value_checked": "shipping_condition_code",
+      "datamart_or_reference_table_used": "dm_customer_sales_org",
+      "quality_category": "Conformity",
+      "sub_domain": "Distribution",
+      "type_of_check": "TBD",
+      "column_name_checked": "VSBED",
+      "business_attribute_name": "Shipping Conditions",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_154.4",
+      "rule_description": "Valid Delivering Plant for Account Groups: 1[1,2,3]** and 90**",
+      "technical_definition_RU": [
+        "IF delivering_plant_code IS NULL THEN '' ELSE IF b.account_group_code IN (70%,",
+        "71%, 72%, 73%, 90%) AND a.delivering_plant_code IS NULL THEN '0' ELSE IF",
+        "b.account_group_code IN (70%, 71%, 72%, 73%, 90%) AND a.delivering_plant_code IS",
+        "NOT NULL THEN '1' ELSE ''"
+      ],
+      "value_checked": "delivering_plant_code",
+      "datamart_or_reference_table_used": "dm_customer_sales_org (a) dm_cutomer_general (b)",
+      "quality_category": "Conformity",
+      "sub_domain": "Distribution",
+      "type_of_check": "Availability",
+      "column_name_checked": "VWERK",
+      "business_attribute_name": "Delivering Plant",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_154.1",
+      "rule_description": "Consistency between Sales Org, Distribution Channel and Delivering Plant",
+      "technical_definition_RU": [
+        "IF delivering_plant_code IS NULL THEN '' ELSE IF is_delivering_plant_allowed =",
+        "'0' THEN '0' ELSE '1'"
+      ],
+      "value_checked": "delivering_plant_code",
+      "datamart_or_reference_table_used": "dm_customer_sales_org",
+      "quality_category": "Conformity",
+      "sub_domain": "Distribution",
+      "type_of_check": "Consistency",
+      "column_name_checked": "VWERK",
+      "business_attribute_name": "Delivering Plant",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_170.7",
+      "rule_description": "Consistency between Customer Group 4 and Order Block",
+      "technical_definition_RU": [
+        "IF customer_group_4_code IS NULL THEN '' ELSE IF combination",
+        "c.central_order_block_code AND customer_group_4_code found in matrix with flag 0",
+        "THEN '0 ELSE '1' -- b.l3_customer_code is empty in conf table and each value from",
+        "source should join with it"
+      ],
+      "value_checked": "customer_group_4_code+_+central_order_block_code",
+      "datamart_or_reference_table_used": "dm_customer_sales_org (a) dm_cutomer_hierarchy (b) conf_cg4_order_block_martix dm_customer_general (c) (to include in JOIN a and b on b.l7_distribution_channel_code = a.distribution_channel_code AND b.l7_division_code = a.division_code",
+      "quality_category": "Conformity",
+      "sub_domain": "Distribution",
+      "type_of_check": "Consistency",
+      "column_name_checked": "KVGR4",
+      "business_attribute_name": "Customer Group 4",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_164.1",
+      "rule_description": "Valid Account Assignment Group",
+      "technical_definition_RU": [
+        "IF account_assignment_group_code IS NULL THEN '' ELSE IF",
+        "account_assignment_group_name = 'OBSOLETE - USE 17!!!' THEN '0' ELSE '1'"
+      ],
+      "value_checked": "account_assignment_group_code",
+      "datamart_or_reference_table_used": "dm_customer_sales_org",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "Consistency",
+      "column_name_checked": "KTGRD",
+      "business_attribute_name": "Account Assignment Group",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_148.1",
+      "rule_description": "Missing Price Group",
+      "technical_definition_RU": "IF customer_price_group_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "customer_price_group_code",
+      "datamart_or_reference_table_used": "dm_customer_sales_org",
+      "quality_category": "Completeness",
+      "sub_domain": "Grouping",
+      "type_of_check": "Availability",
+      "column_name_checked": "KONDA",
+      "business_attribute_name": "Price Group",
+      "exclude_from_score_calculation": false
+    }
+  ],
+  "KNB1": [
+    {
+      "rule_code": "RCCOMP_113.1",
+      "rule_description": "Missing Reconciliation account",
+      "technical_definition_RU": [
+        "IF account_group_code != '9038' THEN '' ELSE IF reconciliation_account IS NULL",
+        "THEN '0' ELSE '1'"
+      ],
+      "value_checked": "reconciliation_account",
+      "datamart_or_reference_table_used": "dm_customer_company",
+      "quality_category": "Completeness",
+      "sub_domain": "Company",
+      "type_of_check": "Availability",
+      "table_name_checked": "KNB1",
+      "column_name_checked": "AKONT",
+      "business_attribute_name": "Recon. Account",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_115.1",
+      "rule_description": "Missing Cash Management Group",
+      "technical_definition_RU": [
+        "IF account_group_code != '9038' THEN '' ELSE IF planning_group_code IS NULL THEN",
+        "'0' ELSE '1'"
+      ],
+      "value_checked": "planning_group_code",
+      "datamart_or_reference_table_used": "dm_customer_company",
+      "quality_category": "Completeness",
+      "sub_domain": "Company",
+      "type_of_check": "Availability",
+      "table_name_checked": "KNB1",
+      "column_name_checked": "FDGRV",
+      "business_attribute_name": "Cash Mgmt Group",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_119.1",
+      "rule_description": "Missing Terms Of Payment In KNB1 View",
+      "technical_definition_RU": "IF terms_of_payment_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "terms_of_payment_code",
+      "datamart_or_reference_table_used": "dm_customer_company (a) dm_customer_general (b) LEFT JOIN customer_code + country_code",
+      "quality_category": "Completeness",
+      "sub_domain": "Distribution",
+      "type_of_check": "Availability",
+      "table_name_checked": "KNB1",
+      "column_name_checked": "ZTERM",
+      "business_attribute_name": "Terms Of Payment",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_119.2",
+      "rule_description": "Consistency between Payment Terms on KNB1 and KNVV",
+      "technical_definition_RU": [
+        "IF b.terms_of_payment_code IS NULL OR c.terms_of_payment_code IS NULL THEN ''",
+        "ELSE IF b.terms_of_payment_code = c.terms_of_payment_code /*if for one customer",
+        "more rows avaialble due to more than one company code or sales org codes assigned",
+        "to the customer the equality condition must be fulfilled for at least one row*/",
+        "THEN '1' ELSE '0'"
+      ],
+      "value_checked": "b.terms_of_payment_code+_+c.terms_of_payment_code /*list of terms_of payment if many company codes*/",
+      "datamart_or_reference_table_used": "dm_customer_general (a) dm_customer_company (b) dm_customer_sales_organization (c) a INNER b,c ON customer_code b INNER c ON customer_code, country_code",
+      "quality_category": "Conformity",
+      "sub_domain": "Distribution",
+      "type_of_check": "Consistency",
+      "table_name_checked": "KNB1 / KNVV",
+      "column_name_checked": "ZTERM",
+      "business_attribute_name": "Terms Of Payment",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_113.1",
+      "rule_description": "Consistency between Recon. Account and Account Group",
+      "technical_definition_RU": [
+        "IF a.reconciliation_account IS NULL OR b.ktokd IS NULL THEN '' ELSE",
+        "IF combination ktokd and reconciliation_account found in reference",
+        "table THEN '1' ELSE '0'"
+      ],
+      "value_checked": "reconciliation_account",
+      "datamart_or_reference_table_used": "dm_customer_company (a) dm_customer_general (b) conf_recon_accounts b LEFT a",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "Consistency",
+      "table_name_checked": "KNB1",
+      "column_name_checked": "AKONT",
+      "business_attribute_name": "Recon. Account",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_115.11",
+      "rule_description": "Valid Cash Management Group for 90**",
+      "technical_definition_RU": [
+        "IF planning_group_code IS NULL OR account_group_code LIKE '7%' OR account_group_code IN (9096, 9022, 9023, 9095) THEN ''",
+        "ELSE",
+        "IF planning_group_code found in matrix THEN '1' ELSE '0'"
+      ],
+      "value_checked": "planning_group_code",
+      "datamart_or_reference_table_used": "dm_customer_company conf_planning_group_matrix",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "Consistency",
+      "table_name_checked": "KNB1",
+      "column_name_checked": "FDGRV",
+      "business_attribute_name": "Cash Mgmt Group",
+      "exclude_from_score_calculation": false
+    }
+  ],
+  "BUT0IS": [
+    {
+      "rule_code": "RCCONF_69.7",
+      "rule_description": "IND_SECTOR-Required for the following account groups: 7[1,2,3]** and 90**",
+      "technical_definition_RU": [
+        "IF account_group_code in (71%, 72%, 73%, 90%) AND industry_code IS NULL THEN '0'",
+        "ELSE IF account_group_code in (71%, 72%, 73%, 90%) AND industry_code IS NOT NULL",
+        "THEN '1' ELSE ''"
+      ],
+      "value_checked": "industry_code",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Geographical",
+      "type_of_check": "Availability",
+      "table_name_checked": "BUT0IS",
+      "column_name_checked": "IND_SECTOR",
+      "business_attribute_name": "Demand area",
+      "exclude_from_score_calculation": ""
+    },
+    {
+      "rule_code": "RCCOMP_69.1",
+      "rule_description": "Missing Industry (Demand area)",
+      "technical_definition_RU": "IF industry_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "industry_code",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Completeness",
+      "sub_domain": "Geographical",
+      "type_of_check": "Availability",
+      "table_name_checked": "BUT0IS",
+      "column_name_checked": "IND_SECTOR",
+      "business_attribute_name": "Demand area",
+      "exclude_from_score_calculation": ""
+    },
+    {
+      "rule_code": "RCCONF_69.5",
+      "rule_description": "Consistency between Industry and Industry Code 1",
+      "technical_definition_RU": [
+        "IF industry_code IS NULL OR industry_code1 IS NULL THEN '' ELSE IF",
+        "is_industry_sub_demand_area_allowed = '1' THEN '1' ELSE '0'"
+      ],
+      "value_checked": "industry_code+_+industry_code1",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Geographical",
+      "type_of_check": "Consistency",
+      "table_name_checked": "BUT0IS",
+      "column_name_checked": "IND_SECTOR",
+      "business_attribute_name": "Demand area",
+      "exclude_from_score_calculation": ""
+    }
+  ],
+  "KNVI": [
+    {
+      "rule_code": "RCCOMP_166.1",
+      "rule_description": "Missing Tax classification",
+      "technical_definition_RU": [
+        "IF account_group_code NOT LIKE '9%' THEN '' IF tax_classification IS NULL THEN",
+        "'0' ELSE '1'"
+      ],
+      "value_checked": "country_tax_code||_||tax_classification",
+      "datamart_or_reference_table_used": "dm_customer_general (a) dm_customer_tax_classification (b) a LEFT JOIN b conf_tax_calssification c) a b INNER JOIN c a.country_code = c.country_of_sales AND c.country_tax_code = b.country_tax_code",
+      "quality_category": "Completeness",
+      "sub_domain": "Company",
+      "type_of_check": "Availability",
+      "table_name_checked": "KNVI",
+      "column_name_checked": "TAXKD",
+      "business_attribute_name": "Tax Classification",
+      "exclude_from_score_calculation": ""
+    }
+  ],
+  "UKMBP_CMS_SGM": [
+    {
+      "rule_code": "RCCOMP_194.1",
+      "rule_description": "Missing Credit Segment",
+      "technical_definition_RU": "IF credit_segment_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "credit_segment_code",
+      "datamart_or_reference_table_used": "dm_customer_credit (a) dm_customer_general (b) b LEFT a",
+      "quality_category": "Completeness",
+      "sub_domain": "Company",
+      "type_of_check": "Availability",
+      "table_name_checked": "UKMBP_CMS_SGM",
+      "column_name_checked": "CREDIT_SGMNT",
+      "business_attribute_name": "Credit Segment",
+      "exclude_from_score_calculation": ""
+    },
+    {
+      "rule_code": "RCCOMP_206.1",
+      "rule_description": "Missing Credit Limit",
+      "technical_definition_RU": "IF credit_limit IS NULL THEN '0' ELSE '1'",
+      "value_checked": "credit_limit",
+      "datamart_or_reference_table_used": "dm_customer_credit",
+      "quality_category": "Completeness",
+      "sub_domain": "Company",
+      "type_of_check": "Availability",
+      "column_name_checked": "CREDIT_LIMIT",
+      "business_attribute_name": "Credit Limit",
+      "exclude_from_score_calculation": false
+    }
+  ],
+  "UKMBP_CMS": [
+    {
+      "rule_code": "RCCOMP_198.1",
+      "rule_description": "Missing Risk Class",
+      "technical_definition_RU": "IF risk_class_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "risk_class_code",
+      "datamart_or_reference_table_used": "dm_customer_credit",
+      "quality_category": "Completeness",
+      "sub_domain": "Company",
+      "type_of_check": "Availability",
+      "table_name_checked": "UKMBP_CMS",
+      "column_name_checked": "RISK_CLASS",
+      "business_attribute_name": "Risk Class",
+      "exclude_from_score_calculation": ""
+    }
+  ],
+  "ZBUT0000P3VVI9": [
+    {
+      "rule_code": "RCCONF_363.1.3",
+      "rule_description": "Valid BD Territory assigned to trade customer",
+      "technical_definition_RU": [
+        "IF b.account_group_code NOT LIKE '9%' THEN '' ELSE IF a.territory_type = 'BD'",
+        "THEN '1' ELSE '0'"
+      ],
+      "value_checked": "territory_type",
+      "datamart_or_reference_table_used": "dm_customer_territory (a) where territory_type = 'BD' dm_cutomer_general (b) b LEFT a",
+      "quality_category": "Conformity",
+      "sub_domain": "Geographical",
+      "type_of_check": "Availability",
+      "table_name_checked": "ZBUT0000P3VVI9",
+      "column_name_checked": "TYPE",
+      "business_attribute_name": "Territory Type",
+      "exclude_from_score_calculation": ""
+    },
+    {
+      "rule_code": "RCCONF_363.1.2",
+      "rule_description": "Valid Territory Type",
+      "technical_definition_RU": [
+        "IF territory_type IS NULL THEN '' ELSE IF is_territory_type_allowed = '1' THEN",
+        "'1' ELSE '0'"
+      ],
+      "value_checked": "territory_type",
+      "datamart_or_reference_table_used": "dm_customer_territory dm_cutomer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Geographical",
+      "type_of_check": "Consistency",
+      "table_name_checked": "ZBUT0000P3VVI9",
+      "column_name_checked": "TYPE",
+      "business_attribute_name": "Territory Type",
+      "exclude_from_score_calculation": ""
+    },
+    {
+      "rule_code": "RCCOMP_363.1",
+      "rule_description": "Missing Territory Type",
+      "technical_definition_RU": "IF territory_type IS NULL THEN '0' ELSE '1'",
+      "value_checked": "territory_type",
+      "datamart_or_reference_table_used": "dm_customer_territory dm_cutomer_general",
+      "quality_category": "Completeness",
+      "sub_domain": "Geographical",
+      "type_of_check": "Availability",
+      "table_name_checked": "ZBUT0000P3VVI9",
+      "column_name_checked": "TYPE",
+      "business_attribute_name": "Territory Type",
+      "exclude_from_score_calculation": ""
+    },
+    {
+      "rule_code": "RCCONF_363.3",
+      "rule_description": "Consistency Between Territory code and Territory Type",
+      "technical_definition_RU": [
+        "IF territory_type IS NULL THEN OR territory_code IS NULL OR THEN '' ELSE IF",
+        "is_territory_mapping_allowed = '0' THEN '0' ELSE '1'"
+      ],
+      "value_checked": "territory_type+_+territory_code",
+      "datamart_or_reference_table_used": "dm_customer_territory dm_cutomer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Geographical",
+      "type_of_check": "Consistency",
+      "table_name_checked": "ZBUT0000P3VVI9",
+      "column_name_checked": "TYPE",
+      "business_attribute_name": "Territory Type",
+      "exclude_from_score_calculation": ""
+    },
+    {
+      "rule_code": "RCCOMP_366.1",
+      "rule_description": "Missing Territory Code",
+      "technical_definition_RU": "IF territory_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "territory_code",
+      "datamart_or_reference_table_used": "dm_customer_territory dm_customer_general",
+      "quality_category": "Completeness",
+      "sub_domain": "Geographical",
+      "type_of_check": "Availability",
+      "table_name_checked": "ZBUT0000P3VVI9",
+      "column_name_checked": "TERRID",
+      "business_attribute_name": "Territory Code",
+      "exclude_from_score_calculation": ""
+    },
+    {
+      "rule_code": "RCCONF_367.1",
+      "rule_description": "Valid Start Date and End Date for Territory",
+      "technical_definition_RU": [
+        "IF territory_code IS NULL THEN '' ELSE IF territory_validity_to = '9999-12-31'",
+        "AND territory_validity_from = '1000-01-01' THEN '1' ELSE IF territory_validity_to",
+        "= '9999-12-31' AND territory_validity_from != '1000-01-01' THEN '0' ELSE ''",
+        "/*empty date is noticed as incorrect date*/"
+      ],
+      "value_checked": "territory_validity_from",
+      "datamart_or_reference_table_used": "dm_customer_territory dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Geographical",
+      "type_of_check": "TBD",
+      "table_name_checked": "ZBUT0000P3VVI9",
+      "column_name_checked": "DATE_FROM",
+      "business_attribute_name": "Territory Date From",
+      "exclude_from_score_calculation": ""
+    },
+    {
+      "rule_code": "RCCONF_366.1",
+      "rule_description": "Valid Territory Code",
+      "technical_definition_RU": [
+        "IF territory_code IS NULL THEN '' ELSE IF is_territory_code_allowed = '1' THEN",
+        "'1' ELSE '0'"
+      ],
+      "value_checked": "territory_code",
+      "datamart_or_reference_table_used": "dm_customer_territory dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Geographical",
+      "type_of_check": "Consistency",
+      "table_name_checked": "ZBUT0000P3VVI9",
+      "column_name_checked": "TERRID",
+      "business_attribute_name": "Territory Code",
+      "exclude_from_score_calculation": ""
+    },
+    {
+      "rule_code": "RCCONF_363.1.1",
+      "rule_description": "Check Obsolete Territory Type",
+      "technical_definition_RU": [
+        "IF territory_type IS NULL THEN OR territory_code IS NULL OR",
+        "central_order_block_code IN (PR, NR, M) THEN '' ELSE IF",
+        "territory_assignment_description LIKE 'DO NOT USE%' THEN '0' ELSE '1'"
+      ],
+      "value_checked": "territory_type+_+territory_code",
+      "datamart_or_reference_table_used": "dm_customer_territory dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Geographical",
+      "type_of_check": "Consistency",
+      "table_name_checked": "ZBUT0000P3VVI9",
+      "column_name_checked": "TYPE",
+      "business_attribute_name": "Territory Type",
+      "exclude_from_score_calculation": ""
+    }
+  ],
+  "KNB5": [
+    {
+      "rule_code": "RCCONF_129.1",
+      "rule_description": "Valid Dunning Procedure (for both Key and Non Key Account)",
+      "technical_definition_RU": "IF b.dunning_procedure_code = c.default_dunning_procedure THEN '1' ELSE '0'",
+      "value_checked": "dunning_procedure_code",
+      "datamart_or_reference_table_used": [
+        "dm_customer_general (a)",
+        "dm_customer_company (b)",
+        "conf_dunning_procedure_block (c)",
+        "dm_customer_hierarchy (d)",
+        "dm_customer_partner (e) where partner_function_code = 'RG' and division_code = '01' and distribution_channel_code = '01'",
+        "dm_customer_sales_org (f)"
+      ],
+      "joins": [
+        "a LEFT b",
+        "a, b INNER c on account_group_code AND company_code",
+        "a INNER d",
+        "a INNER e",
+        "a LEFT f"
+      ],
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "TBD",
+      "table_name_checked": "KNB5",
+      "column_name_checked": "MAHNA",
+      "business_attribute_name": "Dunning Procedure",
+      "exclude_from_score_calculation": ""
+    },
+    {
+      "rule_code": "RCCOMP_129.1",
+      "rule_description": "Missing dunning procedure (for both Key and Non-key account)",
+      "technical_definition_RU": "IF b.dunning_procedure_code IS NOT NULL THEN '1' ELSE '0'",
+      "value_checked": "dunning_procedure_code",
+      "datamart_or_reference_table_used": [
+        "dm_customer_general (a)",
+        "dm_customer_company (b)",
+        "conf_dunning_procedure_block (c)",
+        "dm_customer_hierarchy (d)",
+        "dm_customer_partner (e) where partner_function_code = 'RG' and division_code = '01' and distribution_channel_code = '01'",
+        "dm_customer_sales_org (f)"
+      ],
+      "joins": [
+        "a LEFT b",
+        "a, b INNER c on account_group_code AND company_code",
+        "a INNER d",
+        "a INNER e",
+        "a LEFT f"
+      ],
+      "quality_category": "Completeness",
+      "sub_domain": "Company",
+      "type_of_check": "Availability",
+      "table_name_checked": "KNB5",
+      "column_name_checked": "MAHNA",
+      "business_attribute_name": "Dunning Procedure",
+      "exclude_from_score_calculation": ""
+    }
+  ],
+  "KNVP": [
+    {
+      "rule_code": "RCCOMP_149.1",
+      "rule_description": "Missing Partner Function",
+      "technical_definition_RU": [
+        "IF account_group_code NOT LIKE '90%' OR order_block_code IN ('S', 'SP', 'E', 'G',",
+        "'S2', 'S3', 'S4', 'S5', 'S9', 'R', 'U', 'S1','SY',' IA','IB','RN') THEN '' ELSE",
+        "IF a.partner_code IS NOT EXIST for any of partner_function_code IN ('BP', 'PY',",
+        "'ZY', 'SP', 'SH', 'YR') THEN '0' ELSE '1' /*partner_code MUST BE assigned to all",
+        "partner_function_code: 'BP', 'PY', 'ZY', 'SP', 'SH', 'YR'*/"
+      ],
+      "value_checked": "IF check_status = '0' THEN\n'Missing Partner function: a.partner_function_code ELSE a.partner_function_code+_+a.partner_code",
+      "datamart_or_reference_table_used": "dm_customer_partner (a) where distribution_channel_code = '01' AND division_code = '01' dm_customer_general (c) c INNER a on customer_code",
+      "quality_category": "Completeness",
+      "sub_domain": "Company",
+      "type_of_check": "Availability",
+      "table_name_checked": "KNVP",
+      "column_name_checked": "PARVW",
+      "business_attribute_name": "Partner Function",
+      "exclude_from_score_calculation": ""
+    },
+    {
+      "rule_code": "RCCOMP_149.2",
+      "rule_description": "Indirect Customers must have Partner Function: ZW",
+      "technical_definition_RU": [
+        "IF account_group_code NOT LIKE '90%' OR order_block_code IN ('S', 'SP', 'E', 'G',",
+        "'S2', 'S3', 'S4', 'S5', 'S9', 'R', 'U', 'S1','SY',' IA','IB','RN') OR",
+        "customer_group_4_code != 'IN' THEN '' IF partner_code IS NULL /*for customer with",
+        "customer_group_4_code = 'IN' not exists ZW partner_function_code*/ THEN '0' ELSE",
+        "'1'"
+      ],
+      "value_checked": "a.partner_function_code+_+a.partner_code",
+      "datamart_or_reference_table_used": "dm_customer_partner (a) where distribution_channel_code = '01' AND division_code = '01' AND partner_function_code = 'ZW' dm_customer_general (c) dm_customer_sales_org (b) b INNER c on customer_code b LEFT a on customer_code, sales_org_code, distribution_channel_code, division_code",
+      "quality_category": "Completeness",
+      "sub_domain": "Company",
+      "type_of_check": "Availability",
+      "table_name_checked": "KNVP",
+      "column_name_checked": "PARVW",
+      "business_attribute_name": "Partner Function",
+      "exclude_from_score_calculation": ""
+    }
+  ],
+  "ADR2": [
+    {
+      "rule_code": "RCCOMP_375.1",
+      "rule_description": "Missing Mobile Phone Number (for non-blocked customers, only rows with empty PERSNUMBER)",
+      "technical_definition_RU": [
+        "IF central_order_block_code IN ('E', 'G', 'SP', 'R', 'U') THEN '' ELSE IF",
+        "TEL_NUMBER IS NOT NULL THEN '1' ELSE '0'"
+      ],
+      "value_checked": "TEL_NUMBER",
+      "datamart_or_reference_table_used": "ADR2 (main table), KNA1.AUFSD (central_order_block_code from KNA1 table)",
+      "quality_category": "Completeness",
+      "sub_domain": "Contact",
+      "type_of_check": "Availability",
+      "table_name_checked": "ADR2",
+      "column_name_checked": "TEL_NUMBER",
+      "business_attribute_name": "Mobile Phone",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_372.1",
+      "rule_description": "Missing Telephone Country",
+      "technical_definition_RU": "IF country_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "country_code",
+      "datamart_or_reference_table_used": "ADRC",
+      "quality_category": "Completeness",
+      "sub_domain": "Address",
+      "type_of_check": "Availability",
+      "table_name_checked": "ADR2",
+      "column_name_checked": "COUNTRY",
+      "business_attribute_name": "Telephone Country",
+      "source_table": "ADRC",
+      "source_column": "COUNTRY"
+    },
+    {
+      "rule_code": "RCCONF_372.1",
+      "rule_description": "adr2_country - Need to only contain the two-character ISO code in accordance with ISO 3166",
+      "technical_definition_RU": [
+        "IF country_code IS NULL THEN '' IF is_allowed_country_code = '1' THEN '1' ELSE",
+        "'0' WHERE is_allowed_country_code = IF record found in T005 THEN '1' ELSE '0'",
+        "COMPARING: T005.LAND1 = ADR2.COUNTRY"
+      ],
+      "value_checked": "country_code",
+      "datamart_or_reference_table_used": "dm_customer_address_contact (source: ADRC.COUNTRY) Reference table: T005 (valid country codes)",
+      "quality_category": "Conformity",
+      "sub_domain": "Address",
+      "type_of_check": "Spelling",
+      "table_name_checked": "ADR2",
+      "column_name_checked": "COUNTRY",
+      "business_attribute_name": "Telephone Country",
+      "exclude_from_score_calculation": false,
+      "validation_logic": "Check if country code exists in standard ISO 3166 reference table T005",
+      "reference_comparison": "ADR2.COUNTRY (country_code) must match T005.LAND1"
+    },
+    {
+      "rule_code": "RCCONF_372.2",
+      "rule_description": "adr2_country-Required if there is a value in field TEL_NUMBER. Else Blank",
+      "technical_definition_RU": [
+        "IF contact_medium_type = 'fixed_tel_number' AND source = 's4' AND",
+        "contact_medium_value IS NULL THEN '' ELSE IF contact_medium_type =",
+        "'fixed_tel_number' AND source = 's4' AND country_code IS NULL THEN '0' ELSE '1'"
+      ],
+      "value_checked": "country_code",
+      "datamart_or_reference_table_used": "dm_customer_address_contact",
+      "quality_category": "Conformity",
+      "sub_domain": "Address",
+      "type_of_check": "Availability",
+      "column_name_checked": "COUNTRY",
+      "business_attribute_name": "Telephone Country",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_39.3",
+      "rule_description": "TEL_NUMBER Valid characters are numbers: 0123456789 (only rows with empty PERSNUMBER)",
+      "technical_definition_RU": [
+        "IF TEL_NUMBER IS NULL OR TEL_NUMBER = '' THEN '' ELSE IF TEL_NUMBER REGEXP",
+        "'[^0-9]' THEN '0' ELSE '1'"
+      ],
+      "value_checked": "TEL_NUMBER",
+      "datamart_or_reference_table_used": "dm_customer_address_contact",
+      "quality_category": "Conformity",
+      "sub_domain": "Customer",
+      "type_of_check": "Spelling",
+      "column_name_checked": "TEL_NUMBER",
+      "business_attribute_name": "Contact",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_39.5",
+      "rule_description": "TEL_NUMBER number format validation (only rows with empty PERSNUMBER)",
+      "technical_definition_RU": [
+        "IF TEL_NUMBER IS NULL THEN '' IF TEL_NUMBER REGEXP '[^0-9]' THEN '0' ELSE IF",
+        "TEL_NUMBER LIKE '9%' AND LENGTH(TEL_NUMBER) = 10 THEN '1' ELSE IF TEL_NUMBER LIKE",
+        "'89%' AND LENGTH(TEL_NUMBER) = 11 THEN '1' ELSE '0'"
+      ],
+      "value_checked": "TEL_NUMBER",
+      "datamart_or_reference_table_used": "ADR2",
+      "quality_category": "Conformity",
+      "sub_domain": "Customer",
+      "type_of_check": "Spelling",
+      "column_name_checked": "TEL_NUMBER",
+      "business_attribute_name": "Contact",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_39.5.2",
+      "rule_description": "TEL_NUMBER number format validation (only rows with filled PERSNUMBER)",
+      "technical_definition_RU": [
+        "IF PERSNUMBER IS NULL THEN '' ELSE IF TEL_NUMBER IS NULL THEN '' ELSE IF",
+        "TEL_NUMBER REGEXP '[^0-9]' THEN '0' ELSE IF TEL_NUMBER LIKE '9%' AND",
+        "LENGTH(TEL_NUMBER) = 10 THEN '1' ELSE IF TEL_NUMBER LIKE '8%' AND",
+        "LENGTH(TEL_NUMBER) = 11 AND SUBSTR(TEL_NUMBER, 2, 1) != '9' THEN '1' ELSE '0'"
+      ],
+      "value_checked": "TEL_NUMBER",
+      "datamart_or_reference_table_used": "ADR2",
+      "quality_category": "Conformity",
+      "sub_domain": "Customer",
+      "type_of_check": "Spelling",
+      "column_name_checked": "TEL_NUMBER",
+      "business_attribute_name": "Contact",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_375.1.2",
+      "rule_description": "Missing Mobile Phone Number (for non-blocked customers, only rows with filled PERSNUMBER)",
+      "technical_definition_RU": [
+        "IF central_order_block_code IN ('E', 'G', 'SP', 'R', 'U') THEN '' ELSE IF",
+        "TEL_NUMBER IS NOT NULL THEN '1' ELSE '0'"
+      ],
+      "value_checked": "TEL_NUMBER",
+      "datamart_or_reference_table_used": "ADR2 (main table), KNA1.AUFSD (central_order_block_code from KNA1 table)",
+      "quality_category": "Completeness",
+      "sub_domain": "Contact",
+      "type_of_check": "Availability",
+      "table_name_checked": "ADR2",
+      "column_name_checked": "TEL_NUMBER",
+      "business_attribute_name": "Mobile Phone",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_39.3.2",
+      "rule_description": "TEL_NUMBER Valid characters are numbers: 0123456789 (only rows with filled PERSNUMBER)",
+      "technical_definition_RU": [
+        "IF TEL_NUMBER IS NULL OR TEL_NUMBER = '' THEN '' ELSE IF TEL_NUMBER REGEXP",
+        "'[^0-9]' THEN '0' ELSE '1'"
+      ],
+      "value_checked": "TEL_NUMBER",
+      "datamart_or_reference_table_used": "dm_customer_address_contact",
+      "quality_category": "Conformity",
+      "sub_domain": "Customer",
+      "type_of_check": "Spelling",
+      "column_name_checked": "TEL_NUMBER",
+      "business_attribute_name": "Contact",
+      "exclude_from_score_calculation": false
+    }
+  ],
+  "ADRC": [
+    {
+      "rule_code": "RCCOMP_23.1",
+      "rule_description": "Missing Country",
+      "technical_definition_RU": "IF country_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "country_code",
+      "datamart_or_reference_table_used": "dm_customer_address",
+      "quality_category": "Completeness",
+      "sub_domain": "Address",
+      "type_of_check": "Availability",
+      "column_name_checked": "COUNTRY",
+      "business_attribute_name": "Country",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_18.1",
+      "rule_description": "Missing Street In ADRC View",
+      "technical_definition_RU": "IF STREET IS NULL THEN '0' ELSE '1'",
+      "value_checked": "STREET",
+      "datamart_or_reference_table_used": "dm_customer_address",
+      "quality_category": "Completeness",
+      "sub_domain": "Address",
+      "type_of_check": "Availability",
+      "column_name_checked": "STREET",
+      "business_attribute_name": "STREET",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_18.2",
+      "rule_description": "Valid Street with No Special Characters",
+      "technical_definition_RU": [
+        "IF STREET IS NULL THEN '' IF STREET includes special characters (marked '1' in",
+        "conf file) space THEN '0' ELSE IF count of consecutive character",
+        ".,/-_&[]{}()\"':;`|~+ > 1 /*each character cannot be repeated after each other*/",
+        "THEN '0' ELSE IF count of character \" is not even /*quotation signs must be in",
+        "pairs*/ THEN '0' ELSE IF bracket signs []{}() are not in pair or are in pair but",
+        "in wrong order THEN '0' /*if opening sign available then closing sign must be as",
+        "well. Opening sign must be before closing sign*/ THEN '0' ELSE '1'"
+      ],
+      "value_checked": "STREET",
+      "datamart_or_reference_table_used": "dm_customer_address, conf_special_characters",
+      "quality_category": "Conformity",
+      "sub_domain": "Address",
+      "type_of_check": "Spelling",
+      "column_name_checked": "STREET",
+      "business_attribute_name": "STREET",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_21.1",
+      "rule_description": "Missing Postal Code In ADRC View",
+      "technical_definition_RU": "IF postal_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "postal_code",
+      "datamart_or_reference_table_used": "dm_customer_address",
+      "quality_category": "Completeness",
+      "sub_domain": "Address",
+      "type_of_check": "Availability",
+      "column_name_checked": "POST_CODE1",
+      "business_attribute_name": "Postal Code",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_22.1",
+      "rule_description": "Missing City",
+      "technical_definition_RU": "IF city IS NULL THEN '0' ELSE '1'",
+      "value_checked": "city",
+      "datamart_or_reference_table_used": "dm_customer_address",
+      "quality_category": "Completeness",
+      "sub_domain": "Address",
+      "type_of_check": "Availability",
+      "column_name_checked": "CITY1",
+      "business_attribute_name": "City",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_22.4",
+      "rule_description": "Valid City Name without numbers",
+      "technical_definition_RU": [
+        "IF city IS NULL THEN '' ELSE IF upper(city) LIKE '%PRAH%' OR upper(city) LIKE",
+        "'%BRATISLAVA%' THEN '1' ELSE IF city includes numeric values THEN '0' ELSE '1'"
+      ],
+      "value_checked": "city",
+      "datamart_or_reference_table_used": "dm_customer_address",
+      "quality_category": "Conformity",
+      "sub_domain": "Address",
+      "type_of_check": "Spelling",
+      "column_name_checked": "CITY1",
+      "business_attribute_name": "City",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_22.2",
+      "rule_description": "Valid City with no Special Characters",
+      "technical_definition_RU": [
+        "IF city IS NULL THEN '' IF city includes special characters (marked '1' in conf",
+        "file) THEN '0' ELSE IF count of consecutive character '-&()./:[]_`+,' > 1 /*each",
+        "character cannot be repeated after each other*/ THEN '0' ELSE IF count of",
+        "character ' is not even /*quotation signs must be in pairs*/ THEN '0' ELSE IF",
+        "bracket signs []() are not in pair or are in pair but in wrong order THEN '0'",
+        "/*if opening sign available then closing sign must be as well. Opening sign must",
+        "be before closing sign*/ THEN '0' ELSE '1'"
+      ],
+      "value_checked": "city",
+      "datamart_or_reference_table_used": "dm_customer_address, conf_special_characters",
+      "quality_category": "Conformity",
+      "sub_domain": "Address",
+      "type_of_check": "Spelling",
+      "column_name_checked": "CITY1",
+      "business_attribute_name": "City",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_21.1",
+      "rule_description": "Valid Postal Code",
+      "technical_definition_RU": [
+        "IF postal_code IS NULL THEN '' ELSE IF postal_code not consistent with standard",
+        "THEN '0' ELSE '1'"
+      ],
+      "value_checked": "postal_code",
+      "datamart_or_reference_table_used": "dm_customer_address, conf_postal_code_standard",
+      "quality_category": "Conformity",
+      "sub_domain": "Address",
+      "type_of_check": "Data Format",
+      "column_name_checked": "POST_CODE1",
+      "business_attribute_name": "Postal Code",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_22.3",
+      "rule_description": "City should be in capital letters",
+      "technical_definition_RU": [
+        "IF city IS NULL or country_code in ('AM','BY','CZ','SK') THEN '' IF city is not",
+        "in capital letters THEN '0' ELSE '1'"
+      ],
+      "value_checked": "city",
+      "datamart_or_reference_table_used": "dm_customer_address",
+      "quality_category": "Conformity",
+      "sub_domain": "Address",
+      "type_of_check": "Spelling",
+      "column_name_checked": "CITY1",
+      "business_attribute_name": "City",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_24.1",
+      "rule_description": "Missing Region",
+      "technical_definition_RU": "IF region_code IS NULL THEN '0' ELSE '1'",
+      "value_checked": "region_code",
+      "datamart_or_reference_table_used": "dm_customer_address",
+      "quality_category": "Completeness",
+      "sub_domain": "Address",
+      "type_of_check": "Availability",
+      "column_name_checked": "REGION",
+      "business_attribute_name": "Region",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_24.1",
+      "rule_description": "Region is mandatory for the account groups 7038 and 9038",
+      "technical_definition_RU": [
+        "IF a.region_code IS NULL or b.ktokd IS NULL THEN '' ELSE IF",
+        "b.ktokd IN (7038,9038) and region_code IS NULL THEN '0' ELSE IF",
+        "b.ktokd IN (7038,9038) and region_code IS NOT NULL THEN '1' ELSE ''"
+      ],
+      "value_checked": "region_code",
+      "datamart_or_reference_table_used": "dm_customer_address (a), dm_customer_general (b)",
+      "quality_category": "Conformity",
+      "sub_domain": "Address",
+      "type_of_check": "Availability",
+      "column_name_checked": "REGION",
+      "business_attribute_name": "Region",
+      "exclude_from_score_calculation": false
+    }
+  ],
+  "/LOT/GC_ADR": [
+    {
+      "rule_code": "RCCONF_383.1",
+      "rule_description": "Longitude Format should be xx.xxxxxx",
+      "technical_definition_RU": [
+        "IF longitude IS NULL OR account_group_code LIKE '7%' OR TO_INTEGER(longitude) =",
+        "'0' THEN '' ELSE IF longitude has format (-)xx.xxxxxx OR (-)x.xxxxxx OR",
+        "(-)xxx.xxxxxx THEN '1' ELSE '0'"
+      ],
+      "value_checked": "longitude",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Address",
+      "type_of_check": "Data Format",
+      "column_name_checked": "_LOT_GC_LONGITUD",
+      "business_attribute_name": "Geo Coordinates",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_383.1",
+      "rule_description": "Missing Longitude",
+      "technical_definition_RU": [
+        "IF account_group_code LIKE '7%' OR central_order_block_code IN (S, SP, E, G, S2,",
+        "S3, S4, S5, S9, R, U, M, NR) THEN '' ELSE IF longitude IS NULL THEN '0' ELSE '1'"
+      ],
+      "value_checked": "longitude",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Completeness",
+      "sub_domain": "Address",
+      "type_of_check": "Availability",
+      "column_name_checked": "_LOT_GC_LONGITUD",
+      "business_attribute_name": "Geo Coordinates",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_384.3",
+      "rule_description": "Latitude is zero",
+      "technical_definition_RU": [
+        "IF account_group_code LIKE '7%' OR latitude is NULL OR central_order_block_code",
+        "IN (S, SP, E, G, S2, S3, S4, S5, S9, R, U, M, NR) THEN '' ELSE IF",
+        "TO_INTEGER(latitude) = '0' THEN '0' ELSE '1'"
+      ],
+      "value_checked": "latitude",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Address",
+      "type_of_check": "TBD",
+      "column_name_checked": "_LOT_GC_LATITUDE",
+      "business_attribute_name": "Geo Coordinates",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_383.3",
+      "rule_description": "Longitude is Zero",
+      "technical_definition_RU": [
+        "IF account_group_code LIKE '7%' OR longitude is NULL OR central_order_block_code",
+        "IN (S, SP, E, G, S2, S3, S4, S5, S9, R, U, M, NR) THEN '' ELSE IF",
+        "TO_INTEGER(longitude) = '0' THEN '0' ELSE '1'"
+      ],
+      "value_checked": "longitude",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Address",
+      "type_of_check": "TBD",
+      "column_name_checked": "_LOT_GC_LONGITUD",
+      "business_attribute_name": "Geo Coordinates",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_383.4",
+      "rule_description": "Latitude is same as Longitude",
+      "technical_definition_RU": [
+        "IF account_group_code LIKE '7%' OR longitude is NULL OR latitude is NULL OR",
+        "TO_INTEGER(longitude) = '0' OR TO_INTEGER(latitude) = '0' THEN '' ELSE IF",
+        "TO_DECIMAL(latitude) = TO_DECIMAL(longitude) THEN '0' ELSE '1'"
+      ],
+      "value_checked": "latitude_longitude",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Address",
+      "type_of_check": "TBD",
+      "column_name_checked": "_LOT_GC_LATITUDE, _LOT_GC_LONGITUD",
+      "business_attribute_name": "Geo Coordinates",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCOMP_384.1",
+      "rule_description": "Missing Latitude",
+      "technical_definition_RU": [
+        "IF account_group_code LIKE '7%' OR central_order_block_code IN (S, SP, E, G, S2,",
+        "S3, S4, S5, S9, R, U, M, NR) THEN '' ELSE IF latitude IS NULL THEN '0' ELSE '1'"
+      ],
+      "value_checked": "latitude",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Completeness",
+      "sub_domain": "Address",
+      "type_of_check": "Availability",
+      "column_name_checked": "_LOT_GC_LATITUDE",
+      "business_attribute_name": "Geo Coordinates",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_384.1",
+      "rule_description": "Latitude Format should be xx.xxxxxx",
+      "technical_definition_RU": [
+        "IF latitude IS NULL OR account_group_code LIKE '7%' OR TO_INTEGER(latitude) = '0'",
+        "THEN '' ELSE IF latitude has format (-)xx.xxxxxx OR (-)x.xxxxxx OR (-)xxx.xxxxxx",
+        "THEN '1' ELSE '0'"
+      ],
+      "value_checked": "latitude",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Address",
+      "type_of_check": "Data Format",
+      "column_name_checked": "_LOT_GC_LATITUDE",
+      "business_attribute_name": "Geo Coordinates",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_383.2",
+      "rule_description": "Longitude Values like 99.99999 are Wrong",
+      "technical_definition_RU": [
+        "IF longitude IS NULL OR account_group_code LIKE '7%' OR TO_INTEGER(longitude) =",
+        "'0' THEN '' ELSE IF longitude LIKE '99.<only 9 digits>' THEN '0' ELSE '1'"
+      ],
+      "value_checked": "longitude",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Address",
+      "type_of_check": "Data Format",
+      "column_name_checked": "_LOT_GC_LONGITUD",
+      "business_attribute_name": "Geo Coordinates",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_384.2",
+      "rule_description": "Latitude Values like 99.99999 are Wrong",
+      "technical_definition_RU": [
+        "IF latitude IS NULL OR account_group_code LIKE '7%' OR TO_INTEGER(latitude) = '0'",
+        "THEN '' ELSE IF latitude LIKE '99.<only 9 digits>' THEN '0' ELSE '1'"
+      ],
+      "value_checked": "latitude",
+      "datamart_or_reference_table_used": "dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Address",
+      "type_of_check": "Data Format",
+      "column_name_checked": "_LOT_GC_LATITUDE",
+      "business_attribute_name": "Geo Coordinates",
+      "exclude_from_score_calculation": false
+    }
+  ],
+  "BUT051": [
+    {
+      "rule_code": "RCCONF_371.2",
+      "rule_description": "Valid Contact Person Function",
+      "technical_definition_RU": [
+        "source = 's4' IF function_of_partner IS NULL OR central_order_block_code != 'M'",
+        "THEN '' ELSE IF function_of_partner IN ('0001','0002','0003','0004','0005','0006',",
+        "'0007','0008','0009','0010','DF','F1','F2','F3','F4','F5','FX','Z1','Z2','Z3','Z4'",
+        ",'Z5','Z6','Z7') THEN '1' ELSE '0'"
+      ],
+      "value_checked": "function_of_partner",
+      "datamart_or_reference_table_used": "dm_customer_contact, dm_customer_general INNER",
+      "quality_category": "Conformity",
+      "sub_domain": "Contact",
+      "type_of_check": "TBD",
+      "column_name_checked": "PAFKT",
+      "business_attribute_name": "Contact Person Role",
+      "exclude_from_score_calculation": false
+    }
+  ],
+  "BUT0BK": [
+    {
+      "rule_code": "RCCOMP_180.1",
+      "rule_description": "BANKS must be RU (for partners from KNA1)",
+      "technical_definition_RU": "IF BANKS = 'RU' THEN '1' ELSE '0'",
+      "value_checked": "BANKS",
+      "datamart_or_reference_table_used": "dm_customer_bank",
+      "quality_category": "Conformity",
+      "sub_domain": "Company",
+      "type_of_check": "Reference",
+      "column_name_checked": "BANKS",
+      "business_attribute_name": "Bank Country Key",
+      "exclude_from_score_calculation": false
+    }
+  ],
+  "BUT050": [
+    {
+      "rule_code": "RCCOMP_369.1",
+      "rule_description": "Missing Contact Person",
+      "technical_definition_RU": [
+        "where source = 's4' IF function_of_partner IS NULL OR central_order_block_code !=",
+        "'M' THEN '' ELSE IF customer_partner_code IS NULL THEN '0' ELSE '1'"
+      ],
+      "value_checked": "customer_partner_code",
+      "datamart_or_reference_table_used": "dm_customer_contact, dm_customer_general",
+      "quality_category": "Completeness",
+      "sub_domain": "Contact",
+      "type_of_check": "Availability",
+      "column_name_checked": "PARTNER2",
+      "business_attribute_name": "Contact Person",
+      "exclude_from_score_calculation": false
+    },
+    {
+      "rule_code": "RCCONF_369.1",
+      "rule_description": "Field is populated for customers in account groups 90** CCHBC Trade customer",
+      "technical_definition_RU": [
+        "IF central_order_block_code != 'M' THEN '' ELSE IF customer_partner_code IS NULL",
+        "AND account_group_code LIKE '9%' THEN '0' ELSE IF customer_partner_code IS NOT",
+        "NULL AND account_group_code LIKE '9%' THEN '1' ELSE ''"
+      ],
+      "value_checked": "customer_partner_code",
+      "datamart_or_reference_table_used": "dm_customer_contact, dm_customer_general",
+      "quality_category": "Conformity",
+      "sub_domain": "Contact",
+      "type_of_check": "Availability",
+      "column_name_checked": "PARTNER2",
+      "business_attribute_name": "Contact Person",
+      "exclude_from_score_calculation": false
+    }
+  ],
+  "ADR6": [
+    {
+      "rule_code": "RCCONF_41.8",
+      "rule_description": "Same Email for multiple Legal Entities",
+      "old_по_рулкоду": "#N/A",
+      "technical_definition": "IF a.contact_medium_value is null OR c.email_address IS NULL OR central_order_block_code IN ('E', 'G', 'SP', 'R', 'U') THEN\n'' ELSE COUNT(COALESCE(b.tax_0_value, b.tax_1_value, b.tax_2_value, b.tax_3_value, NVL(b.legal_name, max(d.legal_name))) >= 5 GROUP BY NVL(a.contact_medium_value,c.email_address) THEN\n'0' ELSE '1'",
+      "value_checked": "NVL(a.contact_medium_value,c.email_address)",
+      "datamart_or_reference_table_used": "dm_customer_address_contact (a), dm_customer_general (b), dm_customer_contact (c), dm_customer_address (d), a LEFT b, a LEFT c, a LEFT d",
+      "quality_category": "Conformity",
+      "domain": "Customer",
+      "sub_domain": "Contact",
+      "type_of_check": "Data Format",
+      "column_name_checked": "SMTP_ADDR"
+    },
+    {
+      "rule_code": "RCCONF_41.1",
+      "rule_description": "No spaces are allowed in the email format",
+      "old_по_рулкоду": "",
+      "technical_definition": "contact_medium_type = 'email_address' AND source = 's4' IF contact_medium_value is null THEN\n'' IF contact_medium_value include space character THEN\n'0' ELSE '1'",
+      "value_checked": "contact_medium_value",
+      "datamart_or_reference_table_used": "dm_customer_address_contact, dm_customer_general",
+      "quality_category": "Conformity",
+      "domain": "Customer",
+      "sub_domain": "Contact",
+      "type_of_check": "Data Format",
+      "column_name_checked": "SMTP_ADDR"
+    }
+  ]
+}

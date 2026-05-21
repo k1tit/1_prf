@@ -1,0 +1,5 @@
+{
+  "taxtype_column": "TAXTYPE",
+  "taxtype_column_alternatives": ["TAXTYP", "Type", "TAX_TYPE"],
+  "_comment": "Колонка с типом налога (1,2,3,5). В «всего записей» — только число строк этого типа (TAXNUM1=100к, TAXNUM2=50к и т.д.). Если колонка называется иначе — укажите в taxtype_column или taxtype_column_alternatives."
+}

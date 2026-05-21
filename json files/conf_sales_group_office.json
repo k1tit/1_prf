@@ -1,0 +1,9 @@
+{
+  "reference_table": null,
+  "RCCONF_143.7_reference_table": null,
+  "allowed_combinations": [
+    {"VKGRP": "01", "VKBUR": "1000"},
+    {"VKGRP": "02", "VKBUR": "2000"}
+  ],
+  "_comment": "Вариант 1: таблица в БД — укажите reference_table (колонки VKGRP, VKBUR). Вариант 2: без таблицы — заполните allowed_combinations реальными допустимыми парами (VKGRP, VKBUR) из вашего SAP/датамарта. Примеры выше замените на свои."
+}

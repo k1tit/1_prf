@@ -1,0 +1,122 @@
+{
+    "description": "Planning Group Matrix with hierarchical lookup logic",
+    "lookup_logic": [
+      {
+        "step": 1,
+        "condition": "customer_hierarchy_4_code != '*' AND terms_of_payment_code = '*'",
+        "description": "Check if customer assigned to rules with specific hierarchy and any payment terms"
+      },
+      {
+        "step": 2,
+        "condition": "customer_hierarchy_4_code = '*' AND terms_of_payment_code != '*'",
+        "description": "Check if customer assigned to rules with any hierarchy and specific payment terms"
+      },
+      {
+        "step": 3,
+        "condition": "customer_hierarchy_4_code = '*' AND terms_of_payment_code = '*'",
+        "description": "Check if customer assigned to default rules (any hierarchy, any payment terms)"
+      }
+    ],
+    "rules": [
+      {
+        "customer_hierarchy_4_code": "10100",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E011"
+      },
+      {
+        "customer_hierarchy_4_code": "10101",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E011"
+      },
+      {
+        "customer_hierarchy_4_code": "10102",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E011"
+      },
+      {
+        "customer_hierarchy_4_code": "10103",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E011"
+      },
+      {
+        "customer_hierarchy_4_code": "10104",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E011"
+      },
+      {
+        "customer_hierarchy_4_code": "10200",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E019"
+      },
+      {
+        "customer_hierarchy_4_code": "10201",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E019"
+      },
+      {
+        "customer_hierarchy_4_code": "10202",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E019"
+      },
+      {
+        "customer_hierarchy_4_code": "10203",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E019"
+      },
+      {
+        "customer_hierarchy_4_code": "10204",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E019"
+      },
+      {
+        "customer_hierarchy_4_code": "10205",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E019"
+      },
+      {
+        "customer_hierarchy_4_code": "10206",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E019"
+      },
+      {
+        "customer_hierarchy_4_code": "10207",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E019"
+      },
+      {
+        "customer_hierarchy_4_code": "10208",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E019"
+      },
+      {
+        "customer_hierarchy_4_code": "10500",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E012"
+      },
+      {
+        "customer_hierarchy_4_code": "10501",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E012"
+      },
+      {
+        "customer_hierarchy_4_code": "*",
+        "terms_of_payment_code": "*",
+        "planning_group_code": "ZZ_E020"
+      },
+      {
+        "customer_hierarchy_4_code": "*",
+        "terms_of_payment_code": "ZC00",
+        "planning_group_code": "ZZ_E015"
+      },
+      {
+        "customer_hierarchy_4_code": "*",
+        "terms_of_payment_code": "ZC98",
+        "planning_group_code": "ZZ_E015"
+      },
+      {
+        "customer_hierarchy_4_code": "*",
+        "terms_of_payment_code": "ZADV",
+        "planning_group_code": "ZZ_E015"
+      }
+    ]
+  }

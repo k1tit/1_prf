@@ -1,0 +1,186 @@
+[
+  {
+    "central_order_block_code": "WH",
+    "allowed_cooler_status": "PLCD"
+  },
+  {
+    "central_order_block_code": "WH",
+    "allowed_cooler_status": "FOND"
+  },
+  {
+    "central_order_block_code": "WH",
+    "allowed_cooler_status": "NACT"
+  },
+  {
+    "central_order_block_code": "WH",
+    "allowed_cooler_status": "UINV"
+  },
+  {
+    "central_order_block_code": "WH",
+    "allowed_cooler_status": "LOST"
+  },
+  {
+    "central_order_block_code": "I",
+    "allowed_cooler_status": "PLCD"
+  },
+  {
+    "central_order_block_code": "I",
+    "allowed_cooler_status": "FOND"
+  },
+  {
+    "central_order_block_code": "I",
+    "allowed_cooler_status": "NACT"
+  },
+  {
+    "central_order_block_code": "I",
+    "allowed_cooler_status": "UINV"
+  },
+  {
+    "central_order_block_code": "I",
+    "allowed_cooler_status": "LOST"
+  },
+  {
+    "central_order_block_code": "CW",
+    "allowed_cooler_status": "PLCD"
+  },
+  {
+    "central_order_block_code": "CW",
+    "allowed_cooler_status": "FOND"
+  },
+  {
+    "central_order_block_code": "CW",
+    "allowed_cooler_status": "NACT"
+  },
+  {
+    "central_order_block_code": "CW",
+    "allowed_cooler_status": "UINV"
+  },
+  {
+    "central_order_block_code": "CW",
+    "allowed_cooler_status": "LOST"
+  },
+  {
+    "central_order_block_code": "TS",
+    "allowed_cooler_status": "NACT"
+  },
+  {
+    "central_order_block_code": "E",
+    "allowed_cooler_status": "UINV"
+  },
+  {
+    "central_order_block_code": "E",
+    "allowed_cooler_status": "LOST"
+  },
+  {
+    "central_order_block_code": "F",
+    "allowed_cooler_status": "PLCD"
+  },
+  {
+    "central_order_block_code": "F",
+    "allowed_cooler_status": "FOND"
+  },
+  {
+    "central_order_block_code": "F",
+    "allowed_cooler_status": "NACT"
+  },
+  {
+    "central_order_block_code": "F",
+    "allowed_cooler_status": "UINV"
+  },
+  {
+    "central_order_block_code": "F",
+    "allowed_cooler_status": "LOST"
+  },
+  {
+    "central_order_block_code": "G",
+    "allowed_cooler_status": "UINV"
+  },
+  {
+    "central_order_block_code": "G",
+    "allowed_cooler_status": "LOST"
+  },
+  {
+    "central_order_block_code": "VF",
+    "allowed_cooler_status": "NACT"
+  },
+  {
+    "central_order_block_code": "U",
+    "allowed_cooler_status": "UINV"
+  },
+  {
+    "central_order_block_code": "U",
+    "allowed_cooler_status": "LOST"
+  },
+  {
+    "central_order_block_code": "",
+    "allowed_cooler_status": "PLCD"
+  },
+  {
+    "central_order_block_code": "",
+    "allowed_cooler_status": "FOND"
+  },
+  {
+    "central_order_block_code": "",
+    "allowed_cooler_status": "NACT"
+  },
+  {
+    "central_order_block_code": "",
+    "allowed_cooler_status": "UINV"
+  },
+  {
+    "central_order_block_code": "",
+    "allowed_cooler_status": "LOST"
+  },
+  {
+    "central_order_block_code": "S",
+    "allowed_cooler_status": "No cooler must be linked to this customer"
+  },
+  {
+    "central_order_block_code": "S3",
+    "allowed_cooler_status": "No cooler must be linked to this customer"
+  },
+  {
+    "central_order_block_code": "S4",
+    "allowed_cooler_status": "No cooler must be linked to this customer"
+  },
+  {
+    "central_order_block_code": "SP",
+    "allowed_cooler_status": "No cooler must be linked to this customer"
+  },
+  {
+    "central_order_block_code": "SY",
+    "allowed_cooler_status": "No cooler must be linked to this customer"
+  },
+  {
+    "central_order_block_code": "PR",
+    "allowed_cooler_status": "No cooler must be linked to this customer"
+  },
+  {
+    "central_order_block_code": "C",
+    "allowed_cooler_status": "No cooler must be linked to this customer"
+  },
+  {
+    "central_order_block_code": "S1",
+    "allowed_cooler_status": "No cooler must be linked to this customer"
+  },
+  {
+    "central_order_block_code": "DR",
+    "allowed_cooler_status": "No cooler must be linked to this customer"
+  },
+  {
+    "central_order_block_code": "M",
+    "allowed_cooler_status": "No cooler must be linked to this customer"
+  },
+  {
+    "central_order_block_code": "NH",
+    "allowed_cooler_status": "No cooler must be linked to this customer"
+  },
+  {
+    "central_order_block_code": "R",
+    "allowed_cooler_status": "No cooler must be linked to this customer"
+  },
+  {
+    "central_order_block_code": "NR",
+    "allowed_cooler_status": "No cooler must be linked to this customer"
+  }
+]

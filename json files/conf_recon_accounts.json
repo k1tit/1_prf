@@ -1,0 +1,144 @@
+{
+    "conf_recon_accounts": [
+      {
+        "account_group_code": "1000",
+        "reconciliation_account": "0178495000"
+      },
+      {
+        "account_group_code": "2000",
+        "reconciliation_account": "0174520000"
+      },
+      {
+        "account_group_code": "2000",
+        "reconciliation_account": "0174520100"
+      },
+      {
+        "account_group_code": "2000",
+        "reconciliation_account": "0174520201"
+      },
+      {
+        "account_group_code": "2000",
+        "reconciliation_account": "0174520202"
+      },
+      {
+        "account_group_code": "2000",
+        "reconciliation_account": "0174520203"
+      },
+      {
+        "account_group_code": "2000",
+        "reconciliation_account": "0174550000"
+      },
+      {
+        "account_group_code": "3000",
+        "reconciliation_account": "0172000000"
+      },
+      {
+        "account_group_code": "3000",
+        "reconciliation_account": "0172000201"
+      },
+      {
+        "account_group_code": "3000",
+        "reconciliation_account": "0172000202"
+      },
+      {
+        "account_group_code": "3000",
+        "reconciliation_account": "0172010000"
+      },
+      {
+        "account_group_code": "3000",
+        "reconciliation_account": "0172015000"
+      },
+      {
+        "account_group_code": "3000",
+        "reconciliation_account": "0172020000"
+      },
+      {
+        "account_group_code": "3000",
+        "reconciliation_account": "0172030000"
+      },
+      {
+        "account_group_code": "3000",
+        "reconciliation_account": "0172040000"
+      },
+      {
+        "account_group_code": "3000",
+        "reconciliation_account": "0172050000"
+      },
+      {
+        "account_group_code": "3000",
+        "reconciliation_account": "0172080000"
+      },
+      {
+        "account_group_code": "3000",
+        "reconciliation_account": "0172080200"
+      },
+      {
+        "account_group_code": "3000",
+        "reconciliation_account": "0172080201"
+      },
+      {
+        "account_group_code": "5000",
+        "reconciliation_account": "0170000208"
+      },
+      {
+        "account_group_code": "5000",
+        "reconciliation_account": "0170000209"
+      },
+      {
+        "account_group_code": "5000",
+        "reconciliation_account": "0178490000"
+      },
+      {
+        "account_group_code": "7038",
+        "reconciliation_account": "0178550000"
+      },
+      {
+        "account_group_code": "8000",
+        "reconciliation_account": "0178500000"
+      },
+      {
+        "account_group_code": "8100",
+        "reconciliation_account": "0178050000"
+      },
+      {
+        "account_group_code": "8100",
+        "reconciliation_account": "0178050300"
+      },
+      {
+        "account_group_code": "8100",
+        "reconciliation_account": "0178500010"
+      },
+      {
+        "account_group_code": "8200",
+        "reconciliation_account": "0178050000"
+      },
+      {
+        "account_group_code": "8200",
+        "reconciliation_account": "0178050300"
+      },
+      {
+        "account_group_code": "8300",
+        "reconciliation_account": "0178050000"
+      },
+      {
+        "account_group_code": "8300",
+        "reconciliation_account": "0178050300"
+      },
+      {
+        "account_group_code": "9038",
+        "reconciliation_account": "0170000000"
+      },
+      {
+        "account_group_code": "9038",
+        "reconciliation_account": "0178490000"
+      },
+      {
+        "account_group_code": "9038",
+        "reconciliation_account": "0178490202"
+      },
+      {
+        "account_group_code": "9038",
+        "reconciliation_account": "0178500000"
+      }
+    ]
+  }

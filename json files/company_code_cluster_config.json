@@ -1,0 +1,15 @@
+{
+    "company_code_cluster_config": [
+      {
+        "country_code": "RU",
+        "company_code": "0403",
+        "sap_cluster": "RUBY"
+      },
+      {
+        "country_code": "RU",
+        "company_code": "0307",
+        "sap_cluster": "RUBY"
+      }
+    ],
+    "filtering_condition": "cluster_config_v1, flag = 'DM_company'"
+  }

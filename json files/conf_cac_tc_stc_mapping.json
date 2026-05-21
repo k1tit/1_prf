@@ -1,0 +1,1079 @@
+{
+  "conf_cac_tc_stc_mapping": [
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "001",
+      "sub_trade_channel_code": "101"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "001",
+      "sub_trade_channel_code": "102"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "001",
+      "sub_trade_channel_code": "103"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "001",
+      "sub_trade_channel_code": "591"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "001",
+      "sub_trade_channel_code": "610"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "001",
+      "sub_trade_channel_code": "766"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "001",
+      "sub_trade_channel_code": "771"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "001",
+      "sub_trade_channel_code": "778"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "001",
+      "sub_trade_channel_code": "779"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "002",
+      "sub_trade_channel_code": "254"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "002",
+      "sub_trade_channel_code": "519"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "003",
+      "sub_trade_channel_code": "104"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "003",
+      "sub_trade_channel_code": "105"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "003",
+      "sub_trade_channel_code": "106"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "003",
+      "sub_trade_channel_code": "255"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "003",
+      "sub_trade_channel_code": "540"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "007",
+      "sub_trade_channel_code": "253"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "007",
+      "sub_trade_channel_code": "593"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "007",
+      "sub_trade_channel_code": "815"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "011",
+      "sub_trade_channel_code": "120"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "011",
+      "sub_trade_channel_code": "121"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "011",
+      "sub_trade_channel_code": "122"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "037",
+      "sub_trade_channel_code": "107"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "037",
+      "sub_trade_channel_code": "108"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "037",
+      "sub_trade_channel_code": "109"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "037",
+      "sub_trade_channel_code": "110"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "037",
+      "sub_trade_channel_code": "111"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "037",
+      "sub_trade_channel_code": "112"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "037",
+      "sub_trade_channel_code": "585"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "037",
+      "sub_trade_channel_code": "794"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "038",
+      "sub_trade_channel_code": "113"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "038",
+      "sub_trade_channel_code": "115"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "038",
+      "sub_trade_channel_code": "559"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "038",
+      "sub_trade_channel_code": "816"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "039",
+      "sub_trade_channel_code": "116"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "039",
+      "sub_trade_channel_code": "117"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "039",
+      "sub_trade_channel_code": "119"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "039",
+      "sub_trade_channel_code": "251"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "039",
+      "sub_trade_channel_code": "542"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "039",
+      "sub_trade_channel_code": "581"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "039",
+      "sub_trade_channel_code": "810"
+    },
+    {
+      "customer_activity_cluster_code": "A",
+      "trade_channel_code": "114",
+      "sub_trade_channel_code": "256"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "006",
+      "sub_trade_channel_code": "257"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "008",
+      "sub_trade_channel_code": "123"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "008",
+      "sub_trade_channel_code": "124"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "008",
+      "sub_trade_channel_code": "125"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "008",
+      "sub_trade_channel_code": "126"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "008",
+      "sub_trade_channel_code": "127"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "008",
+      "sub_trade_channel_code": "128"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "008",
+      "sub_trade_channel_code": "131"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "008",
+      "sub_trade_channel_code": "144"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "008",
+      "sub_trade_channel_code": "145"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "012",
+      "sub_trade_channel_code": "258"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "012",
+      "sub_trade_channel_code": "798"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "012",
+      "sub_trade_channel_code": "799"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "040",
+      "sub_trade_channel_code": "135"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "040",
+      "sub_trade_channel_code": "136"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "040",
+      "sub_trade_channel_code": "138"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "040",
+      "sub_trade_channel_code": "146"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "132",
+      "sub_trade_channel_code": "133"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "132",
+      "sub_trade_channel_code": "134"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "282",
+      "sub_trade_channel_code": "129"
+    },
+    {
+      "customer_activity_cluster_code": "B",
+      "trade_channel_code": "283",
+      "sub_trade_channel_code": "818"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "153"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "265"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "266"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "267"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "268"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "269"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "270"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "271"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "272"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "273"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "275"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "560"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "567"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "655"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "750"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "792"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "018",
+      "sub_trade_channel_code": "793"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "019",
+      "sub_trade_channel_code": "162"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "019",
+      "sub_trade_channel_code": "164"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "019",
+      "sub_trade_channel_code": "165"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "019",
+      "sub_trade_channel_code": "166"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "019",
+      "sub_trade_channel_code": "261"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "019",
+      "sub_trade_channel_code": "283"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "019",
+      "sub_trade_channel_code": "529"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "020",
+      "sub_trade_channel_code": "157"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "020",
+      "sub_trade_channel_code": "158"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "020",
+      "sub_trade_channel_code": "159"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "020",
+      "sub_trade_channel_code": "161"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "020",
+      "sub_trade_channel_code": "523"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "020",
+      "sub_trade_channel_code": "641"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "020",
+      "sub_trade_channel_code": "761"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "020",
+      "sub_trade_channel_code": "762"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "020",
+      "sub_trade_channel_code": "769"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "020",
+      "sub_trade_channel_code": "797"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "020",
+      "sub_trade_channel_code": "817"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "041",
+      "sub_trade_channel_code": "154"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "041",
+      "sub_trade_channel_code": "155"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "041",
+      "sub_trade_channel_code": "156"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "013"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "014"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "015"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "016"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "017"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "148"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "149"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "150"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "252"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "276"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "278"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "520"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "526"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "528"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "536"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "537"
+    },
+    {
+      "customer_activity_cluster_code": "C",
+      "trade_channel_code": "147",
+      "sub_trade_channel_code": "670"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "035",
+      "sub_trade_channel_code": "033"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "035",
+      "sub_trade_channel_code": "168"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "035",
+      "sub_trade_channel_code": "176"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "035",
+      "sub_trade_channel_code": "182"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "035",
+      "sub_trade_channel_code": "183"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "035",
+      "sub_trade_channel_code": "185"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "035",
+      "sub_trade_channel_code": "186"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "035",
+      "sub_trade_channel_code": "264"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "035",
+      "sub_trade_channel_code": "696"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "035",
+      "sub_trade_channel_code": "767"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "262",
+      "sub_trade_channel_code": "169"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "262",
+      "sub_trade_channel_code": "171"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "262",
+      "sub_trade_channel_code": "172"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "262",
+      "sub_trade_channel_code": "177"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "262",
+      "sub_trade_channel_code": "178"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "262",
+      "sub_trade_channel_code": "180"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "262",
+      "sub_trade_channel_code": "181"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "262",
+      "sub_trade_channel_code": "280"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "262",
+      "sub_trade_channel_code": "533"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "262",
+      "sub_trade_channel_code": "544"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "262",
+      "sub_trade_channel_code": "550"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "262",
+      "sub_trade_channel_code": "705"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "263",
+      "sub_trade_channel_code": "173"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "263",
+      "sub_trade_channel_code": "174"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "263",
+      "sub_trade_channel_code": "175"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "263",
+      "sub_trade_channel_code": "179"
+    },
+    {
+      "customer_activity_cluster_code": "D",
+      "trade_channel_code": "263",
+      "sub_trade_channel_code": "281"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "031",
+      "sub_trade_channel_code": "190"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "031",
+      "sub_trade_channel_code": "191"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "031",
+      "sub_trade_channel_code": "192"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "031",
+      "sub_trade_channel_code": "193"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "031",
+      "sub_trade_channel_code": "194"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "031",
+      "sub_trade_channel_code": "195"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "031",
+      "sub_trade_channel_code": "196"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "031",
+      "sub_trade_channel_code": "197"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "031",
+      "sub_trade_channel_code": "198"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "031",
+      "sub_trade_channel_code": "199"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "031",
+      "sub_trade_channel_code": "200"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "031",
+      "sub_trade_channel_code": "202"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "031",
+      "sub_trade_channel_code": "203"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "204",
+      "sub_trade_channel_code": "021"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "204",
+      "sub_trade_channel_code": "205"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "204",
+      "sub_trade_channel_code": "206"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "204",
+      "sub_trade_channel_code": "531"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "204",
+      "sub_trade_channel_code": "532"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "204",
+      "sub_trade_channel_code": "548"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "204",
+      "sub_trade_channel_code": "551"
+    },
+    {
+      "customer_activity_cluster_code": "E",
+      "trade_channel_code": "204",
+      "sub_trade_channel_code": "737"
+    },
+    {
+      "customer_activity_cluster_code": "F",
+      "trade_channel_code": "029",
+      "sub_trade_channel_code": "213"
+    },
+    {
+      "customer_activity_cluster_code": "F",
+      "trade_channel_code": "029",
+      "sub_trade_channel_code": "214"
+    },
+    {
+      "customer_activity_cluster_code": "F",
+      "trade_channel_code": "029",
+      "sub_trade_channel_code": "215"
+    },
+    {
+      "customer_activity_cluster_code": "F",
+      "trade_channel_code": "042",
+      "sub_trade_channel_code": "209"
+    },
+    {
+      "customer_activity_cluster_code": "F",
+      "trade_channel_code": "042",
+      "sub_trade_channel_code": "210"
+    },
+    {
+      "customer_activity_cluster_code": "F",
+      "trade_channel_code": "042",
+      "sub_trade_channel_code": "211"
+    },
+    {
+      "customer_activity_cluster_code": "F",
+      "trade_channel_code": "207",
+      "sub_trade_channel_code": "026"
+    },
+    {
+      "customer_activity_cluster_code": "F",
+      "trade_channel_code": "207",
+      "sub_trade_channel_code": "027"
+    },
+    {
+      "customer_activity_cluster_code": "F",
+      "trade_channel_code": "207",
+      "sub_trade_channel_code": "028"
+    },
+    {
+      "customer_activity_cluster_code": "F",
+      "trade_channel_code": "207",
+      "sub_trade_channel_code": "208"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "025",
+      "sub_trade_channel_code": "224"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "025",
+      "sub_trade_channel_code": "227"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "025",
+      "sub_trade_channel_code": "228"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "030",
+      "sub_trade_channel_code": "229"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "030",
+      "sub_trade_channel_code": "233"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "043",
+      "sub_trade_channel_code": "220"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "043",
+      "sub_trade_channel_code": "221"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "043",
+      "sub_trade_channel_code": "222"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "043",
+      "sub_trade_channel_code": "223"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "043",
+      "sub_trade_channel_code": "563"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "044",
+      "sub_trade_channel_code": "137"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "044",
+      "sub_trade_channel_code": "259"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "216",
+      "sub_trade_channel_code": "022"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "216",
+      "sub_trade_channel_code": "024"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "216",
+      "sub_trade_channel_code": "217"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "216",
+      "sub_trade_channel_code": "218"
+    },
+    {
+      "customer_activity_cluster_code": "G",
+      "trade_channel_code": "216",
+      "sub_trade_channel_code": "219"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "036",
+      "sub_trade_channel_code": "234"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "036",
+      "sub_trade_channel_code": "235"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "036",
+      "sub_trade_channel_code": "237"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "036",
+      "sub_trade_channel_code": "238"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "036",
+      "sub_trade_channel_code": "240"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "036",
+      "sub_trade_channel_code": "249"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "036",
+      "sub_trade_channel_code": "250"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "036",
+      "sub_trade_channel_code": "561"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "036",
+      "sub_trade_channel_code": "562"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "036",
+      "sub_trade_channel_code": "746"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "036",
+      "sub_trade_channel_code": "801"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "099",
+      "sub_trade_channel_code": "260"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "099",
+      "sub_trade_channel_code": "511"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "099",
+      "sub_trade_channel_code": "546"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "099",
+      "sub_trade_channel_code": "547"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "099",
+      "sub_trade_channel_code": "998"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "241",
+      "sub_trade_channel_code": "242"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "241",
+      "sub_trade_channel_code": "243"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "241",
+      "sub_trade_channel_code": "244"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "241",
+      "sub_trade_channel_code": "246"
+    },
+    {
+      "customer_activity_cluster_code": "H",
+      "trade_channel_code": "036",
+      "sub_trade_channel_code": "819"
+    },
+    {
+      "customer_activity_cluster_code": "Z",
+      "trade_channel_code": "ZZ",
+      "sub_trade_channel_code": "ZZZ"
+    }
+  ]
+}

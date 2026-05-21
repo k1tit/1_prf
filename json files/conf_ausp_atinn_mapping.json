@@ -1,0 +1,33 @@
+{
+  "description": "Колонка ATINN. Значение в ней = имя поля: ATINN='143'=CCAF, ATINN='604'=RED_OUTLET, ATINN='148'=ZGLOBAL_CUSTOMER, ATINN='151'=ZTRADE_NAME. ATINN(143)1-9, ATINN=143, ATINN = 604 в правилах — это значение ATINN для фильтра.",
+  "column_name_checked_to_atinn": {
+    "ATINN(143)1-9": "143",
+    "ATINN(143)": "143",
+    "ATINN =143": "143",
+    "ATINN=143": "143",
+    "ATINN = 604": "604",
+    "ATINN=604": "604",
+    "ATINN_3": "143",
+    "Z_CCAF": "143",
+    "CCAF": "143",
+    "CAF": "143",
+    "ATINN_20": "604",
+    "ZRED_OUTLET": "604",
+    "RED_OUTLET": "604",
+    "Red Outlet": "604",
+    "Outlet": "604",
+    "ZGLOBAL_CUSTOMER": "148",
+    "GLOBAL_CUSTOMER": "148",
+    "Global Customer": "148",
+    "ZTRADE_NAME": "151",
+    "TRADE_NAME": "151",
+    "Trade Name": "151",
+    "Trading Group": "151"
+  },
+  "atinn_to_temporary_column_name": {
+    "143": "CCAF",
+    "604": "RED_OUTLET",
+    "148": "ZGLOBAL_CUSTOMER",
+    "151": "ZTRADE_NAME"
+  }
+}

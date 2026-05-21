@@ -1,0 +1,12 @@
+{
+  "conf_ccaf_format": [
+    {
+      "ccaf_format": "[1-5][1-5][0-9][0-9]",
+      "length": 4
+    },
+    {
+      "ccaf_format": "[1-5][1-5][0-9][A-Z]",
+      "length": 4
+    }
+  ]
+}

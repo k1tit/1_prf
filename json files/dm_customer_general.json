@@ -1,0 +1,214 @@
+{
+  "dm_customer_general": [
+    {
+      "type": "DM",
+      "place": "KNA1",
+      "alias": "kna",
+      "filtering": "(NODEL != 'X' AND LOEVM != 'X' AND (KTOKD like '9%') AND AUFSD NOT IN ('S', 'NH', 'S3', 'S4', 'SY', 'U', 'R') AND combination KTOKD - Cluster in available in config file)"
+    },
+    {
+      "type": "DM",
+      "place": "TVAST",
+      "alias": "a1",
+      "filtering": "SPRAS = 'E'"
+    },
+    {
+      "type": "DM",
+      "place": "TVK1T",
+      "alias": "a2",
+      "filtering": "SPRAS = 'E'"
+    },
+    {
+      "type": "DM",
+      "place": "TVK6T",
+      "alias": "a3",
+      "filtering": "SPRAS = 'E'"
+    },
+    {
+      "type": "DM",
+      "place": "BUT000",
+      "alias": "bu",
+      "filtering": null
+    },
+    {
+      "type": "DM",
+      "place": "TVK7T",
+      "alias": "a4",
+      "filtering": "SPRAS = 'E'"
+    },
+    {
+      "type": "DM",
+      "place": "TVK4T",
+      "alias": "a5",
+      "filtering": "SPRAS = 'E'"
+    },
+    {
+      "type": "DM",
+      "place": "T077X",
+      "alias": "a10",
+      "filtering": "SPRAS = 'E'"
+    },
+    {
+      "type": "DM",
+      "place": "TKUKT",
+      "alias": "a6",
+      "filtering": "SPRAS = 'E'"
+    },
+    {
+      "type": "DM",
+      "place": "ZW2_CMDEMAND",
+      "alias": "a7",
+      "filtering": "distinct BRAN1"
+    },
+    {
+      "type": "DM",
+      "place": "CVI_CUST_LINK",
+      "alias": "cvi",
+      "filtering": null
+    },
+    {
+      "type": "DM",
+      "place": "AUSP_CRM",
+      "alias": "au",
+      "filtering": "ATINN='143' /Z_CCAF/ OR ATINN='148' /ZGLOBAL_CUSTOMER/ OR ATINN='151' /ZTRADE_NAME/ OR ATINN='146' /ZCDE_CHANNEL_PRIORITY/ OR ATINN = '584' /Z_EATB_WARM_SPACE_TARGET/ OR ATINN = '582' /ZCDE_TARGET_DOORS/ OR ATINN = '601' /ZRED_OUTLET/ OR ATINN = '613' /ZLOCAL_SEGMENTATION/ (IF more than one record for customer please take the record with max value in column CHANGED_AT)"
+    },
+    {
+      "type": "DM",
+      "place": "CAWNT_CRM",
+      "alias": "ct",
+      "filtering": "SPRAS = 'E'"
+    },
+    {
+      "type": "DM",
+      "place": "CAWN_CRM",
+      "alias": "cn",
+      "filtering": "ATINN IN ('143', '148', '151', '146', '584', '582', '601', '613')"
+    },
+    {
+      "type": "DM",
+      "place": "DFKKBPTAXNUM",
+      "alias": "tax",
+      "filtering": null
+    },
+    {
+      "type": "DM",
+      "place": "T005",
+      "alias": "t1",
+      "filtering": null
+    },
+    {
+      "type": "DM",
+      "place": "T005",
+      "alias": "t2",
+      "filtering": null
+    },
+    {
+      "type": "DM",
+      "place": "ZGLOBAL_CUSTOMER",
+      "alias": "zc",
+      "filtering": null
+    },
+    {
+      "type": "DM",
+      "place": "ZTRADE_NAME",
+      "alias": "zct",
+      "filtering": null
+    },
+    {
+      "type": "DM",
+      "place": "ZTRADE_NAME",
+      "alias": "zct2",
+      "filtering": "distinct TRADE_ID"
+    },
+    {
+      "type": "DM",
+      "place": "BP1012",
+      "alias": "BP",
+      "filtering": "GRADE_METHOD = 'BD_SURV'"
+    },
+    {
+      "type": "DM",
+      "place": "BUT0IS",
+      "alias": "is",
+      "filtering": null
+    },
+    {
+      "type": "DM",
+      "place": "T016T",
+      "alias": "a8",
+      "filtering": "SPRAS = 'E'"
+    },
+    {
+      "type": "DM",
+      "place": "ZW2_CMDEMAND",
+      "alias": "a9",
+      "filtering": null
+    },
+    {
+      "type": "manual file",
+      "place": "curated_data_quality_data_control_center.cluster_config_v1",
+      "alias": "agcg",
+      "filtering": "flag = 'DM_general'"
+    },
+    {
+      "type": "DM",
+      "place": "dm_customer_sales_organization",
+      "alias": "kv",
+      "filtering": "distinct KUNNR WHERE SPART = '01' AND VTWEG = '01' AND KVGR4 != 'ZIN' or to use dm_customer_sales_organization"
+    },
+    {
+      "type": "DM",
+      "place": "/LOT/GC_ADR",
+      "alias": "l",
+      "filtering": null
+    },
+    {
+      "type": "DM",
+      "place": "curated_cch_bw_md.ca_0_cus03_customer_v1",
+      "alias": "fsm04",
+      "filtering": "/SAP BW report/"
+    },
+    {
+      "type": "dropzone",
+      "place": "dummy_customers",
+      "alias": "dum",
+      "filtering": "manual xls file managed by CCH team to exclude dymmy customers"
+    },
+    {
+      "type": "DM",
+      "place": "curated_cch_bw_md.cacus03pi_customer_pi_v1",
+      "alias": "cus03",
+      "filtering": "/SAP BW report/"
+    },
+    {
+      "type": "DM",
+      "place": "CDHDR",
+      "alias": "ch",
+      "filtering": "OBJECTCLAS = 'DEBI'"
+    },
+    {
+      "type": "DM",
+      "place": "CDPOS",
+      "alias": "cp",
+      "filtering": "OBJECTCLAS = 'DEBI' AND CHNGIND = 'U' AND TABNAME = 'KNA1' AND FNAME = 'AUFSD'"
+    },
+    {
+      "type": "DM",
+      "place": "customer_code_country_mapping",
+      "alias": "ccm",
+      "filtering": null
+    },
+    {
+      "type": "UDF",
+      "place": "text_transliteraition process",
+      "alias": "tt",
+      "filtering": "https://dev.azure.com/CCHBC/CCH SAFe Portfolio/_wiki/wikis/CCH-SAFe-Portfolio.wiki/6863/Reference-tables?anchor=text_transliteration"
+    },
+    {
+      "type": "DM",
+      "place": "dm_customer_crm_activites",
+      "alias": "cca",
+      "filtering": "execution_visit_status != ''"
+    }
+  ]
+}

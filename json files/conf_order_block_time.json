@@ -1,0 +1,12 @@
+{
+  "conf_order_block_time": [
+    {
+      "central_order_block_code": "TS",
+      "max_months": 12
+    },
+    {
+      "central_order_block_code": "F",
+      "max_months": 12
+    }
+  ]
+}

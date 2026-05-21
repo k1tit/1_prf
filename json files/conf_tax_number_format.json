@@ -1,0 +1,26 @@
+[
+  {
+    "country_name": "Russia",
+    "country_code": "RU",
+    "tax_format": "[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]",
+    "length": 8
+  },
+  {
+    "country_name": "Russia",
+    "country_code": "RU",
+    "tax_format": "[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]",
+    "length": 9
+  },
+  {
+    "country_name": "Russia",
+    "country_code": "RU",
+    "tax_format": "[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]",
+    "length": 10
+  },
+  {
+    "country_name": "Russia",
+    "country_code": "RU",
+    "tax_format": "[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]",
+    "length": 12
+  }
+]
