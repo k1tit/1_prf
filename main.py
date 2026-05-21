@@ -8,7 +8,9 @@ from datetime import datetime, time
 # Базовый каталог проекта (где лежит main.py)
 _PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
-DB_PATH = os.path.join(_PROJECT_ROOT, "db_mrt.db")
+from utils.sqlite_safe import resolve_database_path, load_database_config, DB_CONFIG_REL
+
+DB_PATH, DB_SOURCE = resolve_database_path(_PROJECT_ROOT)
 RULES_FILE = os.path.join(_PROJECT_ROOT, "json files", "rules.json")
 OUTPUT_DIR = os.path.join(_PROJECT_ROOT, "quality_reports")
 
@@ -54,9 +56,21 @@ def setup_environment():
         full_path = os.path.join(current_dir, file_path) if not os.path.isabs(file_path) else file_path
         if os.path.exists(full_path):
             size_kb = os.path.getsize(full_path) / 1024
-            print(f"{description}: {file_path} ({size_kb:.1f} KB)")
+            mtime = datetime.fromtimestamp(os.path.getmtime(full_path)).strftime("%Y-%m-%d %H:%M")
+            extra = f", изменён {mtime}" if description.startswith("База данных") else ""
+            print(f"{description}: {file_path} ({size_kb:.1f} KB{extra})")
+            if description.startswith("База данных"):
+                print(f"  Источник пути: {DB_SOURCE}")
+                cfg = load_database_config(current_dir)
+                if cfg.get("period"):
+                    print(f"  Период в {DB_CONFIG_REL}: {cfg.get('period')}")
         else:
             print(f"{description}: {file_path} - НЕ НАЙДЕН!")
+            if description.startswith("База данных"):
+                print(
+                    f"  Укажите файл в config/database.json (поле database) "
+                    f"или запуск: python main.py --db имя_файла.db"
+                )
     
     # Проверка дополнительных файлов (маппинг: config/ или json files/)
     column_map_candidates = [
@@ -416,6 +430,11 @@ def parse_arguments():
   python main.py --reference-date 2026-04-01  # Опорная дата для правил «на дату» (RCCONF_173.1 и др.)
   python main.py --list             # Показать список таблиц
   python main.py --help             # Показать эту справку
+
+Смена БД каждый месяц (одно место):
+  1) Положите новый файл, например db_may.db, в корень проекта
+  2) Отредактируйте config/database.json: "database": "db_may.db", "period": "2026-05"
+  Либо: set DQ_DATABASE=db_may.db  или  python main.py --all --db db_may.db
         """
     )
     
@@ -458,8 +477,9 @@ def parse_arguments():
         '--db', 
         type=str,
         metavar='PATH',
-        default=DB_PATH,
-        help=f'Путь к базе данных (по умолчанию: {DB_PATH})'
+        default=None,
+        help='Путь к SQLite (переопределяет config/database.json и DQ_DATABASE). '
+             'По умолчанию — поле database в config/database.json'
     )
     
     parser.add_argument(
@@ -523,9 +543,12 @@ def main():
         print(f"[LOG] Логи пишутся в файл: {os.path.abspath(log_path)}")
 
     # Глобальные переменные могут быть переопределены аргументами
-    global DB_PATH, RULES_FILE, OUTPUT_DIR
-    if args.db:
-        DB_PATH = args.db
+    global DB_PATH, DB_SOURCE, RULES_FILE, OUTPUT_DIR
+    try:
+        DB_PATH, DB_SOURCE = resolve_database_path(_PROJECT_ROOT, args.db, must_exist=True)
+    except FileNotFoundError as e:
+        print(f"ОШИБКА: {e}")
+        sys.exit(2)
     if args.rules:
         RULES_FILE = args.rules
     if args.output:

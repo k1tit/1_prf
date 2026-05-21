@@ -12,8 +12,14 @@ from datetime import datetime
 if sys.platform == "win32":
     sys.stdout.reconfigure(encoding='utf-8')
 
-# Конфигурация
-DB_PATH = "db_april.db"
+_PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
+
+from utils.sqlite_safe import resolve_database_path
+
+# Та же БД, что и у main.py (config/database.json → DQ_DATABASE → --db при обёртке)
+DB_PATH, DB_SOURCE = resolve_database_path(_PROJECT_ROOT)
 RULE_CODE = "RCCOMP_103.1"
 RULE_DESC = "Missing Customer Activity Cluster"
 RULE_CATEGORY = "Completeness"
@@ -139,6 +145,7 @@ def save_csv(data, filepath):
 def main():
     print("🔍 Проверка правила RCCOMP_103.1")
     print(f"📁 База: {DB_PATH}")
+    print(f"   ({DB_SOURCE})")
 
     result, used_table = run_check()
 

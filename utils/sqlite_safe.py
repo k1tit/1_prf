@@ -4,13 +4,20 @@
 """
 from __future__ import annotations
 
+import json
 import os
 import sqlite3
 import time
 from typing import Optional, Tuple
 
-# Имя файла БД по умолчанию в корне проекта (менять здесь и при необходимости в скриптах с хардкодом)
+# Запасной файл БД, если нет config/database.json и переменной DQ_DATABASE
 DEFAULT_DB_FILENAME = "db_april.db"
+
+# Относительный путь к конфигу смены БД (одно место на месяц)
+DB_CONFIG_REL = os.path.join("config", "database.json")
+
+# Переменная окружения: имя файла или полный путь к SQLite
+ENV_DB_VAR = "DQ_DATABASE"
 
 # Секунды: сколько ждать освобождения файла при connect()
 SQLITE_CONNECT_TIMEOUT_SEC = 120.0
@@ -37,7 +44,76 @@ def find_project_root(start_file: str) -> str:
 def default_db_path(project_file: str) -> str:
     """Путь к БД в корне проекта относительно любого файла внутри репо (обычно __file__)."""
     root = find_project_root(project_file)
-    return os.path.join(root, DEFAULT_DB_FILENAME)
+    path, _ = resolve_database_path(root)
+    return path
+
+
+def _normalize_db_spec(project_root: str, spec: str) -> str:
+    """Имя файла или путь → абсолютный путь к SQLite."""
+    spec = (spec or "").strip()
+    if not spec:
+        raise ValueError("пустое имя/путь к базе данных")
+    if os.path.isabs(spec):
+        return os.path.normpath(spec)
+    return os.path.normpath(os.path.join(project_root, spec))
+
+
+def load_database_config(project_root: str) -> dict:
+    """Читает config/database.json; при отсутствии файла — пустой dict."""
+    path = os.path.join(project_root, DB_CONFIG_REL)
+    if not os.path.isfile(path):
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except (json.JSONDecodeError, OSError):
+        return {}
+
+
+def resolve_database_path(
+    project_root: str,
+    cli_path: Optional[str] = None,
+    *,
+    must_exist: bool = False,
+) -> Tuple[str, str]:
+    """
+    Единая точка выбора файла SQLite на месяц.
+
+    Приоритет:
+      1) аргумент CLI (--db)
+      2) переменная окружения DQ_DATABASE
+      3) поле database в config/database.json
+      4) DEFAULT_DB_FILENAME в корне проекта
+
+    Возвращает (абсолютный_путь, описание_источника).
+    """
+    if cli_path and str(cli_path).strip():
+        path = _normalize_db_spec(project_root, str(cli_path))
+        source = "аргумент --db"
+    elif os.environ.get(ENV_DB_VAR, "").strip():
+        path = _normalize_db_spec(project_root, os.environ[ENV_DB_VAR])
+        source = f"переменная окружения {ENV_DB_VAR}"
+    else:
+        cfg = load_database_config(project_root)
+        db_spec = (cfg.get("database") or "").strip()
+        if db_spec:
+            path = _normalize_db_spec(project_root, db_spec)
+            period = (cfg.get("period") or "").strip()
+            source = f"config/{DB_CONFIG_REL.replace(os.sep, '/')}"
+            if period:
+                source += f" (period={period})"
+        else:
+            path = _normalize_db_spec(project_root, DEFAULT_DB_FILENAME)
+            source = f"запасной DEFAULT_DB_FILENAME ({DEFAULT_DB_FILENAME})"
+
+    if must_exist and not os.path.isfile(path):
+        raise FileNotFoundError(
+            f"Файл базы данных не найден: {path}\n"
+            f"Источник: {source}. Положите .db в корень проекта и обновите "
+            f"{DB_CONFIG_REL} (поле database) или задайте {ENV_DB_VAR} / --db."
+        )
+    return path, source
 
 
 def connect_sqlite(
