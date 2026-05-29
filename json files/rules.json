@@ -2204,10 +2204,11 @@
     },
     {
       "rule_code": "RCCONF_18.2",
-      "rule_description": "Valid Street with No Special Characters",
+      "rule_description": "Valid Street with No Special Characters (single space allowed, not two in a row)",
       "technical_definition_RU": [
-        "IF STREET IS NULL THEN '' IF STREET includes special characters (marked '1' in",
-        "conf file) space THEN '0' ELSE IF count of consecutive character",
+        "IF STREET IS NULL THEN '' IF STREET has two or more consecutive space characters",
+        "THEN '0' ELSE IF STREET includes special characters (marked '1' in conf file,",
+        "space excluded) THEN '0' ELSE IF count of consecutive character",
         ".,/-_&[]{}()\"':;`|~+ > 1 /*each character cannot be repeated after each other*/",
         "THEN '0' ELSE IF count of character \" is not even /*quotation signs must be in",
         "pairs*/ THEN '0' ELSE IF bracket signs []{}() are not in pair or are in pair but",

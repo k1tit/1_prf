@@ -181,7 +181,7 @@ class AdvancedSpecialCharactersValidator(BaseValidator):
                 consecutive_chars = '.,/-_&[]{}()"\'`:;`|~+'
                 quote_char = '"'
                 bracket_pairs = [('[', ']'), ('{', '}'), ('(', ')')]
-                check_space = True
+                check_space = False
             elif rule_code == 'RCCONF_22.2':
                 consecutive_chars = '-&()./:[]_`+,\\'
                 quote_char = "'"
@@ -199,6 +199,9 @@ class AdvancedSpecialCharactersValidator(BaseValidator):
         forbidden_chars_from_excel = set()
         if use_config_file:
             forbidden_chars_from_excel = self.special_chars_config if self.special_chars_config else set()
+        rule_code_u_early = str(rule_code or self.rule_code or "").strip().upper()
+        if rule_code_u_early == "RCCONF_18.2":
+            forbidden_chars_from_excel.discard(" ")
         
         # Объединяем запрещенные символы из JSON и Excel.
         # Важно: символы из блока consecutive_chars / quotes / brackets
@@ -236,14 +239,19 @@ class AdvancedSpecialCharactersValidator(BaseValidator):
         if rule_code_u == "RCCONF_18.2":
             forbidden_chars.add(",")
             forbidden_chars.discard("/")
+            # Один пробел в STREET допустим; два и более подряд — отдельная проверка ниже.
+            forbidden_chars.discard(" ")
             consecutive_chars = "".join(
                 dict.fromkeys(c for c in consecutive_chars if c != "/")
             )
         
-        # Для RCCONF_18.2 также проверяем пробел, если указано в конфиге
-        if check_space and ' ' not in forbidden_chars:
-            # Если check_space=True, но пробел не в списке, добавляем его
-            forbidden_chars.add(' ')
+        # Пробел как запрещённый символ (любой) — не для RCCONF_18.2
+        if (
+            check_space
+            and rule_code_u != "RCCONF_18.2"
+            and " " not in forbidden_chars
+        ):
+            forbidden_chars.add(" ")
         
         # Фильтруем только непустые значения для проверки
         mask_not_empty = df[column_name].notna() & (df[column_name].astype(str).str.strip() != '')
@@ -277,6 +285,11 @@ class AdvancedSpecialCharactersValidator(BaseValidator):
             if consecutive_pattern:
                 consecutive_mask = texts.str.contains(consecutive_pattern, regex=True, na=False)
                 error_mask = error_mask | consecutive_mask
+
+        # RCCONF_18.2 (STREET): один пробел разрешён, два и более подряд — ошибка
+        if rule_code_u == "RCCONF_18.2":
+            double_space_mask = texts.str.contains(r"\s{2,}", regex=True, na=False)
+            error_mask = error_mask | double_space_mask
         
         # 3. Проверка на четность кавычек (векторизованная)
         if quote_char:

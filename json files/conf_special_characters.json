@@ -21,7 +21,9 @@
         ")"
       ]
     ],
-    "check_space": false
+    "check_space": false,
+    "allow_single_space": true,
+    "forbid_consecutive_spaces": true
   },
   "RCCONF_22.2": {
     "description": "Valid City with no Special Characters",
