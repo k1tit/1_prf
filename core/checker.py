@@ -2592,6 +2592,18 @@ class FastDataQualityChecker:
                 if org3_res:
                     params["org3_column_resolved"] = org3_res
 
+            # RCCOMP_375.1.2: TEL_NUMBER или e-mail в ADR6 (колонка E-Mail Address / SMTP_ADDR)
+            if rule_code == "RCCOMP_375.1.2":
+                adr6_df = self._get_adr6_df()
+                if adr6_df is not None and not adr6_df.empty:
+                    params["adr6_df"] = adr6_df
+                    print(f"      [ADR6] RCCOMP_375.1.2: подключена таблица ADR6 ({len(adr6_df):,} строк) для проверки e-mail")
+                else:
+                    print(
+                        "      [WARN] RCCOMP_375.1.2: таблица ADR6 не найдена — "
+                        "проверяется только TEL_NUMBER"
+                    )
+
             total_rows, error_count, error_df = validator.validate(df_to_validate, matched_column, **params)
 
             if is_recon_1131 and total_rows == 0 and error_count == 0:
@@ -4334,6 +4346,29 @@ class FastDataQualityChecker:
             traceback.print_exc()
             return df
     
+    def _get_adr6_df(self):
+        """Загружает ADR6 из кэша или SQLite (для RCCOMP_375.1.2 — e-mail)."""
+        try:
+            adr6 = self.memory_manager.get_table("ADR6")
+            if (adr6 is None or adr6.empty) and getattr(self, "db_path", None):
+                conn = connect_sqlite(self.db_path)
+                tables = pd.read_sql_query(
+                    "SELECT name FROM sqlite_master WHERE type='table'", conn
+                )
+                adr6_name = next(
+                    (r[0] for r in tables.values if str(r[0]).strip().upper() == "ADR6"),
+                    None,
+                )
+                if adr6_name:
+                    adr6 = pd.read_sql_query(f'SELECT * FROM "{adr6_name}"', conn)
+                conn.close()
+            if adr6 is None or adr6.empty:
+                return None
+            return self._apply_rule_time_column_map(adr6.copy(), "ADR6")
+        except Exception as e:
+            print(f"      [WARN] _get_adr6_df: {e}")
+            return None
+
     def _ensure_adr2_has_partner(self, df, rule_code):
         """
         Для ADR2: если в df нет колонки PARTNER, добавляет её из BUT020 по ADDRNUMBER.

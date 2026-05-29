@@ -469,8 +469,12 @@
     "contact_medium_value": "SMTP_ADDR",
     "SMTP_ADDR": "SMTP_ADDR",
     "E-Mail_Address": "SMTP_ADDR",
+    "PERSNUMBER": "PERSNUMBER",
+    "ADDRNUMBER": "ADDRNUMBER",
     "_aliases": {
-      "SMTP_ADDR": ["SMTP_ADDR", "email", "E-Mail_Address", "E-Mail Address", "Email", "SMTP address"]
+      "SMTP_ADDR": ["SMTP_ADDR", "email", "E-Mail_Address", "E-Mail Address", "Email", "SMTP address"],
+      "PERSNUMBER": ["PERSNUMBER", "Person", "Pers.number", "Person number"],
+      "ADDRNUMBER": ["ADDRNUMBER", "Addr__No_", "Addr. No.", "Address number"]
     }
   },
   "/LOT/GC_ADR": {

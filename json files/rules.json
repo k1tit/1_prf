@@ -2154,19 +2154,21 @@
     },
     {
       "rule_code": "RCCOMP_375.1.2",
-      "rule_description": "Missing Mobile Phone Number (for non-blocked customers, only rows with filled PERSNUMBER)",
+      "rule_description": "Missing Mobile Phone Number or E-mail (for non-blocked customers, only rows with filled PERSNUMBER)",
       "technical_definition_RU": [
         "IF central_order_block_code IN ('E', 'G', 'SP', 'R', 'U') THEN '' ELSE IF",
-        "TEL_NUMBER IS NOT NULL THEN '1' ELSE '0'"
+        "TEL_NUMBER IS NOT NULL OR ADR6.E-Mail Address IS NOT NULL THEN '1' ELSE '0'"
       ],
       "value_checked": "TEL_NUMBER",
-      "datamart_or_reference_table_used": "ADR2 (main table), KNA1.AUFSD (central_order_block_code from KNA1 table)",
+      "datamart_or_reference_table_used": "ADR2 (main table), ADR6.E-Mail Address (SMTP_ADDR), KNA1.AUFSD (central_order_block_code from KNA1 table)",
       "quality_category": "Completeness",
       "sub_domain": "Contact",
       "type_of_check": "Availability",
       "table_name_checked": "ADR2",
       "column_name_checked": "TEL_NUMBER",
       "business_attribute_name": "Mobile Phone",
+      "alternate_table": "ADR6",
+      "alternate_column": "E-Mail Address",
       "exclude_from_score_calculation": false
     },
     {
