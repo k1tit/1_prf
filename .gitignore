@@ -1,11 +1,10 @@
-﻿*.db
+*.db
 *.sqlite
 *.sqlite3
 *.csv
 *.xlsx
 *.xls
 quality_reports/
-edit_table/
 telbd/
 AUSP/
 __pycache__/
