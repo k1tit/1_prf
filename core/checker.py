@@ -45,7 +45,16 @@ except ImportError as e:
     raise
 
 class FastDataQualityChecker:
-    
+    # KNB1: RCCOMP_113.1 / 115.1 — оценка только при account_group_code = 9038 (KNA1.KTOKD)
+    RULES_KTOKD_ONLY_9038_SCOPE = frozenset({"RCCOMP_113.1", "RCCOMP_115.1"})
+    RULES_FORCE_KNA1_KTOKD_JOIN = frozenset(
+        {"RCCONF_113.1", "RCCONF_115.11", "RCCONF_24.1", "RCCOMP_113.1", "RCCOMP_115.1"}
+    )
+    # В выгрузку ошибок всегда подтягиваем KTOKD из KNA1 (Group_1)
+    RULES_ERROR_EXPORT_KNA1_KTOKD = frozenset(
+        {"RCCOMP_113.1", "RCCOMP_115.1", "RCCONF_113.1", "RCCONF_24.1", "RCCONF_115.11"}
+    )
+
     def __init__(self, db_path: str, rules_file: str, output_dir: str = "quality_reports",
                  parallel_tables: int = 0, use_async_load: bool = False, debug: bool = False,
                  reference_datetime=None):
@@ -407,9 +416,9 @@ class FastDataQualityChecker:
             color = "\033[91m"  # красный
             status = "[!] ОШИБКИ"
         
-        # Форматирование
+        # Форматирование (total_rows = только оценённые по правилу, без skip)
         print(f"\r    {color}{status}\033[0m {rule_code:20} | "
-              f"Строк: {total_rows:8,} | "
+              f"Оценено: {total_rows:8,} | "
               f"Успех: {success_rate:6.1f}% | "
               f"Ошибок: {error_count:8,} ({error_percent:5.1f}%) | "
               f"Время: {exec_time:6.2f}с")
@@ -505,31 +514,95 @@ class FastDataQualityChecker:
         self.table_handlers = self._load_table_handlers(silent=True)
         print(f"   [INFO] Обработчики таблиц обновлены с диска ({len(self.table_handlers)} шт.)")
 
+    def _apply_rule_time_column_map(self, df, table_name: str):
+        """
+        Переименование колонок по column_map.json только на время проверки правил.
+        БД и data_cache не изменяются.
+        """
+        try:
+            from utils.column_map_resolver import apply_column_headers_for_rules
+            return apply_column_headers_for_rules(
+                df,
+                table_name,
+                self.column_map,
+                parent_dir,
+                log_renames=True,
+            )
+        except ImportError:
+            return df.copy() if df is not None else df
+
+    def _get_table_for_rules(self, table_name: str):
+        """
+        Таблица из кэша с шапкой по column_map.json (копия для правил).
+        Исходные имена колонок в SQLite не меняются.
+        """
+        if not hasattr(self, "_rule_time_column_cache"):
+            self._rule_time_column_cache = {}
+        cache_key = str(table_name or "").strip().upper()
+        if cache_key in self._rule_time_column_cache:
+            return self._rule_time_column_cache[cache_key].copy()
+        raw = self.memory_manager.get_table(table_name)
+        if raw is None or raw.empty:
+            return raw
+        mapped = self._apply_rule_time_column_map(raw, table_name)
+        self._rule_time_column_cache[cache_key] = mapped
+        return mapped.copy()
+
     def _get_mapped_column_name(self, table_name, column_name):
-        """Получает реальное имя колонки из маппинга"""
-        if not self.column_map or table_name not in self.column_map:
+        """Получает SAP-имя колонки из column_map.json (логическое -> SAP)."""
+        try:
+            from utils.column_map_resolver import map_logical_to_sap
+            mapped = map_logical_to_sap(table_name, column_name, self.column_map, parent_dir)
+            if mapped and mapped != column_name:
+                print(f"      [MAP] {table_name}: '{column_name}' -> '{mapped}' (из column_map.json)")
+            return mapped
+        except ImportError:
+            pass
+        if not self.column_map:
             return column_name
-        
-        table_mapping = self.column_map[table_name]
-        
-        # Сначала проверяем, может быть column_name уже реальное имя колонки
+        table_mapping = None
+        if table_name in self.column_map:
+            table_mapping = self.column_map[table_name]
+        else:
+            tn = str(table_name or "").strip().upper()
+            for k, v in self.column_map.items():
+                if str(k).strip().upper() == tn and isinstance(v, dict):
+                    table_mapping = v
+                    break
+        if not table_mapping:
+            return column_name
         for logical_name, real_name in table_mapping.items():
-            if real_name.upper() == column_name.upper():
+            if str(logical_name).startswith("_"):
+                continue
+            if str(real_name).upper() == str(column_name or "").upper():
                 return column_name
-        
-        # Если не нашли в значениях, проверяем ключи (логические имена)
         if column_name in table_mapping:
-            mapped_name = table_mapping[column_name]
-            print(f"      [MAP] {table_name}: '{column_name}' -> '{mapped_name}' (из column_map.json)")
-            return mapped_name
-        
-        # Также проверяем без учета регистра
+            return table_mapping[column_name]
         for logical_name, real_name in table_mapping.items():
-            if logical_name.upper() == column_name.upper():
-                print(f"      [MAP] {table_name}: '{column_name}' -> '{real_name}' (из column_map.json, без учета регистра)")
+            if str(logical_name).startswith("_"):
+                continue
+            if str(logical_name).upper() == str(column_name or "").upper():
                 return real_name
-        
         return column_name
+
+    def _resolve_column_for_rule(self, df, column_name, table_name):
+        """Единая точка: column_map + физические заголовки выгрузки -> колонка в DataFrame."""
+        if not column_name or df is None:
+            return None
+        try:
+            from utils.column_map_resolver import resolve_column_in_df, map_logical_to_sap
+            sap_name = map_logical_to_sap(table_name, column_name, self.column_map, parent_dir)
+            for target in (sap_name, column_name):
+                if not target:
+                    continue
+                found = resolve_column_in_df(df, target, table_name, self.column_map, parent_dir)
+                if found:
+                    if target != column_name or found != column_name:
+                        print(f"      [MAP] Колонка по column_map: '{column_name}' -> '{found}'")
+                    return found
+        except ImportError:
+            pass
+        return self._find_column_alternative(df.columns, column_name, table_name)
     
     def _fix_column_name_for_taxnum(self, column_name, table_name):
         if table_name.startswith('DFKKBPTAXNUM') and len(table_name) > 12 and table_name[12:].isdigit():
@@ -567,7 +640,8 @@ class FastDataQualityChecker:
         print(f"="*100)
         
         self.start_time = time.time()
-        
+        self._rule_time_column_cache = {}
+
         rules_config = self.load_configuration()
         if not rules_config:
             self.logger.error("[ERROR] Не удалось загрузить конфигурацию правил")
@@ -783,7 +857,9 @@ class FastDataQualityChecker:
             return
         self.current_table = table_name
         self.table_start_time = time.time()
-        
+        if str(table_name or "").strip().upper() == "KNB1":
+            setattr(self, "_kna1_ktokd_lookup_df", None)
+
         # Таблица считается доступной, если есть в списке или для ADRC — по совпадению имени без учёта регистра
         def _table_available(tname, avail):
             if tname in avail:
@@ -811,8 +887,8 @@ class FastDataQualityChecker:
                     self._log_skipped_rule(rule, table_name, "Таблица не найдена в БД", timestamp)
             return
         
-        df = self.memory_manager.get_table(table_name)
-        if df is None or df.empty:
+        df_raw = self.memory_manager.get_table(table_name)
+        if df_raw is None or df_raw.empty:
             # Для производных AUSP_143 и т.д. уточняем причину: срез по ATINN пуст
             skip_reason = "Таблица пуста"
             if table_name in self.AUSP_TABLE_GROUP:
@@ -823,11 +899,20 @@ class FastDataQualityChecker:
                 with self._parallel_lock:
                     for rule in table_rules:
                         self.skipped_rules += 1
-                        self._log_skipped_rule(rule, table_name, skip_reason, timestamp)
+                    self._log_skipped_rule(rule, table_name, skip_reason, timestamp)
             else:
                 for rule in table_rules:
                     self.skipped_rules += 1
                     self._log_skipped_rule(rule, table_name, skip_reason, timestamp)
+            return
+
+        # Шапка из выгрузки → SAP-имена для rules.json (копия; в БД имена из Excel/CSV)
+        df = self._get_table_for_rules(table_name)
+        if df is None or df.empty:
+            print(f"   \033[93m[WARN]\033[0m Таблица {table_name} пуста после маппинга колонок. Пропускаем...")
+            for rule in table_rules:
+                self.skipped_rules += 1
+                self._log_skipped_rule(rule, table_name, "Таблица пуста после маппинга колонок", timestamp)
             return
         
         # ADRC: исключаем клиентов с NAME1 = RESERVED (не учитываем в правилах, в ошибках и в общем подсчёте)
@@ -985,11 +1070,18 @@ class FastDataQualityChecker:
                 
                 if result and isinstance(result, dict):
                     error_df_res = result.get('error_df', pd.DataFrame())
-                    error_count_result = result.get('error_count', 0)
-                    # Всего записей = только оценённые (ошибочные + верные), без строк пустых по правилам
-                    passed = result.get('passed', (result.get('total_records', len(df)) - result.get('failed', error_count_result)))
-                    failed = result.get('failed', error_count_result)
-                    total_rows = passed + failed
+                    error_count_result = int(result.get('error_count', result.get('failed', 0)))
+                    failed = int(result.get('failed', error_count_result))
+                    passed = int(result.get('passed', 0))
+                    # Только строки в scope правила (passed + failed). Не len(df) и не размер таблицы.
+                    if result.get('total_records') is not None:
+                        total_rows = int(result['total_records'])
+                    elif result.get('total_evaluated') is not None:
+                        total_rows = int(result['total_evaluated'])
+                    else:
+                        total_rows = passed + failed
+                    if passed + failed != total_rows and total_rows > 0:
+                        passed = max(total_rows - failed, 0)
                     is_suspicious = self._check_if_suspicious(self.current_rule, error_count_result, total_rows)
                     mass_error = error_count_result > self.MAX_ERRORS_TO_SAVE
                     
@@ -1007,10 +1099,12 @@ class FastDataQualityChecker:
                     
                     # Сохраняем результат и ошибки (общее состояние — под блокировкой при параллелизме)
                     result['check_date'] = timestamp
-                    if 'passed' not in result:
-                        result['passed'] = result.get('total_records', len(df)) - result.get('failed', result.get('error_count', 0))
-                    result['total_records'] = result.get('passed', 0) + result.get('failed', 0)  # всего записей по правилу
-                    result['total_evaluated'] = result['total_records']
+                    result['passed'] = passed
+                    result['failed'] = failed
+                    result['total_records'] = total_rows
+                    result['total_evaluated'] = total_rows
+                    result['error_count'] = error_count_result
+                    # total_records / total_evaluated: только scope правила, без IF ... THEN '' skip
                     if self._parallel_lock:
                         with self._parallel_lock:
                             self.results.append(result)
@@ -1134,6 +1228,30 @@ class FastDataQualityChecker:
         quality_category = rule.get("quality_category", "Unknown")
         column_to_check = rule.get("column_name_checked", "")
         value_checked = rule.get("value_checked", "")
+
+        # RCCONF_63.1 — только через TaxNumHandler (длины из conf_tax_number_format)
+        tn_tax = str(table_name or "").strip().upper()
+        if rule_code == "RCCONF_63.1" and tn_tax.startswith("DFKKBPTAXNUM"):
+            handler_cls = self.table_handlers.get(table_name) or self.table_handlers.get(tn_tax)
+            if handler_cls is not None:
+                try:
+                    h = handler_cls(table_name, df, self.memory_manager, self)
+                    result = h.validate_rule(rule)
+                    if result and isinstance(result, dict):
+                        err = int(result.get("failed", result.get("error_count", 0)))
+                        tot = int(result.get("total_records", 0))
+                        if save_result:
+                            result["check_date"] = timestamp
+                            result["table_name"] = table_name
+                            self.results.append(result)
+                            if err > 0 and result.get("error_df") is not None:
+                                self._save_rule_error_with_limit(
+                                    rule_code, table_name, result["error_df"], err,
+                                    self._check_if_suspicious(rule_code, err, tot), tot,
+                                )
+                        return err, tot
+                except Exception as e:
+                    print(f"      [WARN] RCCONF_63.1 TaxNumHandler: {e}")
         
         # AUSP: если передано разбиение по ATINN — сразу подставляем готовый срез и имя колонки (CCAF, Red Outlet и т.д.)
         matched_column = None
@@ -1160,14 +1278,28 @@ class FastDataQualityChecker:
             elif table_name_norm == "KNB1" and column_to_check in ("AKONT", "FDGRV", "ZTERM"):
                 actual_column_to_check = column_to_check
                 print(f"      [MAP] KNB1: используем column_name_checked '{column_to_check}' (AKONT/FDGRV/ZTERM), альтернативы через _find_column_alternative)")
-            elif value_checked and self.column_map and table_name in self.column_map:
-                table_mapping = self.column_map[table_name]
-                for logical_name in table_mapping.keys():
-                    pattern = rf'(?:^|[\.\s\+\-_])({re.escape(logical_name)})(?:[\s\+\-_\.]|$)'
-                    if re.search(pattern, value_checked, re.IGNORECASE):
-                        actual_column_to_check = table_mapping[logical_name]
-                        print(f"      [MAP] Найдено логическое имя в value_checked: '{logical_name}' -> '{actual_column_to_check}'")
-                        break
+            elif value_checked and self.column_map:
+                table_mapping = None
+                tn = str(table_name or "").strip().upper()
+                if table_name in self.column_map:
+                    table_mapping = self.column_map[table_name]
+                else:
+                    for k, v in self.column_map.items():
+                        if str(k).strip().upper() == tn and isinstance(v, dict):
+                            table_mapping = v
+                            break
+                if table_mapping:
+                    logical_keys = sorted(
+                        (k for k in table_mapping.keys() if not str(k).startswith("_")),
+                        key=lambda x: len(str(x)),
+                        reverse=True,
+                    )
+                    for logical_name in logical_keys:
+                        pattern = rf'(?:^|[\.\s\+\-_])({re.escape(logical_name)})(?:[\s\+\-_\.]|$)'
+                        if re.search(pattern, value_checked, re.IGNORECASE):
+                            actual_column_to_check = table_mapping[logical_name]
+                            print(f"      [MAP] Найдено логическое имя в value_checked: '{logical_name}' -> '{actual_column_to_check}'")
+                            break
             
             if not actual_column_to_check:
                 actual_column_to_check = self._get_mapped_column_name(table_name, column_to_check)
@@ -1208,11 +1340,11 @@ class FastDataQualityChecker:
                 return 0, 0
             
             if not matched_column:
-                matched_column = self.column_matcher.find_column_match(df.columns, actual_column_to_check)
-            
-            if not matched_column:
-                matched_column = self._find_column_alternative(df.columns, actual_column_to_check, table_name)
-            
+                matched_column = self._resolve_column_for_rule(df, actual_column_to_check, table_name)
+
+            if not matched_column and actual_column_to_check != column_to_check:
+                matched_column = self._resolve_column_for_rule(df, column_to_check, table_name)
+
             if not matched_column:
                 matched_column = self._find_most_similar_column(df.columns, actual_column_to_check)
                 if not matched_column:
@@ -1231,7 +1363,7 @@ class FastDataQualityChecker:
         
         validator = self._get_validator_for_rule(rule_description, quality_category, rule_info)
         is_recon_1131 = (
-            rule_code == "RCCONF_113.1"
+            self._normalize_rule_code(rule_code) == "RCCONF_113.1"
             or ("recon" in rule_desc_lower and "account group" in rule_desc_lower)
         )
         # Защита от ошибочного выбора generic cross-column валидатора для RCCONF_119.2
@@ -1287,7 +1419,7 @@ class FastDataQualityChecker:
                 }
                 wanted = second_by_rule.get(rule_code)
                 if wanted:
-                    found = self._find_column_alternative(df.columns, wanted, table_name) or (wanted if wanted in df.columns else None)
+                    found = self._resolve_column_for_rule(df, wanted, table_name) or (wanted if wanted in df.columns else None)
                     if not found:
                         for c in df.columns:
                             if c.upper() == wanted.upper():
@@ -1407,7 +1539,7 @@ class FastDataQualityChecker:
                             
                             second_logical = f"organization_{second_num}_name"
                             second_column_candidate = self._get_mapped_column_name(table_name, second_logical)
-                            resolved = second_column_candidate if second_column_candidate in df.columns else self._find_column_alternative(df.columns, second_column_candidate, table_name)
+                            resolved = self._resolve_column_for_rule(df, second_column_candidate, table_name)
                             if not resolved and second_column_candidate:
                                 for c in df.columns:
                                     if c.upper() == second_column_candidate.upper():
@@ -1422,7 +1554,7 @@ class FastDataQualityChecker:
                                 if match_num != first_num:
                                     second_logical = f"organization_{match_num}_name"
                                     second_column_candidate = self._get_mapped_column_name(table_name, second_logical)
-                                    resolved = second_column_candidate if second_column_candidate in df.columns else self._find_column_alternative(df.columns, second_column_candidate, table_name)
+                                    resolved = self._resolve_column_for_rule(df, second_column_candidate, table_name)
                                     if not resolved and second_column_candidate:
                                         for c in df.columns:
                                             if c.upper() == second_column_candidate.upper():
@@ -1467,7 +1599,7 @@ class FastDataQualityChecker:
                         
                         if second_logical:
                             second_column_candidate = self._get_mapped_column_name(table_name, second_logical)
-                            resolved = second_column_candidate if second_column_candidate in df.columns else self._find_column_alternative(df.columns, second_column_candidate, table_name)
+                            resolved = self._resolve_column_for_rule(df, second_column_candidate, table_name)
                             if not resolved and second_column_candidate:
                                 for c in df.columns:
                                     if c.upper() == second_column_candidate.upper():
@@ -1563,6 +1695,34 @@ class FastDataQualityChecker:
         
         if needs_account_group_code:
             df_to_validate = self._add_account_group_code_from_kna1(df_to_validate, table_name, rule_code)
+            if str(rule_code).strip().upper() in self.RULES_KTOKD_ONLY_9038_SCOPE:
+                before_scope = len(df_to_validate)
+                df_to_validate = self._filter_rows_only_ktokd_9038(df_to_validate, rule_code)
+                skipped_non_9038 = before_scope - len(df_to_validate)
+                print(
+                    f"      [FILTER] {rule_code}: только account_group_code='9038' -> "
+                    f"{len(df_to_validate):,} из {before_scope:,} "
+                    f"(пропущено не 9038: {skipped_non_9038:,})"
+                )
+                if df_to_validate.empty:
+                    st = getattr(self, "_last_kna1_join_stats", {}) or {}
+                    self._log_skipped_rule(
+                        rule,
+                        table_name,
+                        (
+                            "Нет строк KNB1 с KTOKD=9038 из KNA1. "
+                            f"После JOIN: {st.get('rows_after_join', before_scope):,} строк; "
+                            f"с заполненным KTOKD: {st.get('filled_ktokd', '?')}; "
+                            f"с KTOKD=9038: {st.get('n9038', 0):,}. "
+                            "Проверьте JOIN KNB1.Customer=KNA1.Customer и поле Group_1."
+                        ),
+                        timestamp,
+                    )
+                    return 0, 0
+                # KTOKD из KNA1 в каждой строке error_df (для выгрузки ошибок)
+                df_to_validate = self._attach_kna1_ktokd_export_columns(df_to_validate, rule_code)
+            elif self._normalize_rule_code(rule_code) in self.RULES_ERROR_EXPORT_KNA1_KTOKD:
+                df_to_validate = self._attach_kna1_ktokd_export_columns(df_to_validate, rule_code)
             if is_recon_1131:
                 has_account_group = any(
                     str(c).strip().lower() in ("account_group_code", "b.account_group_code", "ktokd")
@@ -1839,27 +1999,39 @@ class FastDataQualityChecker:
                 return error_count, total_rows
             
             if rule_code == "RCCONF_372.1":
-                print(f"      [REF] Обработка правила {rule_code} с проверкой по справочнику T005...")
-                
-                # Загружаем справочник T005
-                t005_df = self.memory_manager.get_table("T005")
+                print(
+                    f"      [REF] {rule_code}: ADR2.COUNTRY (ISO 3166) vs справочник T005 "
+                    f"(SAP LAND1 = 2-симв. код, в выгрузке часто C/R)..."
+                )
+
+                t005_df = self._get_table_for_rules("T005")
                 if t005_df is None or t005_df.empty:
                     print(f"      [WARN] Справочник T005 не найден или пуст для правила {rule_code}")
-                    self._log_skipped_rule(rule, table_name, "Справочник T005 не найден", timestamp)
+                    self._log_skipped_rule(
+                        rule, table_name,
+                        "RCCONF_372.1: справочник T005 не найден (нужен для ADR2.COUNTRY)",
+                        timestamp,
+                    )
                     return 0, 0
-                
-                # Ищем колонку LAND1 в T005
+
                 land1_col = None
-                for col in t005_df.columns:
-                    col_lower = col.lower()
-                    if col_lower == 'land1' or 'land1' in col_lower:
-                        land1_col = col
-                        print(f"      [REF] Найдена колонка LAND1 в T005: {col}")
+                for ref_candidate in ("LAND1", "C/R", "ISO_Code"):
+                    land1_col = self._resolve_column_for_rule(t005_df, ref_candidate, "T005")
+                    if land1_col:
                         break
-                
-                if not land1_col:
-                    print(f"      [WARN] Колонка LAND1 не найдена в T005 для правила {rule_code}")
-                    self._log_skipped_rule(rule, table_name, "Колонка LAND1 не найдена в T005", timestamp)
+                if land1_col:
+                    print(f"      [REF] T005 — колонка кодов стран (LAND1): {land1_col}")
+                else:
+                    print(
+                        f"      [WARN] В T005 не найдена колонка кодов стран "
+                        f"(LAND1 / C/R / ISO_Code). Колонки: {list(t005_df.columns)[:12]}..."
+                    )
+                    self._log_skipped_rule(
+                        rule, table_name,
+                        "RCCONF_372.1: в справочнике T005 нет колонки кодов стран "
+                        "(LAND1, C/R, ISO_Code) для сравнения с ADR2.COUNTRY",
+                        timestamp,
+                    )
                     return 0, 0
                 
                 # Получаем список валидных кодов стран из T005
@@ -2221,6 +2393,14 @@ class FastDataQualityChecker:
                     account_group_col = self._find_column_alternative(df_to_validate.columns, "account_group_code", table_name)
 
                 recon_ref_path = os.path.join(parent_dir, "json files", "conf_recon_accounts.json")
+                if not os.path.isfile(recon_ref_path):
+                    self._log_skipped_rule(
+                        rule,
+                        table_name,
+                        f"RCCONF_113.1: не найден {recon_ref_path}",
+                        timestamp,
+                    )
+                    return 0, 0
                 params.update(
                     {
                         "account_group_col": account_group_col,
@@ -2413,6 +2593,24 @@ class FastDataQualityChecker:
                     params["org3_column_resolved"] = org3_res
 
             total_rows, error_count, error_df = validator.validate(df_to_validate, matched_column, **params)
+
+            if is_recon_1131 and total_rows == 0 and error_count == 0:
+                st = getattr(self, "_last_kna1_join_stats", {}) or {}
+                ag_col = params.get("account_group_col") or self._find_account_group_column(df_to_validate)
+                skip_reason = (
+                    "RCCONF_113.1: нет строк для оценки (нужны заполненные AKONT и KTOKD из KNA1). "
+                    f"Строк KNB1 в срезе: {len(df_to_validate):,}"
+                )
+                if ag_col and ag_col in df_to_validate.columns:
+                    from utils.sap_account_keys import norm_sap_account_group, norm_sap_recon_account
+                    has_k = df_to_validate[ag_col].apply(norm_sap_account_group) != ""
+                    has_a = df_to_validate[matched_column].apply(norm_sap_recon_account) != ""
+                    skip_reason += (
+                        f"; с KTOKD: {int(has_k.sum()):,}; с AKONT: {int(has_a.sum()):,}; "
+                        f"с обоими: {int((has_k & has_a).sum()):,}"
+                    )
+                self._log_skipped_rule(rule, table_name, skip_reason, timestamp)
+                return 0, 0
             
             # Для правил с «оценёнными» строками (например CrossColumnEquality: только обе колонки заполнены) — сохраняем всего в таблице
             
@@ -2489,20 +2687,29 @@ class FastDataQualityChecker:
         if error_df is None or error_df.empty:
             return
 
-        # Гарантируем наличие KTOKD в выгрузке ошибок для правил,
-        # где KTOKD (account group) является ключевым условием/измерением.
-        # Источник KTOKD: JOIN из KNA1 → account_group_code / ktokd / b.ktokd.
-        if str(rule_code).strip().upper() in ("RCCONF_113.1", "RCCONF_24.1", "RCCONF_115.11"):
-            if "KTOKD" not in error_df.columns:
-                src = None
-                for cand in ("ktokd", "b.ktokd", "account_group_code", "b.account_group_code", "kna.KTOKD", "kna.ktokd"):
-                    if cand in error_df.columns:
-                        src = cand
-                        break
-                if src is not None:
-                    error_df = error_df.copy()
-                    error_df["KTOKD"] = error_df[src]
-        
+        # RCCOMP_113.1: в файле ошибок обязательно показываем AKONT
+        # (даже если исходная колонка была под другим заголовком и попала в DQ_COLUMN_CHECKED).
+        if self._normalize_rule_code(rule_code) == "RCCOMP_113.1" and "AKONT" not in error_df.columns:
+            src_col = None
+            if "DQ_COLUMN_CHECKED" in error_df.columns:
+                try:
+                    cn = str(error_df["DQ_COLUMN_CHECKED"].iloc[0]).strip()
+                    if cn and cn in error_df.columns:
+                        src_col = cn
+                except Exception:
+                    src_col = None
+            if src_col is None:
+                src_col = self._find_column_alternative(error_df.columns, "AKONT", table_name)
+            if src_col and src_col in error_df.columns:
+                error_df = error_df.copy()
+                error_df["AKONT"] = error_df[src_col]
+            else:
+                error_df = error_df.copy()
+                error_df["AKONT"] = ""
+
+        if self._normalize_rule_code(rule_code) in self.RULES_ERROR_EXPORT_KNA1_KTOKD:
+            error_df = self._enrich_error_df_kna1_ktokd(error_df, table_name, rule_code)
+
         # ADRC: в ошибки не попадают строки с NAME1=RESERVED (исключаем перед сохранением)
         if (str(table_name or "").strip().upper() == "ADRC"):
             name1_col = None
@@ -2569,6 +2776,16 @@ class FastDataQualityChecker:
             def _is_valid_10_9(v):
                 d = _digits(v)
                 return len(d) == 10 and d.startswith('9')
+
+            def _is_valid_39_5_format(v):
+                d = _digits(v)
+                if len(d) == 10 and d.startswith('9'):
+                    return True
+                if len(d) == 11 and (d.startswith('89') or d.startswith('79')):
+                    return True
+                if len(d) == 11 and d.startswith('8') and d[1] != '9':
+                    return True
+                return False
             # 1) Колонка из метаданных (та, что реально проверялась)
             tel_col = None
             if 'DQ_COLUMN_CHECKED' in error_df.columns:
@@ -2588,20 +2805,21 @@ class FastDataQualityChecker:
                         tel_col = c
                         break
             # 3) Перебор всех колонок: если хоть в одной есть 10 цифр с 9 — считаем строку валидной и выкидываем
+            _fmt_ok = _is_valid_39_5_format if rule_code == "RCCONF_39.5.2" else _is_valid_10_9
             if tel_col is not None:
-                drop_mask = error_df[tel_col].apply(_is_valid_10_9)
+                drop_mask = error_df[tel_col].apply(_fmt_ok)
             else:
                 drop_mask = pd.Series(False, index=error_df.index)
                 for c in error_df.columns:
                     if c in ('DQ_ERROR_TYPE', 'DQ_RULE_CODE', 'DQ_COLUMN_CHECKED', 'DQ_ERROR_DESCRIPTION', 'DQ_TIMESTAMP', 'DQ_RULE_DESCRIPTION'):
                         continue
-                    drop_mask = drop_mask | error_df[c].apply(_is_valid_10_9)
+                    drop_mask = drop_mask | error_df[c].apply(_fmt_ok)
             if drop_mask.any():
                 before = len(error_df)
                 error_df = error_df.loc[~drop_mask].copy()
                 error_count = len(error_df)
                 if before > error_count:
-                    print(f"      [{rule_code}] Убраны из ошибок номера 10 цифр с 9: {before - error_count} строк, осталось {error_count}")
+                    print(f"      [{rule_code}] Убраны из ошибок номера с валидным форматом: {before - error_count} строк, осталось {error_count}")
             if error_df.empty:
                 return
         
@@ -2609,7 +2827,12 @@ class FastDataQualityChecker:
         # Для отдельных правил/таблиц ограничение 100k снято — лимит по размеру Excel
         tbl = str(table_name or "").strip().upper()
         rule_u = str(rule_code or "").strip().upper()
-        save_all_errors = (tbl in ("ADR2", "BUT000")) or (rule_u == "RCCONF_18.2")
+        save_all_errors = (
+            tbl in ("ADR2", "BUT000")
+            or rule_u == "RCCONF_18.2"
+            or rule_u == "RCCONF_63.1"
+            or tbl.startswith("DFKKBPTAXNUM")
+        )
         limit_errors = self.EXCEL_MAX_ROWS if save_all_errors else self.MAX_ERRORS_TO_SAVE
         
         # Проверяем, что error_df содержит только ошибки
@@ -2652,7 +2875,14 @@ class FastDataQualityChecker:
                     return re.sub(r'\D', '', s)
                 def _ok(v):
                     d = _d(v)
-                    return len(d) == 10 and d.startswith('9')
+                    if len(d) == 10 and d.startswith('9'):
+                        return True
+                    if rule_code == "RCCONF_39.5.2":
+                        if len(d) == 11 and (d.startswith('89') or d.startswith('79')):
+                            return True
+                        if len(d) == 11 and d.startswith('8') and d[1] != '9':
+                            return True
+                    return False
                 tel_col = None
                 if 'DQ_COLUMN_CHECKED' in combined_df.columns:
                     try:
@@ -3062,10 +3292,13 @@ class FastDataQualityChecker:
         print(f"[INFO] Всего таблиц: {len(tables)}")
         return tables
     
-    # Постоянные таблицы по taxtype (DFKKBPTAXNUM1, 2, 3, 5 — с правилами в rules.json; правила 52.2/52.3/52.4/RCCOMP_52.2 продублированы по каждому taxnum)
+    # Постоянные таблицы по taxtype (DFKKBPTAXNUM1, 2, 3, 5). Общие правила 52.x в rules.json — один раз на DFKKBPTAXNUM1.
     DFKKBPTAXNUM_ALIASES = ("DFKKBPTAXNUM1", "DFKKBPTAXNUM2", "DFKKBPTAXNUM3", "DFKKBPTAXNUM5")
+    DFKKBPTAXNUM_SHARED_RULE_CODES = frozenset({
+        "RCCONF_52.4", "RCCONF_52.3", "RCCONF_52.2", "RCCOMP_52.2",
+    })
     # Таблицы, для которых «всего записей» = уникальные PARTNER (один клиент считается один раз, дубли исключаются)
-    TABLE_UNIQUE_PARTNER = ("ZBUT0000P3VVI9", "ZBUT0000P", "ZBUT0000P3VV19", "KNVP")
+    TABLE_UNIQUE_PARTNER = ("ZBUT0000P3VVI9", "ZBUT0000P", "ZBUT0000P3VV19")
 
     # AUSP в интерфейсе показывается как одна таблица; внутри — производные AUSP_143, AUSP_604, AUSP_148, AUSP_151
     AUSP_TABLE_GROUP = ("AUSP_143", "AUSP_604", "AUSP_148", "AUSP_151")
@@ -3080,13 +3313,31 @@ class FastDataQualityChecker:
                 out.extend(self.AUSP_TABLE_GROUP)
             else:
                 out.append(t)
+        # Правила BUT0BK/BUT051/KNB1/... джойнятся к KNA1.KUNNR (в выгрузке — Customer).
+        kna1_dependent = {
+            "BUT0BK", "BUT051", "KNB1", "KNVV", "KNVP", "KNVH", "ADR2", "ADRC", "BUT050",
+        }
+        if any(str(t).strip().upper() in kna1_dependent for t in out) and "KNA1" not in out:
+            out.append("KNA1")
         return out
 
     def get_table_rules(self, table_name: str):
         """Получает правила для конкретной таблицы. Для DFKKBPTAXNUM — объединённые RU1/RU2/RU3/RU5. Для AUSP — объединённые AUSP_143/604/148/151."""
         rules_config = self.load_configuration()
         if table_name in rules_config:
-            return rules_config[table_name]
+            rules = list(rules_config[table_name])
+            # Общие tax-правила (52.x) в rules.json один раз на DFKKBPTAXNUM1 — подмешиваем для 2/3/5
+            if (
+                table_name in self.DFKKBPTAXNUM_ALIASES
+                and table_name != "DFKKBPTAXNUM1"
+            ):
+                have = {str(r.get("rule_code") or "").strip() for r in rules}
+                for shared in rules_config.get("DFKKBPTAXNUM1", []):
+                    code = str(shared.get("rule_code") or "").strip()
+                    if code in self.DFKKBPTAXNUM_SHARED_RULE_CODES and code not in have:
+                        rules.append(shared)
+                        have.add(code)
+            return rules
         if table_name == "DFKKBPTAXNUM":
             combined = []
             for alias in self.DFKKBPTAXNUM_ALIASES:
@@ -3125,6 +3376,9 @@ class FastDataQualityChecker:
         ):
             return ReconAccountConsistencyValidator(rule_info)
         
+        if rule_code == "RCCONF_63.1":
+            return ConformityValidator(rule_info)
+
         if rule_code == 'RCCONF_15.1':
             return LogicalValidator(rule_info, self.error_manager)
         
@@ -3177,10 +3431,113 @@ class FastDataQualityChecker:
             if 'KUNNR' in cu:
                 return col
         # Часто используемые маппинги
-        for candidate in ('CUSTOMER', 'CUSTOMER_CODE', 'MC_CUSTOMER', 'KUNNR_KNA1'):
+        for candidate in ('CUSTOMER', 'CUSTOMER_CODE', 'MC_CUSTOMER', 'KUNNR_KNA1', 'KUNN'):
             if candidate in col_upper_map:
                 return col_upper_map[candidate]
         return None
+
+    def _norm_customer_partner_key(self, v):
+        """Ключ для JOIN KNA1.KUNNR <-> BUT0BK.PARTNER / Business_Partner (нормализация Excel/SQLite)."""
+        if v is None or (isinstance(v, float) and pd.isna(v)):
+            return ""
+        s = str(v).replace("\ufeff", "").replace("\u00a0", " ").strip().strip("'").strip('"').strip()
+        if s.lower() in {"", "none", "null", "nan", "<na>", "nat", "-", ".", "n/a", "na"}:
+            return ""
+        if re.fullmatch(r"\d+\.0+", s):
+            s = s.split(".")[0]
+        digits = re.sub(r"\D", "", s)
+        if not digits:
+            return ""
+        return digits.zfill(10)
+    
+    def _resolve_but0bk_partner_column(self, df, table_name="BUT0BK"):
+        """BUT0BK: Business_Partner (выгрузка) = SAP PARTNER = KNA1.KUNNR (Customer)."""
+        if df is None or df.empty:
+            return None
+        try:
+            from utils.column_map_resolver import resolve_column_in_df
+            for sap in ("PARTNER",):
+                col = resolve_column_in_df(df, sap, table_name, self.column_map, parent_dir)
+                if col:
+                    return col
+        except ImportError:
+            pass
+        for name in ("PARTNER", "Business_Partner", "BUSINESS_PARTNER"):
+            for c in df.columns:
+                if str(c).strip().upper() == name:
+                    return c
+        return self._find_partner_column(df, table_name=table_name)
+
+    def _find_account_group_column(self, df):
+        """KTOKD / account_group_code после JOIN с KNA1."""
+        if df is None or df.empty:
+            return None
+        for c in df.columns:
+            cu = str(c).strip().lower()
+            if cu in (
+                "account_group_code",
+                "b.account_group_code",
+                "ktokd",
+                "b.ktokd",
+                "kna.ktokd",
+                "group_1",
+            ):
+                return c
+        return None
+
+    def _filter_rows_only_ktokd_9038(self, df, rule_code):
+        """
+        RCCOMP_113.1 / RCCOMP_115.1:
+        IF account_group_code != '9038' THEN '' (пропуск).
+        Источник KTOKD: KNA1.Group_1 после JOIN KNB1.Customer = KNA1.KUNNR.
+        """
+        from utils.sap_account_keys import norm_sap_account_group
+
+        if df is None or df.empty:
+            return df
+        ag_col = self._find_account_group_column(df)
+        if not ag_col:
+            print(f"      [WARN] {rule_code}: account_group_code/KTOKD не найден — scope «только 9038» невозможен")
+            return df.iloc[0:0].copy()
+        ag_norm = df[ag_col].apply(norm_sap_account_group)
+        mask = ag_norm == "9038"
+        matched = int(mask.sum())
+        filled_ktokd = int((ag_norm != "").sum())
+        self._last_kna1_join_stats = {
+            "rows_after_join": len(df),
+            "filled_ktokd": filled_ktokd,
+            "n9038": matched,
+        }
+        print(
+            f"      [FILTER] {rule_code}: KTOKD=9038 (KNA1) -> {matched:,} из {len(df):,} "
+            f"(с заполненным KTOKD: {filled_ktokd:,})"
+        )
+        if matched == 0 and len(df) > 0:
+            top = ag_norm[ag_norm != ""].value_counts().head(8)
+            if not top.empty:
+                print(f"      [FILTER] топ KTOKD после JOIN KNA1: {top.to_dict()}")
+            else:
+                print(
+                    f"      [WARN] {rule_code}: после JOIN KNA1 колонка {ag_col} пуста у всех "
+                    f"{len(df):,} строк — проверьте ключ Customer/KUNNR"
+                )
+        return df[mask].copy()
+
+    def _resolve_kna1_kunnr_column(self, df):
+        """KNA1: Customer / KUNN (выгрузка) = SAP KUNNR."""
+        if df is None or df.empty:
+            return None
+        try:
+            from utils.column_map_resolver import resolve_column_in_df
+            col = resolve_column_in_df(df, "KUNNR", "KNA1", self.column_map, parent_dir)
+            if col:
+                return col
+        except ImportError:
+            pass
+        return self._find_kunnr_column(df) or next(
+            (c for c in df.columns if str(c).strip().upper() in ("KUNNR", "CUSTOMER", "KUNN")),
+            None,
+        )
     
     def _find_partner_column(self, df, table_name=None):
         """Возвращает имя колонки с партнёром для ZBUT0000P3VVI9: всего записей = количество уникальных PARTNER (дубли удаляются)."""
@@ -3208,9 +3565,31 @@ class FastDataQualityChecker:
                 if config_col in cols:
                     return config_col
         col_upper = {str(c).strip().upper(): c for c in cols}
-        for name in ('PARTNER', 'PARTNERS', 'PARTNER_ID', 'PARTNER_NUM', 'BP', 'CUSTOMER', 'KUNNR', 'PARTNER_CODE', 'CLIENT', 'CUSTOMER_ID', 'BP_NUMBER'):
+        tn = str(table_name or "").strip().upper()
+        # KNVP: ключ клиента — Customer/KUNNR, не колонка Partner (часто 0)
+        if tn == "KNVP":
+            try:
+                from utils.column_map_resolver import resolve_column_in_df
+                for sap in ("KUNNR", "Customer"):
+                    col = resolve_column_in_df(df, sap, table_name, self.column_map, parent_dir)
+                    if col:
+                        return col
+            except ImportError:
+                pass
+            for name in ("KUNNR", "CUSTOMER", "CUSTOMER_1"):
+                if name in col_upper:
+                    return col_upper[name]
+        if tn == "BUT0BK":
+            for name in ("PARTNER", "BUSINESS_PARTNER", "BUSINESS PARTNER"):
+                if name in col_upper:
+                    return col_upper[name]
+        for name in ('PARTNER', 'PARTNERS', 'PARTNER_ID', 'PARTNER_NUM', 'BP', 'CUSTOMER', 'KUNNR', 'PARTNER_CODE', 'CUSTOMER_ID', 'BP_NUMBER'):
             if name in col_upper:
                 return col_upper[name]
+        if tn != "BUT0BK":
+            for name in ('CLIENT',):
+                if name in col_upper:
+                    return col_upper[name]
         for cu, col in col_upper.items():
             if 'PARTNER' in cu or cu.startswith('PARTNER') or 'CLIENT' in cu or 'KUNNR' in cu or cu == 'BP':
                 return col
@@ -3237,25 +3616,26 @@ class FastDataQualityChecker:
     def _scope_but0bk_to_kna1_partners(self, df, table_name, rule_code):
         """
         BUT0BK scope: оставляем только строки, где партнёр существует в KNA1 (KUNNR).
-        Нормализация ключа нужна из-за Excel/SQLite артефактов ('0000123', '123.0', etc).
+        JOIN: BUT0BK.PARTNER (Business_Partner в выгрузке) = KNA1.KUNNR (Customer в выгрузке).
         """
         try:
             if df is None or df.empty:
                 return df
 
-            partner_col = self._find_partner_column(df, table_name=table_name) or next(
-                (c for c in df.columns if str(c).strip().upper() == "PARTNER"),
-                None,
-            )
+            partner_col = self._resolve_but0bk_partner_column(df, table_name=table_name)
             if not partner_col:
-                print(f"      [WARN] {rule_code}: в {table_name} не найдена колонка партнёра для scope по KNA1")
+                print(f"      [WARN] {rule_code}: в {table_name} не найдена колонка партнёра (PARTNER/Business_Partner)")
                 return df.iloc[0:0].copy()
 
-            kna1_df = self.memory_manager.get_table("KNA1")
+            try:
+                kna1_df = self._get_table_for_rules("KNA1")
+            except Exception:
+                kna1_df = None
             if kna1_df is None or kna1_df.empty:
                 try:
-                    self.memory_manager.load_selected_tables_to_ram(["KNA1"], add_reference_tables=False)
-                    kna1_df = self.memory_manager.get_table("KNA1")
+                    if hasattr(self.memory_manager, "load_selected_tables_to_ram"):
+                        self.memory_manager.load_selected_tables_to_ram(["KNA1"], add_reference_tables=False)
+                    kna1_df = self._get_table_for_rules("KNA1")
                 except Exception:
                     kna1_df = None
 
@@ -3263,10 +3643,16 @@ class FastDataQualityChecker:
                 try:
                     conn = connect_sqlite(self.db_path)
                     try:
-                        kna1_df = pd.read_sql_query('SELECT "KUNNR" FROM "KNA1"', conn)
+                        kna1_df = pd.read_sql_query(
+                            'SELECT "Customer" AS "KUNNR" FROM "KNA1"', conn
+                        )
                     except Exception:
-                        kna1_df = pd.read_sql_query('SELECT * FROM "KNA1"', conn)
+                        try:
+                            kna1_df = pd.read_sql_query('SELECT "KUNNR" FROM "KNA1"', conn)
+                        except Exception:
+                            kna1_df = pd.read_sql_query('SELECT * FROM "KNA1"', conn)
                     conn.close()
+                    kna1_df = self._apply_rule_time_column_map(kna1_df, "KNA1")
                 except Exception as e:
                     print(f"      [WARN] {rule_code}: не удалось загрузить KNA1 для scope: {e}")
                     return df.iloc[0:0].copy()
@@ -3275,39 +3661,28 @@ class FastDataQualityChecker:
                 print(f"      [WARN] {rule_code}: KNA1 пуста, scope невозможен")
                 return df.iloc[0:0].copy()
 
-            kna1_kunnr_col = self._find_kunnr_column(kna1_df) or next(
-                (c for c in kna1_df.columns if str(c).strip().upper() == "KUNNR"),
-                None,
-            )
+            kna1_kunnr_col = self._resolve_kna1_kunnr_column(kna1_df)
             if not kna1_kunnr_col:
-                print(f"      [WARN] {rule_code}: в KNA1 не найдена колонка KUNNR для scope")
+                print(f"      [WARN] {rule_code}: в KNA1 не найдена колонка KUNNR/Customer для scope")
                 return df.iloc[0:0].copy()
 
-            def _norm_key(v):
-                if v is None or (isinstance(v, float) and pd.isna(v)):
-                    return ""
-                s = str(v).replace("\ufeff", "").replace("\u00a0", " ").strip().strip("'").strip('"').strip()
-                if s.lower() in {"", "none", "null", "nan", "<na>", "nat", "-", ".", "n/a", "na"}:
-                    return ""
-                if re.fullmatch(r"\d+\.0+", s):
-                    s = s.split(".")[0]
-                digits = re.sub(r"\D", "", s)
-                if digits:
-                    s = digits
-                return s.lstrip("0") or "0"
-
-            left = df[partner_col].apply(_norm_key)
-            right = kna1_df[kna1_kunnr_col].apply(_norm_key)
+            left = df[partner_col].apply(self._norm_customer_partner_key)
+            right = kna1_df[kna1_kunnr_col].apply(self._norm_customer_partner_key)
             kna1_keys = set(right[right != ""].unique().tolist())
             if not kna1_keys:
                 return df.iloc[0:0].copy()
 
             mask = left.isin(kna1_keys)
+            matched = int(mask.sum())
+            print(
+                f"      [JOIN] {rule_code}: {table_name}.{partner_col} -> KNA1.{kna1_kunnr_col}, "
+                f"совпало строк: {matched:,}"
+            )
             return df[mask].copy()
 
         except Exception as e:
             print(f"      [WARN] {rule_code}: ошибка scope BUT0BK по KNA1 партнёрам: {e}")
-            return df
+            return df.iloc[0:0].copy()
     
     def _get_reference_table_for_rule(self, rule_code, config_key):
         """Читает conf_sales_group_office.json и возвращает имя справочной таблицы для правила (например RCCONF_143.7)."""
@@ -3534,7 +3909,7 @@ class FastDataQualityChecker:
         return None
     
     def _apply_unique_partner_counts_if_needed(self, table_name, df, error_df, total_rows, error_count):
-        """Для таблиц ZBUT0000P*: при подсчёте убираем дубли по колонке PARTNER (всего записей = кол-во уникальных PARTNER)."""
+        """Для ZBUT0000P*: «всего записей» = уникальные PARTNER (не для KNVP — там много строк на клиента)."""
         if table_name not in self.TABLE_UNIQUE_PARTNER:
             return total_rows, error_count
         partner_col = self._find_partner_column(df, table_name=table_name)
@@ -3564,94 +3939,21 @@ class FastDataQualityChecker:
         return total_rows, error_count
     
     def _find_column_alternative(self, columns, column_name, table_name):
-        def _norm_col_name(v):
-            # Унифицированная нормализация имени колонки:
-            # убираем пробелы/точки/подчеркивания/скрытые символы и приводим к верхнему регистру.
-            return re.sub(r"[^A-Z0-9]", "", str(v or "").upper())
-
-        column_upper = str(column_name or "").upper()
-        target_norm = _norm_col_name(column_name)
-        
-        # Сначала проверяем маппинг для этой таблицы (в т.ч. без учета регистра/пробелов)
-        table_mapping = None
-        if self.column_map:
-            if table_name in self.column_map:
-                table_mapping = self.column_map[table_name]
-            else:
-                table_name_norm = str(table_name or "").strip().upper()
-                for k, v in self.column_map.items():
-                    if str(k or "").strip().upper() == table_name_norm:
-                        table_mapping = v
-                        break
-        if table_mapping:
-            for logical_name, real_name in table_mapping.items():
-                if real_name.upper() == column_upper:
-                    for col in columns:
-                        if col.upper() == column_upper:
-                            return col
-                    for col in columns:
-                        col_upper_clean = _norm_col_name(col)
-                        target_upper_clean = _norm_col_name(column_upper)
-                        if target_upper_clean and (target_upper_clean in col_upper_clean or col_upper_clean in target_upper_clean):
-                            return col
-        
-        special_cases = {
-            'ATINN_3': ['ATINN', 'ATWRT', 'ATZHL'],
-            'ATINN_20': ['ATINN', 'ATWRT', 'ATZHL'],
-            'ZGLOBAL_CUSTOMER': ['ATINN', 'ATWRT', 'ATZHL'],
-            'ZTRADE_NAME': ['ATINN', 'ATWRT', 'ATZHL'],
-            
-            'TAXNUM1': ['TAXNUM'],
-            'TAXNUM2': ['TAXNUM'],
-            'TAXNUM3': ['TAXNUM'],
-            'TAXNUM4': ['TAXNUM'],
-            'TAXNUM5': ['TAXNUM'],
-            'TAXNUM6': ['TAXNUM'],
-            
-            'AKONT': ['Recon.acct', 'Recon acct', 'Reconciliation account', 'Reconciliation Account'],
-            'FDGRV': ['Plan. Group', 'Plan Group', 'Plan.Group', 'PlanGroup', 'Planning Group', 'Planning group', 'PlanningGroup', 'FDGRV'],
-            'ZTERM': ['PayT', 'Payment Terms', 'Payment terms', 'Pay T'],
-            
-            'MAHNA': ['Procedure', 'Dunning Procedure', 'Dunning procedure'],
-            'MANSP': ['Block', 'Dunning Block', 'Dunning block'],
-            
-            'PARVW': ['AG', 'Partner Function', 'Partner function', 'PartnerFunction'],
-            'KUNNR': ['Customer', 'Customer Code', 'Customer code'],
-            
-            'NAME_ORG1': ['NAME1', 'NAME_1', 'NAME', 'MC_NAME1'],
-            'NAME_ORG2': ['NAME2', 'NAME_2', 'MC_NAME2'],
-            'NAME_ORG3': ['NAME3', 'NAME_3', 'MC_NAME3'],
-            'NAME_ORG4': ['NAME4', 'NAME_4', 'MC_NAME4'],
-        }
-        
-        # Сначала точное совпадение по имени (для AKONT, FDGRV, ZTERM в KNB1 и т.д.)
-        for col in columns:
-            if col.upper() == column_upper:
-                return col
-            if target_norm and _norm_col_name(col) == target_norm:
-                return col
-        
-        if column_upper in special_cases:
-            for alt in special_cases[column_upper]:
-                alt_norm = _norm_col_name(alt)
-                for col in columns:
-                    if col.upper() == alt.upper():
-                        return col
-                    if alt_norm and _norm_col_name(col) == alt_norm:
-                        return col
-        
-        for col in columns:
-            col_upper = col.upper()
-            col_norm = _norm_col_name(col)
-            
-            if column_upper in col_upper or col_upper in column_upper:
-                return col
-            
-            if column_upper.replace('_', '') in col_upper.replace('_', ''):
-                return col
-            if target_norm and (target_norm in col_norm or col_norm in target_norm):
-                return col
-        
+        try:
+            from utils.column_map_resolver import resolve_column, map_logical_to_sap
+            sap = map_logical_to_sap(table_name, column_name, self.column_map, parent_dir)
+            for target in (sap, column_name):
+                found = resolve_column(
+                    columns,
+                    target,
+                    table_name,
+                    self.column_map,
+                    parent_dir,
+                )
+                if found:
+                    return found
+        except ImportError:
+            pass
         return None
     
     def _find_most_similar_column(self, columns, target_column):
@@ -3662,13 +3964,15 @@ class FastDataQualityChecker:
         
         for col in columns:
             col_upper = col.upper().replace('_', '')
+            if len(col_upper) < 4:
+                continue
             
             score = 0
             
             if col_upper == target_upper:
                 score += 100
             
-            if target_upper in col_upper or col_upper in target_upper:
+            if len(target_upper) >= 4 and (target_upper in col_upper or col_upper in target_upper):
                 score += 50
             
             common = set(target_upper) & set(col_upper)
@@ -3786,10 +4090,34 @@ class FastDataQualityChecker:
                 if not df.empty:
                     return self._filter_adr2_by_knvv_aufsd_fm(df, rule_code, table_name)
                 return df
+
+            # RCCONF_39.3: только PERSNUMBER IS NULL (без R3_USER / KNVV — см. rules.json)
+            if rule_code == "RCCONF_39.3":
+                person_col = None
+                for col in df.columns:
+                    col_lower = col.lower()
+                    if col_lower in ("persnumber", "pers_number") or col_lower == "person" or "persnumber" in col_lower:
+                        person_col = col
+                        print(f"      [FILTER] Найдена колонка PERSNUMBER: {col}")
+                        break
+                if person_col:
+                    mask = (
+                        df[person_col].isna()
+                        | (df[person_col].astype(str).str.strip() == "")
+                        | (df[person_col].astype(str).str.strip().str.lower().isin(("none", "null", "nan")))
+                    )
+                    filtered_df = df[mask].copy()
+                    print(
+                        f"      [FILTER] RCCONF_39.3: PERSNUMBER IS NULL — "
+                        f"{len(filtered_df)} из {len(df)} строк"
+                    )
+                    return filtered_df
+                print(f"      [WARN] RCCONF_39.3: колонка PERSNUMBER не найдена")
+                return df
             
-            # Для правил RCCONF_38.3 и RCCONF_39.3 фильтруем: R3_USER = '1' (стационарный телефон) AND PERSNUMBER IS NULL
+            # Для правила RCCONF_38.3: R3_USER = '1' (стационарный телефон) AND PERSNUMBER IS NULL
             # contact_medium_type = 'fixed_tel_number' когда R3_USER = '1'
-            if rule_code in ["RCCONF_38.3", "RCCONF_39.3"]:
+            if rule_code == "RCCONF_38.3":
                 r3_user_col = None
                 person_col = None
                 contact_medium_col = None
@@ -3841,8 +4169,20 @@ class FastDataQualityChecker:
                     filtered_df = df[mask].copy()
                     print(f"      [FILTER] Применен фильтр (только contact_medium_type='fixed_tel_number') для {rule_code}: {len(filtered_df)} из {len(df)} строк")
                     return self._filter_adr2_by_knvv_aufsd_fm(filtered_df, rule_code, table_name) if (table_name and str(table_name).strip().upper() == 'ADR2') else filtered_df
+                elif person_col:
+                    mask = (
+                        df[person_col].isna()
+                        | (df[person_col].astype(str).str.strip() == "")
+                        | (df[person_col].astype(str).str.strip().str.lower().isin(("none", "null", "nan")))
+                    )
+                    filtered_df = df[mask].copy()
+                    print(
+                        f"      [FILTER] RCCONF_38.3: PERSNUMBER IS NULL (fallback без R3_USER) — "
+                        f"{len(filtered_df)} из {len(df)} строк"
+                    )
+                    return self._filter_adr2_by_knvv_aufsd_fm(filtered_df, rule_code, table_name) if (table_name and str(table_name).strip().upper() == 'ADR2') else filtered_df
                 else:
-                    print(f"      [WARN] Колонки R3_USER или contact_medium_type не найдены для правила {rule_code}")
+                    print(f"      [WARN] RCCONF_38.3: колонки R3_USER / PERSNUMBER / contact_medium_type не найдены")
             
             # Для правила RCCONF_38.5 фильтруем по PERSNUMBER (должно быть пустым)
             elif rule_code == "RCCONF_38.5":
@@ -4088,7 +4428,7 @@ class FastDataQualityChecker:
     
     def _filter_adr2_by_knvv_aufsd_fm(self, df, rule_code, table_name=None):
         """
-        Для правил ADR2 (RCCOMP_375.1, RCCONF_39.3, RCCONF_39.5, RCCONF_39.5.2):
+        Для правил ADR2 (RCCOMP_375.1, RCCONF_39.5, RCCONF_39.5.2):
         ADR2.ADDRNUMBER -> BUT020 -> PARTNER; KNVV: KUNNR=PARTNER, AUFSD in ('F','M').
         Оставляет только строки ADR2, у которых PARTNER в KNVV с блоками F или M. Добавляет колонку AUFSD.
         """
@@ -4216,7 +4556,7 @@ class FastDataQualityChecker:
                 print(f"      [WARN] PARTNER не добавлен из BUT020 для {rule_code}")
                 return df
 
-            kna1 = self.memory_manager.get_table("KNA1")
+            kna1 = self._get_table_for_rules("KNA1")
             if kna1 is None or kna1.empty:
                 print(f"      [WARN] Таблица KNA1 не найдена или пуста для {rule_code}")
                 return df
@@ -4250,39 +4590,111 @@ class FastDataQualityChecker:
             print(f"      [WARN] Ошибка _filter_adr2_rccomp_375_1_scope_by_kna1_aufsd для {rule_code}: {e}")
             return df
     
+    def _non_empty_key_count(self, series) -> int:
+        """Число непустых значений ключа клиента (для выбора Customer vs пустой KUNNR)."""
+        if series is None:
+            return 0
+        filled, _distinct = self._kunnr_join_key_stats(series)
+        return filled
+
+    def _kunnr_join_key_stats(self, series) -> tuple:
+        """
+        (число нормализованных ключей, число уникальных ключей) для выбора колонки JOIN.
+        KNA1/KNB1: Customer и KUNNR — одно поле (номер клиента); Cl_ не используется.
+        """
+        if series is None:
+            return 0, 0
+        try:
+            norms = series.apply(self._norm_customer_partner_key)
+        except Exception:
+            return 0, 0
+        mask = norms.ne("")
+        filled = int(mask.sum())
+        distinct = int(norms[mask].nunique()) if filled else 0
+        return filled, distinct
+
+    def _pick_best_kunnr_column(self, df, table_name: str = "KNB1"):
+        """
+        Номер клиента (SAP KUNNR): в KNB1 выгрузка — Customer, в KNA1 — Customer или KUNNR
+        (одно и то же поле). Cl_ в KNA1 — не KUNNR, в JOIN не участвует.
+        """
+        if df is None or df.empty:
+            return None
+        tn = str(table_name or "").strip().upper()
+        col_upper = {str(c).strip().upper(): c for c in df.columns}
+        # Явный приоритет под вашу выгрузку:
+        # KNB1 -> Customer, KNA1 -> KUNNR (fallback на Customer)
+        if tn == "KNB1":
+            name_order = ("CUSTOMER", "KUNNR", "CUSTOMER_CODE", "KUNNR_KNB1", "CLIENT")
+        elif tn == "KNA1":
+            name_order = ("KUNNR", "CUSTOMER", "CUSTOMER_CODE", "KUNNR_KNB1", "CLIENT")
+        else:
+            name_order = ("CUSTOMER", "KUNNR", "CUSTOMER_CODE", "PARTNER", "CLIENT")
+        priority = {name: i for i, name in enumerate(name_order)}
+        candidates = []
+        for name in name_order:
+            if name in col_upper:
+                candidates.append(col_upper[name])
+        if not candidates:
+            try:
+                from utils.column_map_resolver import resolve_column_in_df
+                for sap in ("KUNNR", "Customer"):
+                    c = resolve_column_in_df(df, sap, table_name, self.column_map, parent_dir)
+                    if c and c not in candidates:
+                        candidates.append(c)
+            except ImportError:
+                pass
+        if not candidates:
+            return self._find_kunnr_column(df)
+
+        def _score(col):
+            filled, distinct = self._kunnr_join_key_stats(df[col])
+            prio = priority.get(str(col).strip().upper(), len(name_order))
+            return (filled, distinct, -prio)
+
+        best = max(candidates, key=_score)
+        filled_b, distinct_b = self._kunnr_join_key_stats(df[best])
+        if filled_b == 0:
+            print(f"      [WARN] {table_name}: все кандидаты ключа клиента пусты ({candidates})")
+        elif len(candidates) > 1:
+            alt = [c for c in candidates if c != best]
+            if alt:
+                c0 = alt[0]
+                f0, d0 = self._kunnr_join_key_stats(df[c0])
+                if f0 == filled_b and d0 != distinct_b and d0 < max(100, distinct_b // 100):
+                    print(
+                        f"      [JOIN] {table_name}: ключ KUNNR/Customer [{best}] "
+                        f"(заполнено {filled_b:,}, уникальных {distinct_b:,}); "
+                        f"отклонён [{c0}] (уникальных {d0:,})"
+                    )
+        return best
+
+    def _resolve_knb1_kna1_join_column(self, df, table_name: str):
+        """
+        JOIN KNB1 ↔ KNA1: KNB1.Customer = KNA1.KUNNR (fallback KNA1.Customer).
+        """
+        return self._pick_best_kunnr_column(df, table_name)
+
     def _add_account_group_code_from_kna1(self, df, table_name, rule_code):
         """
-        Добавляет account_group_code (KTOKD из KNA1) в DataFrame через JOIN по customer_code (KUNNR).
-        Используется для правил в таблицах KNVV, KNB1 и других, где account_group_code нужен для условий.
+        Добавляет account_group_code (KTOKD / kna.KTOKD / b.ktokd) из KNA1 через JOIN по KUNNR.
+
+        KNB1: KNB1.Customer = KNA1.KUNNR (= KNA1.Customer в выгрузке) -> KNA1.Group_1 (KTOKD).
+        KNVV и др.: аналогично по customer_code / KUNNR.
         """
         try:
             rule_code_u = str(rule_code).strip().upper()
-            # Для RCCONF_24.1 хотим гарантировать, что account_group_code действительно
-            # будет подтянут из KNA1.KTOKD и доступен как b.account_group_code
-            # для условия b.account_group_code IN (7038,9038).
-            # Для RCCONF_115.11 по спецификации фильтр — именно kna.KTOKD (не дубли из KNB1 без join).
-            force_rebuild_for_rule = rule_code_u in ("RCCONF_24.1", "RCCONF_115.11")
+            table_u = str(table_name or "").strip().upper()
+            # KNB1: KTOKD только из KNA1 (не KNB1.AuGr и не пустой локальный KTOKD).
+            force_rebuild_for_rule = table_u == "KNB1" or rule_code_u in getattr(
+                self, "RULES_FORCE_KNA1_KTOKD_JOIN", ("RCCONF_24.1", "RCCONF_115.11")
+            )
 
             if str(rule_code).strip().upper() == "RCCONF_113.1":
                 print("      [DEBUG] RCCONF_113.1 JOIN PATH v2 (memory->sqlite fallback)")
+
             def _norm_join_key(v):
-                if v is None or (isinstance(v, float) and pd.isna(v)):
-                    return ""
-                s = str(v).replace("\ufeff", "").replace("\u00a0", "").strip()
-                # Частые кейсы после чтения из SQLite/Excel/CSV
-                if re.fullmatch(r"\d+\.0+", s):
-                    s = s.split(".")[0]
-                elif re.fullmatch(r"\d+(\.\d+)?[eE][+-]?\d+", s):
-                    try:
-                        s = str(int(float(s)))
-                    except Exception:
-                        pass
-                # Оставляем только цифры (SAP KUNNR)
-                digits = re.sub(r"\D", "", s)
-                if digits:
-                    s = digits
-                # Нормализуем KUNNR: без ведущих нулей
-                return s.lstrip("0") or "0"
+                return self._norm_customer_partner_key(v)
 
             # Если account_group_code уже есть — обычно не пересчитываем.
             # Но для RCCONF_24.1 принудительно пересобираем (может быть, что колонка
@@ -4292,28 +4704,38 @@ class FastDataQualityChecker:
                 return df
 
             if force_rebuild_for_rule:
-                df = df.drop(columns=[c for c in ['account_group_code', 'b.account_group_code', 'KTOKD'] if c in df.columns], errors='ignore')
+                df = self._drop_kna1_account_group_columns(df)
             
             print(f"      [JOIN] Добавление account_group_code из KNA1 для правила {rule_code} в таблице {table_name}...")
             
             # Ищем колонку для JOIN (customer_code/KUNNR) в текущей таблице.
-            # Для ADRC customer_code обычно нет — там адрес, поэтому:
-            # ADRC.ADDRNUMBER/ADRNR -> BUT020.ADDRNUMBER -> PARTNER -> KNA1.KUNNR.
+            # KNB1: обязательно Customer (SAP KUNNR) <-> KNA1.KUNNR / KNA1.Customer.
+            # ADRC: ADDRNUMBER -> BUT020 -> PARTNER -> KNA1.KUNNR.
             join_col = None
             is_rule_24_1 = rule_code_u == "RCCONF_24.1"
+            if table_u == "KNB1":
+                join_col = self._resolve_knb1_kna1_join_column(df, table_name)
+                if join_col:
+                    print(
+                        f"      [JOIN] KNB1: ключ {table_name}.{join_col} (Customer/KUNNR) "
+                        f"-> KNA1.Customer/KUNNR -> KNA1.KTOKD (Group_1) как account_group_code"
+                    )
             if is_rule_24_1:
                 partner_direct = next((c for c in df.columns if str(c).strip().upper() == "PARTNER"), None)
                 if partner_direct:
                     join_col = partner_direct
                     print(f"      [JOIN] RCCONF_24.1: принудительный JOIN по PARTNER -> KNA1.KUNNR (колонка: {join_col})")
-            for col in df.columns:
-                if join_col is not None:
-                    break
-                col_lower = col.lower()
-                if col_lower in ['kunnr', 'customer_code', 'customer', 'kunnr_knvv', 'kunnr_knb1']:
-                    join_col = col
-                    print(f"      [JOIN] Найдена колонка для JOIN в {table_name}: {col}")
-                    break
+            if not join_col:
+                join_col = self._resolve_knb1_kna1_join_column(df, table_name)
+                if join_col:
+                    print(f"      [JOIN] Найдена колонка для JOIN в {table_name}: {join_col}")
+            if not join_col:
+                for col in df.columns:
+                    col_lower = col.lower()
+                    if col_lower in ['kunnr', 'customer_code', 'customer', 'kunnr_knvv', 'kunnr_knb1']:
+                        join_col = col
+                        print(f"      [JOIN] Найдена колонка для JOIN в {table_name}: {col}")
+                        break
             
             # ADRC fallback: сначала получаем PARTNER из BUT020 по адресу, затем JOIN к KNA1 по KUNNR
             join_mode = "kunnr"
@@ -4373,118 +4795,296 @@ class FastDataQualityChecker:
             if not join_col:
                 print(f"      [WARN] Колонка для JOIN (KUNNR/customer_code или ADRC address) не найдена в {table_name} для правила {rule_code}")
                 return df
-            
-            # Загружаем KNA1
-            kna1_df = self.memory_manager.get_table("KNA1")
-            if kna1_df is None or kna1_df.empty:
-                # Явно подгружаем KNA1 в RAM для одиночной проверки таблицы (например только KNB1)
-                print(f"      [INFO] KNA1 отсутствует в RAM для {rule_code} — загружаем в память...")
+
+            # Подгрузка KNA1 в RAM при проверке только KNB1
+            if self._get_table_for_rules("KNA1") is None or self._get_table_for_rules("KNA1").empty:
+                print(f"      [INFO] KNA1 отсутствует в RAM для {rule_code} — загружаем...")
                 try:
                     self.memory_manager.load_selected_tables_to_ram(["KNA1"], add_reference_tables=False)
-                    kna1_df = self.memory_manager.get_table("KNA1")
+                    setattr(self, "_kna1_ktokd_lookup_df", None)
                 except Exception as e:
-                    print(f"      [WARN] Не удалось загрузить KNA1 в RAM для правила {rule_code}: {e}")
+                    print(f"      [WARN] Не удалось загрузить KNA1: {e}")
 
-            if kna1_df is None or kna1_df.empty:
-                # Fallback: подгружаем минимальные колонки из SQLite
-                print(f"      [WARN] Таблица KNA1 не найдена/пуста в RAM для правила {rule_code}, пробуем SQLite...")
-                try:
-                    import sqlite3
-                    conn = connect_sqlite(self.db_path)
-                    try:
-                        kna1_df = pd.read_sql_query('SELECT "KUNNR","KTOKD" FROM "KNA1"', conn)
-                    except Exception:
-                        kna1_df = pd.read_sql_query('SELECT * FROM "KNA1"', conn)
-                    conn.close()
-                    if kna1_df is None or kna1_df.empty:
-                        print(f"      [WARN] KNA1 не удалось загрузить из SQLite для правила {rule_code}")
-                        return df
-                    print(f"      [JOIN] KNA1 загружена из SQLite: {len(kna1_df):,} строк")
-                except Exception as e:
-                    print(f"      [WARN] Ошибка загрузки KNA1 из SQLite для правила {rule_code}: {e}")
-                    return df
-            
-            # Ищем колонку JOIN в KNA1
-            kna1_join_col = None
-            for col in kna1_df.columns:
-                col_lower = col.lower()
-                if col_lower in ['kunnr', 'customer_code', 'customer']:
-                    kna1_join_col = col
-                    break
-            
-            # Ищем колонку KTOKD (account_group_code) в KNA1
-            ktokd_col = None
-            for col in kna1_df.columns:
-                col_lower = col.lower()
-                if col_lower == 'ktokd' or 'ktokd' in col_lower:
-                    ktokd_col = col
-                    print(f"      [JOIN] Найдена колонка KTOKD в KNA1: {col}")
-                    break
-            
-            if not kna1_join_col or not ktokd_col:
-                print(f"      [WARN] Колонки KUNNR или KTOKD не найдены в KNA1 для правила {rule_code}")
-                return df
-            
-            # Создаем DataFrame для JOIN: только нужные колонки
-            kna1_join = kna1_df[[kna1_join_col, ktokd_col]].copy()
-            kna1_join = kna1_join.rename(columns={kna1_join_col: join_col, ktokd_col: 'account_group_code'})
-            
-            # Удаляем дубликаты по ключу JOIN (если у клиента несколько записей в KNA1, берем первую)
-            kna1_join = kna1_join.drop_duplicates(subset=[join_col], keep='first')
-            
-            # Нормализуем ключ JOIN с обеих сторон (dtype + нули + '.0'), иначе матчинг часто 0%
-            df_for_merge = df.copy()
-            df_for_merge["_join_key_norm"] = df_for_merge[join_col].apply(_norm_join_key)
-            kna1_join = kna1_join.copy()
-            kna1_join["_join_key_norm"] = kna1_join[join_col].apply(_norm_join_key)
-            kna1_join = kna1_join.drop_duplicates(subset=["_join_key_norm"], keep='first')
-            
-            # Выполняем LEFT JOIN
-            df_joined = df_for_merge.merge(
-                kna1_join[["_join_key_norm", "account_group_code"]],
-                on="_join_key_norm",
-                how='left'
-            )
-            df_joined = df_joined.drop(columns=["_join_key_norm"], errors="ignore")
-            if str(rule_code).strip().upper() == "RCCONF_113.1":
-                left_sample = df_for_merge[join_col].head(5).astype(str).tolist()
-                right_sample = kna1_join[join_col].head(5).astype(str).tolist()
-                left_norm_sample = df_for_merge["_join_key_norm"].head(5).tolist()
-                right_norm_sample = kna1_join["_join_key_norm"].head(5).tolist()
-                print(f"      [DEBUG] RCCONF_113.1 raw KNB1 KUNNR sample: {left_sample}")
-                print(f"      [DEBUG] RCCONF_113.1 raw KNA1 KUNNR sample: {right_sample}")
-                print(f"      [DEBUG] RCCONF_113.1 norm KNB1 KUNNR sample: {left_norm_sample}")
-                print(f"      [DEBUG] RCCONF_113.1 norm KNA1 KUNNR sample: {right_norm_sample}")
-            
-            # Также добавляем алиас b.account_group_code для правил, которые используют b.account_group_code
-            # (например, RCCONF_154.4 в KNVV)
-            if 'account_group_code' in df_joined.columns:
-                df_joined['b.account_group_code'] = df_joined['account_group_code']
-                # Универсальные алиасы для правил/парсеров, которым нужен именно "ktokd"
-                if 'ktokd' not in df_joined.columns:
-                    df_joined['ktokd'] = df_joined['account_group_code']
-                if 'b.ktokd' not in df_joined.columns:
-                    df_joined['b.ktokd'] = df_joined['account_group_code']
-                # Для некоторых правил/отладок полезно иметь alias "kna.ktokd" напрямую.
-                # В rules.json условие может ссылаться на b.account_group_code,
-                # но пользователю часто нужен именно источник KTOKD.
-                if 'kna.ktokd' not in df_joined.columns:
-                    df_joined['kna.ktokd'] = df_joined['account_group_code']
-                if 'kna.KTOKD' not in df_joined.columns:
-                    df_joined['kna.KTOKD'] = df_joined['account_group_code']
-            
-            filled_count = (~df_joined['account_group_code'].isna()).sum()
-            fill_percent = (filled_count / len(df_joined) * 100) if len(df_joined) > 0 else 0.0
-            print(f"      [JOIN] JOIN выполнен: добавлен account_group_code из KNA1 (KTOKD). Строк: {len(df_joined)} (было {len(df)}), "
-                  f"заполнено account_group_code: {filled_count} ({fill_percent:.1f}%)")
-            
-            return df_joined
+            return self._merge_kna1_account_group_from_lookup(df, table_name, rule_code, join_col)
             
         except Exception as e:
             print(f"      [WARN] Ошибка при добавлении account_group_code из KNA1 для правила {rule_code}: {e}")
             import traceback
             traceback.print_exc()
             return df
+
+    def _find_kna1_ktokd_column_in_df(self, df):
+        """Колонка группы счёта из KNA1 в DataFrame (после JOIN или выгрузка Group_1)."""
+        if df is None or df.empty:
+            return None
+        col_lower = {str(c).strip().lower(): c for c in df.columns}
+        for name in (
+            "ktokd",
+            "kna.ktokd",
+            "account_group_code",
+            "b.account_group_code",
+            "b.ktokd",
+            "group_1",
+            "lookup_account_group_ktokd",
+        ):
+            if name in col_lower:
+                return col_lower[name]
+        return None
+
+    def _place_column_after(self, df, col_name, after_col_names):
+        """Переставляет col_name сразу после первой найденной колонки из after_col_names."""
+        if df is None or col_name not in df.columns:
+            return df
+        after_col = None
+        upper_map = {str(c).strip().upper(): c for c in df.columns}
+        for name in after_col_names:
+            if name.upper() in upper_map:
+                after_col = upper_map[name.upper()]
+                break
+        if not after_col:
+            return df
+        cols = [c for c in df.columns if c != col_name]
+        if after_col not in cols:
+            return df
+        ix = cols.index(after_col) + 1
+        return df[cols[:ix] + [col_name] + cols[ix:]]
+
+    def _normalize_rule_code(self, rule_code: str) -> str:
+        return re.sub(r"[^A-Za-z0-9._-]", "", str(rule_code or "")).strip().upper()
+
+    def _format_ktokd_for_export(self, series):
+        """KTOKD / Group_1 из KNA1 для выгрузки ошибок (без .0, пусто = '')."""
+        if series is None:
+            return pd.Series(dtype=object)
+        s = series.astype(str).str.strip().str.replace(r"\.0+$", "", regex=True)
+        return s.replace({"nan": "", "None": "", "null": "", "NaN": ""})
+
+    def _find_customer_column_for_kna1_join(self, df, table_name: str = "KNB1"):
+        """Колонка клиента в KNB1/ошибках для JOIN к KNA1 (Customer, не пустая SAP-копия KUNNR)."""
+        return self._pick_best_kunnr_column(df, table_name or "KNB1")
+
+    def _build_kna1_ktokd_lookup(self, force_reload: bool = False):
+        """Справочник KNA1: _join_key (норм. KUNNR) -> KTOKD (Group_1). Кэш на прогон."""
+        cache_key = "_kna1_ktokd_lookup_df"
+        if not force_reload and getattr(self, cache_key, None) is not None:
+            return getattr(self, cache_key)
+
+        kna1_df = None
+        if hasattr(self, "memory_manager"):
+            kna1_df = self.memory_manager.get_table("KNA1")
+        if kna1_df is None or kna1_df.empty:
+            if getattr(self, "db_path", None):
+                try:
+                    conn = connect_sqlite(self.db_path)
+                    try:
+                        kna1_df = pd.read_sql_query(
+                            'SELECT "Customer", "Group_1" FROM "KNA1"',
+                            conn,
+                        )
+                    except Exception:
+                        kna1_df = pd.read_sql_query('SELECT * FROM "KNA1"', conn)
+                    conn.close()
+                except Exception:
+                    kna1_df = None
+
+        lookup = pd.DataFrame(columns=["_join_key", "KTOKD"])
+        if kna1_df is None or kna1_df.empty:
+            setattr(self, cache_key, lookup)
+            return lookup
+
+        kna1_mapped = self._apply_rule_time_column_map(kna1_df.copy(), "KNA1")
+        kunnr_col = self._pick_best_kunnr_column(kna1_mapped, "KNA1")
+        ktokd_col = None
+        for c in kna1_mapped.columns:
+            cl = str(c).strip().lower()
+            if cl in ("group_1", "ktokd", "account_group_code"):
+                if ktokd_col is None or self._non_empty_key_count(kna1_mapped[c]) > self._non_empty_key_count(
+                    kna1_mapped[ktokd_col]
+                ):
+                    ktokd_col = c
+        kna1_df = kna1_mapped
+
+        if kunnr_col and ktokd_col:
+            lookup = kna1_df[[kunnr_col, ktokd_col]].copy()
+            lookup["_join_key"] = lookup[kunnr_col].apply(self._norm_customer_partner_key)
+            lookup["KTOKD"] = self._format_ktokd_for_export(lookup[ktokd_col])
+            lookup = lookup.drop_duplicates(subset=["_join_key"], keep="first")[["_join_key", "KTOKD"]]
+
+        if kunnr_col and ktokd_col:
+            _kf, _kd = self._kunnr_join_key_stats(kna1_df[kunnr_col])
+            print(
+                f"      [JOIN] справочник KNA1: ключ [{kunnr_col}] "
+                f"({_kf:,} ключей, уникальных {_kd:,}), KTOKD из [{ktokd_col}]"
+            )
+        setattr(self, cache_key, lookup)
+        return lookup
+
+    def _drop_kna1_account_group_columns(self, df):
+        if df is None or df.empty:
+            return df
+        drop = []
+        for c in df.columns:
+            cl = str(c).strip().lower()
+            cu = str(c).strip().upper()
+            if cl in (
+                "account_group_code",
+                "b.account_group_code",
+                "ktokd",
+                "b.ktokd",
+                "kna.ktokd",
+                "group_1",
+            ) or cu == "KTOKD":
+                drop.append(c)
+        if drop:
+            return df.drop(columns=drop, errors="ignore")
+        return df
+
+    def _merge_kna1_account_group_from_lookup(self, df, table_name, rule_code, join_col):
+        """JOIN KNA1.Group_1 -> account_group_code / KTOKD по нормализованному Customer/KUNNR."""
+        if df is None or df.empty or not join_col:
+            return df
+        lookup = self._build_kna1_ktokd_lookup(force_reload=False)
+        if lookup is None or lookup.empty:
+            print(f"      [WARN] {rule_code}: справочник KNA1 (Customer->Group_1) пуст")
+            return df
+
+        out = self._drop_kna1_account_group_columns(df.copy())
+        out["_join_key"] = out[join_col].apply(self._norm_customer_partner_key)
+        matched_keys = out["_join_key"].isin(lookup["_join_key"])
+        out = out.merge(lookup, on="_join_key", how="left")
+        out = out.drop(columns=["_join_key"], errors="ignore")
+
+        if "KTOKD" in out.columns:
+            out["account_group_code"] = out["KTOKD"]
+            out["b.account_group_code"] = out["KTOKD"]
+            out["ktokd"] = out["KTOKD"]
+            out["b.ktokd"] = out["KTOKD"]
+            out["kna.ktokd"] = out["KTOKD"]
+
+        from utils.sap_account_keys import norm_sap_account_group
+
+        ktokd_norm = out["KTOKD"].apply(norm_sap_account_group) if "KTOKD" in out.columns else pd.Series(dtype=str)
+        filled = int((ktokd_norm != "").sum())
+        n9038 = int((ktokd_norm == "9038").sum())
+        self._last_kna1_join_stats = {
+            "rows_after_join": len(out),
+            "filled_ktokd": filled,
+            "n9038": n9038,
+            "join_col": join_col,
+            "key_matched": int(matched_keys.sum()),
+        }
+        print(
+            f"      [JOIN] {rule_code}: KNA1.Group_1 -> {table_name} по [{join_col}]: "
+            f"ключ совпал {int(matched_keys.sum()):,}/{len(out):,}, "
+            f"KTOKD из KNA1: {filled:,}, из них 9038: {n9038:,}"
+        )
+        if int(matched_keys.sum()) == 0 and filled > 0:
+            print(
+                f"      [WARN] {rule_code}: KTOKD не пустой, но ключей KNA1=0 — "
+                f"проверьте колонку JOIN (нужна Customer, не пустая KUNNR)"
+            )
+        return out
+
+    def _attach_kna1_ktokd_export_columns(self, df, rule_code=None):
+        """
+        Колонки KTOKD / KTOKD_SOURCE в срезе до валидации — попадут в error_df как есть.
+        """
+        if df is None or df.empty:
+            return df
+        ag_col = self._find_account_group_column(df)
+        out = df.copy()
+        if ag_col is not None:
+            out["KTOKD"] = self._format_ktokd_for_export(out[ag_col])
+        else:
+            customer_col = self._find_customer_column_for_kna1_join(out, "KNB1")
+            if customer_col:
+                lookup = self._build_kna1_ktokd_lookup()
+                if not lookup.empty:
+                    out["_jk"] = out[customer_col].apply(self._norm_customer_partner_key)
+                    out = out.merge(lookup, left_on="_jk", right_on="_join_key", how="left")
+                    out = out.drop(columns=["_jk", "_join_key"], errors="ignore")
+        if "KTOKD" not in out.columns:
+            out["KTOKD"] = ""
+        out["KTOKD_SOURCE"] = "KNA1"
+        rule_u = self._normalize_rule_code(rule_code)
+        if rule_u in self.RULES_KTOKD_ONLY_9038_SCOPE:
+            out["RULE_SCOPE"] = "only KNA1.KTOKD=9038"
+        return self._place_column_after(out, "KTOKD", ("Customer", "KUNNR", "CUSTOMER", "Cl_", "CLIENT"))
+
+    def _enrich_error_df_kna1_ktokd(self, error_df, table_name, rule_code=None):
+        """
+        В файл ошибок добавляет колонку KTOKD из KNA1 (Group_1) по Customer/KUNNR.
+        Всегда перечитывает KNA1 — не полагается на JOIN на этапе проверки.
+        """
+        if error_df is None or error_df.empty:
+            return error_df
+        rule_u = self._normalize_rule_code(rule_code)
+
+        # Уже есть KTOKD из этапа валидации — только выровнять порядок колонок
+        if "KTOKD" in error_df.columns:
+            out = error_df.copy()
+            if "KTOKD_SOURCE" not in out.columns:
+                out["KTOKD_SOURCE"] = "KNA1"
+            if rule_u in self.RULES_KTOKD_ONLY_9038_SCOPE and "RULE_SCOPE" not in out.columns:
+                out["RULE_SCOPE"] = "only KNA1.KTOKD=9038"
+            return self._place_column_after(out, "KTOKD", ("Customer", "KUNNR", "CUSTOMER", "Cl_", "CLIENT"))
+
+        customer_col = self._find_customer_column_for_kna1_join(error_df, table_name or "KNB1")
+        if not customer_col:
+            print(
+                f"      [WARN] {rule_code}: в error_df нет Customer/KUNNR — "
+                f"колонки: {list(error_df.columns)[:12]}..."
+            )
+            out = error_df.copy()
+            out["KTOKD"] = ""
+            out["KTOKD_SOURCE"] = "KNA1 (join key not found)"
+            return out
+
+        try:
+            lookup = self._build_kna1_ktokd_lookup()
+            if lookup.empty:
+                print(f"      [WARN] {rule_code}: справочник KNA1.KTOKD пуст — KTOKD не добавлен")
+                out = error_df.copy()
+                out["KTOKD"] = ""
+                out["KTOKD_SOURCE"] = "KNA1"
+                return out
+
+            out = error_df.copy()
+            out["_join_key"] = out[customer_col].apply(self._norm_customer_partner_key)
+            out = out.merge(lookup, on="_join_key", how="left")
+            out = out.drop(columns=["_join_key"], errors="ignore")
+            if "KTOKD" not in out.columns:
+                out["KTOKD"] = ""
+            out["KTOKD_SOURCE"] = "KNA1"
+
+            filled = int((out["KTOKD"].astype(str).str.strip() != "").sum())
+            print(
+                f"      [JOIN] {rule_code}: KTOKD из KNA1 (Group_1) в error_df — "
+                f"заполнено {filled:,} из {len(out):,} (ключ: {customer_col})"
+            )
+
+            if rule_u in self.RULES_KTOKD_ONLY_9038_SCOPE:
+                out["RULE_SCOPE"] = "only KNA1.KTOKD=9038"
+                ktokd_chk = out["KTOKD"].astype(str).str.strip()
+                not_9038 = ~ktokd_chk.isin({"9038", ""}) & ktokd_chk.notna()
+                if not_9038.any():
+                    print(
+                        f"      [WARN] {rule_code}: {int(not_9038.sum()):,} строк в error_df с KTOKD != 9038"
+                    )
+
+            out = self._place_column_after(out, "KTOKD", ("Customer", "KUNNR", "CUSTOMER", "Cl_", "CLIENT"))
+            if "KTOKD_SOURCE" in out.columns:
+                out = self._place_column_after(out, "KTOKD_SOURCE", ("KTOKD",))
+            if "RULE_SCOPE" in out.columns:
+                out = self._place_column_after(out, "RULE_SCOPE", ("KTOKD", "KTOKD_SOURCE"))
+            return out
+        except Exception as e:
+            print(f"      [WARN] {rule_code}: не удалось подтянуть KTOKD из KNA1 в error_df: {e}")
+            traceback.print_exc()
+            out = error_df.copy()
+            out["KTOKD"] = ""
+            out["KTOKD_SOURCE"] = "KNA1 (error)"
+            return out
 
     def _add_central_order_block_code_from_kna1(self, df, table_name, rule_code):
         """
@@ -4520,11 +5120,11 @@ class FastDataQualityChecker:
                 print(f"      [WARN] {rule_code}: в {table_name} не найдены колонки PARTNER1/PARTNER2 для JOIN с KNA1")
                 return df
 
-            kna1_df = self.memory_manager.get_table("KNA1")
+            kna1_df = self._get_table_for_rules("KNA1")
             if kna1_df is None or kna1_df.empty:
                 try:
                     self.memory_manager.load_selected_tables_to_ram(["KNA1"], add_reference_tables=False)
-                    kna1_df = self.memory_manager.get_table("KNA1")
+                    kna1_df = self._get_table_for_rules("KNA1")
                 except Exception:
                     kna1_df = None
 
@@ -4544,8 +5144,24 @@ class FastDataQualityChecker:
                 print(f"      [WARN] {rule_code}: KNA1 пуста, central_order_block_code не добавлен")
                 return df
 
-            kna1_kunnr_col = next((c for c in kna1_df.columns if str(c).strip().upper() == "KUNNR"), None)
-            aufsd_col = next((c for c in kna1_df.columns if str(c).strip().upper() == "AUFSD"), None)
+            kna1_df = self._apply_rule_time_column_map(kna1_df, "KNA1")
+            try:
+                from utils.column_map_resolver import resolve_column_in_df
+                kna1_kunnr_col = resolve_column_in_df(
+                    kna1_df, "KUNNR", "KNA1", self.column_map, parent_dir
+                )
+                aufsd_col = resolve_column_in_df(
+                    kna1_df, "AUFSD", "KNA1", self.column_map, parent_dir
+                ) or resolve_column_in_df(
+                    kna1_df, "central_order_block_code", "KNA1", self.column_map, parent_dir
+                )
+            except ImportError:
+                kna1_kunnr_col = None
+                aufsd_col = None
+            if not kna1_kunnr_col:
+                kna1_kunnr_col = next((c for c in kna1_df.columns if str(c).strip().upper() == "KUNNR"), None)
+            if not aufsd_col:
+                aufsd_col = next((c for c in kna1_df.columns if str(c).strip().upper() == "AUFSD"), None)
             if not kna1_kunnr_col or not aufsd_col:
                 print(f"      [WARN] {rule_code}: в KNA1 не найдены KUNNR/AUFSD для JOIN")
                 return df
@@ -4616,10 +5232,34 @@ class FastDataQualityChecker:
                 if not df.empty:
                     return self._filter_adr2_by_knvv_aufsd_fm(df, rule_code, table_name)
                 return df
+
+            # RCCONF_39.3: только PERSNUMBER IS NULL (без R3_USER / KNVV — см. rules.json)
+            if rule_code == "RCCONF_39.3":
+                person_col = None
+                for col in df.columns:
+                    col_lower = col.lower()
+                    if col_lower in ("persnumber", "pers_number") or col_lower == "person" or "persnumber" in col_lower:
+                        person_col = col
+                        print(f"      [FILTER] Найдена колонка PERSNUMBER: {col}")
+                        break
+                if person_col:
+                    mask = (
+                        df[person_col].isna()
+                        | (df[person_col].astype(str).str.strip() == "")
+                        | (df[person_col].astype(str).str.strip().str.lower().isin(("none", "null", "nan")))
+                    )
+                    filtered_df = df[mask].copy()
+                    print(
+                        f"      [FILTER] RCCONF_39.3: PERSNUMBER IS NULL — "
+                        f"{len(filtered_df)} из {len(df)} строк"
+                    )
+                    return filtered_df
+                print(f"      [WARN] RCCONF_39.3: колонка PERSNUMBER не найдена")
+                return df
             
-            # Для правил RCCONF_38.3 и RCCONF_39.3 фильтруем: R3_USER = '1' (стационарный телефон) AND PERSNUMBER IS NULL
+            # Для правила RCCONF_38.3: R3_USER = '1' (стационарный телефон) AND PERSNUMBER IS NULL
             # contact_medium_type = 'fixed_tel_number' когда R3_USER = '1'
-            if rule_code in ["RCCONF_38.3", "RCCONF_39.3"]:
+            if rule_code == "RCCONF_38.3":
                 r3_user_col = None
                 person_col = None
                 contact_medium_col = None
@@ -4671,8 +5311,20 @@ class FastDataQualityChecker:
                     filtered_df = df[mask].copy()
                     print(f"      [FILTER] Применен фильтр (только contact_medium_type='fixed_tel_number') для {rule_code}: {len(filtered_df)} из {len(df)} строк")
                     return self._filter_adr2_by_knvv_aufsd_fm(filtered_df, rule_code, table_name) if (table_name and str(table_name).strip().upper() == 'ADR2') else filtered_df
+                elif person_col:
+                    mask = (
+                        df[person_col].isna()
+                        | (df[person_col].astype(str).str.strip() == "")
+                        | (df[person_col].astype(str).str.strip().str.lower().isin(("none", "null", "nan")))
+                    )
+                    filtered_df = df[mask].copy()
+                    print(
+                        f"      [FILTER] RCCONF_38.3: PERSNUMBER IS NULL (fallback без R3_USER) — "
+                        f"{len(filtered_df)} из {len(df)} строк"
+                    )
+                    return self._filter_adr2_by_knvv_aufsd_fm(filtered_df, rule_code, table_name) if (table_name and str(table_name).strip().upper() == 'ADR2') else filtered_df
                 else:
-                    print(f"      [WARN] Колонки R3_USER или contact_medium_type не найдены для правила {rule_code}")
+                    print(f"      [WARN] RCCONF_38.3: колонки R3_USER / PERSNUMBER / contact_medium_type не найдены")
             
             # Для правила RCCONF_38.5 фильтруем по PERSNUMBER (должно быть пустым)
             elif rule_code == "RCCONF_38.5":
@@ -5170,7 +5822,7 @@ class FastDataQualityChecker:
                                             print(f"   [WARN] {rule_code}: не удалось подтянуть PARTNER из BUT000")
                                         else:
                                             # KNA1: KUNNR (= PARTNER) -> AUFSD
-                                            kna1_df = self.memory_manager.get_table("KNA1")
+                                            kna1_df = self._get_table_for_rules("KNA1")
                                             if kna1_df is None or kna1_df.empty:
                                                 conn = connect_sqlite(self.db_path)
                                                 kna1_tables = pd.read_sql_query("SELECT name FROM sqlite_master WHERE type='table'", conn)
@@ -5206,6 +5858,10 @@ class FastDataQualityChecker:
                     error_data['error_df'] = error_df
                 
                 # Для остальных таблиц (BUT000, KNB1, KNVP, KNVH, ADRC, ZBUT0000P3VVI9 и др.): подтягиваем AUFSD по KUNNR/PARTNER из KNVV или KNA1
+                if self._normalize_rule_code(rule_code) in self.RULES_ERROR_EXPORT_KNA1_KTOKD:
+                    error_df = self._enrich_error_df_kna1_ktokd(error_df, table_name, rule_code)
+                    error_data["error_df"] = error_df
+
                 if not is_adr2 and not is_ausp_table:
                     need_aufsd = 'AUFSD' not in error_df.columns or error_df['AUFSD'].isna().all()
                     if need_aufsd:
@@ -5266,7 +5922,7 @@ class FastDataQualityChecker:
                                         print(f"   [INFO] {rule_code} ({table_name}): добавлена колонка AUFSD из KNVV")
                                         aufsd_added = True
                                 if not aufsd_added:
-                                    kna1_df = self.memory_manager.get_table("KNA1")
+                                    kna1_df = self._get_table_for_rules("KNA1")
                                     if (kna1_df is None or kna1_df.empty) and getattr(self, 'db_path', None):
                                         import sqlite3
                                         conn = connect_sqlite(self.db_path)
@@ -5303,7 +5959,12 @@ class FastDataQualityChecker:
                 # Для отдельных правил/таблиц ограничение 100k снято — пишем до лимита Excel
                 tbl = str(table_name or "").strip().upper()
                 rule_u = str(rule_code or "").strip().upper()
-                no_100k_limit = (tbl in ("ADR2", "BUT000")) or (rule_u == "RCCONF_18.2")
+                no_100k_limit = (
+                    tbl in ("ADR2", "BUT000")
+                    or rule_u == "RCCONF_18.2"
+                    or rule_u == "RCCONF_63.1"
+                    or tbl.startswith("DFKKBPTAXNUM")
+                )
                 limit_save = self.EXCEL_MAX_ROWS if no_100k_limit else self.MAX_ERRORS_TO_SAVE
                 
                 if total_errors > limit_save:
@@ -5332,6 +5993,15 @@ class FastDataQualityChecker:
                     or len(error_df) > limit_save
                 )
                 safe_table_name = self._safe_filename_token(table_name)
+                # Финальная страховка: KTOKD из KNA1 в файле ошибок (RCCOMP_113.1 / RCCONF_113.1)
+                if (
+                    str(table_name or "").strip().upper() == "KNB1"
+                    and self._normalize_rule_code(rule_code) in self.RULES_ERROR_EXPORT_KNA1_KTOKD
+                ):
+                    error_df = self._enrich_error_df_kna1_ktokd(error_df, table_name, rule_code)
+                    if "KTOKD" not in error_df.columns:
+                        error_df.insert(0, "KTOKD", "")
+                        error_df.insert(1, "KTOKD_SOURCE", "KNA1")
                 if use_csv:
                     filename = f"{rule_code}_{safe_table_name}_errors_{timestamp}.csv"
                     filepath = os.path.join(errors_dir, filename)
@@ -5403,7 +6073,7 @@ class FastDataQualityChecker:
             headers = [
                 "Код правила", "Описание", "Категория", "Таблица", "Тип TAXNUM",
                 "Колонка", "Всего записей", "Успешно", "Ошибок",
-                "% успеха", "Статус", "Время (сек)", "Файл ошибок", "Комментарии",
+                "% успеха", "Статус", "Время (сек)", "Комментарии",
                 "Список записей (файл)"
             ]
             
@@ -5446,7 +6116,6 @@ class FastDataQualityChecker:
                     result.get('success_rate_%', 0),
                     result.get('status', ''),
                     result.get('execution_time_sec', 0),
-                    result.get('error_file', 'Нет'),
                     result.get('comments', ''),
                     list_file_display,
                 ]
@@ -5455,7 +6124,7 @@ class FastDataQualityChecker:
                     cell = ws.cell(row=row_num, column=col_num, value=value)
                     cell.font = self.colors['normal_font']
                     # Ссылка на файл со списком записей (ADR2): открыть — увидеть, что именно входит в «Всего записей»
-                    if col_num == 15 and value and isinstance(value, str) and os.path.isfile(value):
+                    if col_num == 14 and value and isinstance(value, str) and os.path.isfile(value):
                         try:
                             path_uri = "file:///" + value.replace("\\", "/").lstrip("/")
                             cell.hyperlink = path_uri

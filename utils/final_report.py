@@ -222,7 +222,7 @@ class FinalReportGenerator:
         
         # Заголовки для сводки
         summary_headers = ["№", "Код правила", "Категория", "Таблица", "Колонка", 
-                         "Всего записей", "Успешно", "Ошибок", "% успеха", 
+                         "Оценено", "Успешно", "Ошибок", "% успеха", 
                          "Статус", "Время (с)"]
         
         for col, header in enumerate(summary_headers, 1):
@@ -307,7 +307,7 @@ class FinalReportGenerator:
             'rule_code': 'count'
         }).reset_index()
         
-        categories.columns = ['Категория', 'Среднее качество', 'Всего записей', 'Ошибок', 'Правил']
+        categories.columns = ['Категория', 'Среднее качество', 'Оценено', 'Ошибок', 'Правил']
         
         # Заголовки категорий
         cat_headers = list(categories.columns)
@@ -325,7 +325,7 @@ class FinalReportGenerator:
             row_data = [
                 cat_row['Категория'],
                 f"{cat_row['Среднее качество']:.1f}%",
-                cat_row['Всего записей'],
+                cat_row['Оценено'],
                 cat_row['Ошибок'],
                 cat_row['Правил']
             ]
@@ -424,7 +424,7 @@ class FinalReportGenerator:
         start_row = len(legend_items) + 5
         
         headers = ["Код правила", "Описание", "Категория", "Таблица", 
-                  "Статус", "Качество", "Ошибок", "Всего записей",
+                  "Статус", "Качество", "Ошибок", "Оценено",
                   "Рекомендация", "Приоритет", "Ссылка на ошибки"]
         
         for col, header in enumerate(headers, 1):
@@ -524,7 +524,7 @@ class FinalReportGenerator:
         ws.merge_cells('A1:F1')
         
         headers = ["Категория качества", "Кол-во правил", "Среднее качество", 
-                  "Всего записей", "Успешно", "Ошибок"]
+                  "Оценено", "Успешно", "Ошибок"]
         
         for col, header in enumerate(headers, 1):
             cell = ws.cell(row=3, column=col, value=header)

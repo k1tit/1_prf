@@ -28,17 +28,37 @@ SQLITE_BUSY_TIMEOUT_MS = 120_000
 
 def find_project_root(start_file: str) -> str:
     """
-    Каталог проекта: ищем вверх по дереву каталог с main.py (корень data_quality_checker).
+    Каталог проекта DQ: вверх от файла скрипта ищем каталог с main.py
+    (data_quality_checker / job_project_clean). config/database.json не обязателен.
     """
-    cur = os.path.dirname(os.path.abspath(start_file))
-    for _ in range(8):
+    return find_dq_project_root(start_file)
+
+
+def find_dq_project_root(start_file: str | None = None) -> str:
+    """
+    Корень проекта проверки качества данных.
+
+    1) Вверх от каталога скрипта (view_table.py в data_quality_checker → этот каталог).
+    2) Если скрипт в подпапке (edit_table/) — сосед data_quality_checker или job_project_clean.
+    Не переключается на чужой job_project_clean на Desktop, если у скрипта уже есть main.py выше.
+    """
+    here = os.path.dirname(os.path.abspath(start_file or __file__))
+    cur = here
+    for _ in range(12):
         if os.path.isfile(os.path.join(cur, "main.py")):
             return cur
         parent = os.path.dirname(cur)
         if parent == cur:
             break
         cur = parent
-    return os.path.dirname(os.path.abspath(start_file))
+
+    parent = os.path.dirname(here)
+    for folder_name in ("data_quality_checker", "job_project_clean"):
+        candidate = os.path.join(parent, folder_name)
+        if os.path.isfile(os.path.join(candidate, "main.py")):
+            return candidate
+
+    return here
 
 
 def default_db_path(project_file: str) -> str:
@@ -100,7 +120,7 @@ def resolve_database_path(
         if db_spec:
             path = _normalize_db_spec(project_root, db_spec)
             period = (cfg.get("period") or "").strip()
-            source = f"config/{DB_CONFIG_REL.replace(os.sep, '/')}"
+            source = DB_CONFIG_REL.replace("\\", "/")
             if period:
                 source += f" (period={period})"
         else:
@@ -176,3 +196,19 @@ def probe_db_writable(
 def is_lock_error(exc: BaseException) -> bool:
     s = str(exc).lower()
     return "locked" in s or "busy" in s
+
+
+# Старые скрипты: from utils.sqlite_safe import find_project_root
+__all__ = [
+    "DEFAULT_DB_FILENAME",
+    "DB_CONFIG_REL",
+    "ENV_DB_VAR",
+    "connect_sqlite",
+    "resolve_database_path",
+    "load_database_config",
+    "find_project_root",
+    "find_dq_project_root",
+    "default_db_path",
+    "probe_db_writable",
+    "is_lock_error",
+]

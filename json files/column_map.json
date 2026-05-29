@@ -1,1 +1,493 @@
-{"KNA1": {"customer_activity_cluster_code": "KATR1", "trade_channel_code": "KATR6", "sub_trade_channel_code": "KATR7", "industry_code1": "BRAN1", "assignment_hierrarchy_level": "HZUOR", "distribution_type_code": "KATR4", "customer_classification_code": "KUKLA", "central_order_block_assignment_date": "AUFSD"}, "BUT000": {"organization_1_name": "NAME_ORG1", "organization_2_name": "NAME_ORG2", "organization_3_name": "NAME_ORG3", "organization_4_name": "NAME_ORG4", "legal_name": "NAME_ORG1"}, "KNB1": {"customer_code": "Customer", "company_code": "CoCd", "reconciliation_account": "Recon.acct", "planning_group_code": "Plan. Group", "terms_of_payment_code": "PayT"}, "KNVI": {"customer_code": "Customer", "country_tax_code": "DeCR", "tax_category": "TxCat", "tax_classification": "TaxCl"}, "KNB5": {"dunning_procedure_code": "Procedure", "dunning_block_code": "Block"}, "KNVP": {"customer_code": "KUNNR", "partner_function_code": "PARVW"}, "ZBUT0000P3VVI9": {"partner": "PARTNER"}}
+{
+  "KNA1": {
+    "customer_code": "KUNNR",
+    "account_group_code": "KTOKD",
+    "customer_activity_cluster_code": "KATR1",
+    "trade_channel_code": "KATR6",
+    "sub_trade_channel_code": "KATR7",
+    "attribute_2_code": "KATR2",
+    "industry_code1": "BRAN1",
+    "assignment_hierrarchy_level": "HZUOR",
+    "distribution_type_code": "KATR4",
+    "customer_classification_code": "KUKLA",
+    "central_order_block_code": "AUFSD",
+    "Customer": "KUNNR",
+    "Group_1": "KTOKD",
+    "A1": "KATR1",
+    "A2": "KATR2",
+    "A4": "KATR4",
+    "A6": "KATR6",
+    "A7": "KATR7",
+    "Ind_code_1": "BRAN1",
+    "Cl": "KUKLA",
+    "HA": "HZUOR",
+    "OrBlk": "AUFSD",
+    "Date": "central_order_block_assignment_date",
+    "KUNNR": "KUNNR",
+    "KTOKD": "KTOKD",
+    "KATR1": "KATR1",
+    "KATR2": "KATR2",
+    "KATR6": "KATR6",
+    "KATR7": "KATR7",
+    "BRAN1": "BRAN1",
+    "HZUOR": "HZUOR",
+    "KATR4": "KATR4",
+    "KUKLA": "KUKLA",
+    "AUFSD": "AUFSD",
+    "_aliases": {
+      "KUNNR": ["KUNNR", "customer_code", "Customer", "KUNN", "Customer Code", "Customer No.", "Customer number", "Client"],
+      "KTOKD": ["KTOKD", "Group_1", "account_group_code", "Account group", "Account Group", "AcctGrp", "Acct.Grp", "Account Grp", "CuGp", "Group"],
+      "KATR1": ["KATR1", "A1", "customer_activity_cluster_code", "Attribute 1", "Attrib. 1", "Attr. 1", "CAC", "Activity cluster", "Cust. attr. 1"],
+      "KATR2": ["KATR2", "A2", "attribute_2_code", "Attribute 2", "Attrib. 2", "Attr. 2", "Cust. attr. 2"],
+      "KATR6": ["KATR6", "A6", "trade_channel_code", "Attribute 6", "Attrib. 6", "Attr. 6", "Trade channel", "TC", "Cust. attr. 6"],
+      "KATR7": ["KATR7", "A7", "sub_trade_channel_code", "Attribute 7", "Attrib. 7", "Attr. 7", "Sub trade channel", "STC", "Cust. attr. 7"],
+      "BRAN1": ["BRAN1", "Ind_code_1", "industry_code1", "Industry", "Industry sector", "Ind. sector", "IndSector", "Industry code"],
+      "HZUOR": ["HZUOR", "HA", "assignment_hierrarchy_level", "Hierarchy", "Assignment hierarchy", "Assign.hierarchy", "Hierrarchy", "Hier.assignment"],
+      "KATR4": ["KATR4", "A4", "distribution_type_code", "Attribute 4", "Attrib. 4", "Attr. 4", "Distribution type", "Dist.type"],
+      "KUKLA": ["KUKLA", "Cl", "customer_classification_code", "Classification", "Cust.classification", "Customer class", "Cust.class"],
+      "AUFSD": ["AUFSD", "OrBlk", "central_order_block_code", "Order block", "Central order block", "Ord.block", "Order Block", "C.order block", "Or.block"]
+    }
+  },
+  "KNVV": {
+    "customer_code": "KUNNR",
+    "sales_organization": "VKORG",
+    "distribution_channel": "VTWEG",
+    "division": "SPART",
+    "valid_from": "DATAB",
+    "valid_to": "DATBI",
+    "customer_group": "KDGRP",
+    "sales_group": "VKGRP",
+    "sales_office_code": "VKBUR",
+    "shipping_conditions": "VSBED",
+    "shipping_condition_code": "VSBED",
+    "delivering_plant": "VWERK",
+    "delivering_plant_code": "VWERK",
+    "account_assignment_group": "KTGRD",
+    "account_assignment_group_code": "KTGRD",
+    "customer_group_4": "KVGR4",
+    "customer_group_4_code": "KVGR4",
+    "price_group": "KONDA",
+    "customer_price_group_code": "KONDA",
+    "terms_of_payment": "ZTERM",
+    "terms_of_payment_code": "ZTERM",
+    "Customer": "KUNNR",
+    "KUNNR": "KUNNR",
+    "VKORG": "VKORG",
+    "VTWEG": "VTWEG",
+    "SPART": "SPART",
+    "DATAB": "DATAB",
+    "DATBI": "DATBI",
+    "KDGRP": "KDGRP",
+    "VKGRP": "VKGRP",
+    "VKBUR": "VKBUR",
+    "VSBED": "VSBED",
+    "VWERK": "VWERK",
+    "KTGRD": "KTGRD",
+    "KVGR4": "KVGR4",
+    "KONDA": "KONDA",
+    "ZTERM": "ZTERM",
+    "_aliases": {
+      "KUNNR": ["KUNNR", "customer_code", "Customer", "Customer Code"],
+      "VKORG": ["VKORG", "sales_organization", "Sales Org.", "Sales org.", "Sales Organization", "SOrg", "Sales Org"],
+      "VTWEG": ["VTWEG", "distribution_channel", "Distr. Channel", "Distr.Channel", "Distribution Channel", "DChl"],
+      "SPART": ["SPART", "division", "Division", "Div."],
+      "VKGRP": ["VKGRP", "sales_group", "sales_group_code", "Sales Group", "Sales group", "Sls.group"],
+      "KDGRP": ["KDGRP", "customer_group", "customer_group_code", "Customer Group", "Customer group", "Cust.group"],
+      "KVGR4": ["KVGR4", "customer_group_4", "customer_group_4_code", "Customer Group 4", "Cust.group 4", "Group 4"],
+      "VSBED": ["VSBED", "shipping_conditions", "shipping_condition_code", "Shipping Conditions", "Ship.cond.", "Shipping cond."],
+      "VWERK": ["VWERK", "delivering_plant", "delivering_plant_code", "Delivering Plant", "Plant", "Dl.plant"],
+      "KTGRD": ["KTGRD", "account_assignment_group", "account_assignment_group_code", "Acct assgt", "Account assignment", "AcctAssg"],
+      "KONDA": ["KONDA", "price_group", "customer_price_group_code", "Price group", "Price Group", "Price grp"],
+      "VKBUR": ["VKBUR", "sales_office_code", "Sales Office", "Sales office"],
+      "ZTERM": ["ZTERM", "terms_of_payment", "terms_of_payment_code", "Terms of Payment", "PayT", "Payment Terms"]
+    }
+  },
+  "KNVH": {
+    "customer_code": "KUNNR",
+    "Customer": "KUNNR",
+    "KUNNR": "KUNNR",
+    "VKORG": "VKORG",
+    "VTWEG": "VTWEG",
+    "SPART": "SPART",
+    "DATAB": "DATAB",
+    "DATBI": "DATBI",
+    "_aliases": {
+      "KUNNR": ["Customer", "customer_code", "KUNNR"],
+      "VKORG": ["Sales Org.", "Sales org.", "VKORG"],
+      "VTWEG": ["Distr. Channel", "VTWEG"],
+      "SPART": ["Division", "SPART"]
+    }
+  },
+  "KNVP": {
+    "customer_code": "KUNNR",
+    "partner_function_code": "PARVW",
+    "partner_code": "KUNNR",
+    "sales_organization": "VKORG",
+    "distribution_channel": "VTWEG",
+    "division": "SPART",
+    "Customer": "KUNNR",
+    "KUNNR": "KUNNR",
+    "Funct": "PARVW",
+    "SOrg_": "VKORG",
+    "DChl": "VTWEG",
+    "Dv": "SPART",
+    "PARVW": "PARVW",
+    "VKORG": "VKORG",
+    "VTWEG": "VTWEG",
+    "SPART": "SPART",
+    "_aliases": {
+      "KUNNR": ["Customer", "customer_code", "KUNNR", "Customer_1"],
+      "PARVW": ["PARVW", "partner_function_code", "Funct", "Partner Function", "Partner function", "Par.func.", "Function"],
+      "VKORG": ["VKORG", "SOrg_", "Sales Org.", "Sales org."],
+      "VTWEG": ["VTWEG", "DChl", "Distr. Channel"],
+      "SPART": ["SPART", "Dv", "Division"]
+    }
+  },
+  "KNVI": {
+    "customer_code": "KUNNR",
+    "country_tax_code": "ALAND",
+    "tax_category": "TAXKD",
+    "tax_classification": "TAXKD",
+    "Customer": "KUNNR",
+    "TAXKD": "TAXKD",
+    "_aliases": {
+      "KUNNR": ["Customer", "customer_code", "KUNNR"],
+      "TAXKD": ["TAXKD", "tax_classification", "TaxCl", "Tax class.", "Tax classification", "TxCat"]
+    }
+  },
+  "KNB1": {
+    "customer_code": "KUNNR",
+    "company_code": "BUKRS",
+    "reconciliation_account": "AKONT",
+    "planning_group_code": "FDGRV",
+    "terms_of_payment_code": "ZTERM",
+    "Customer": "KUNNR",
+    "CoCd": "BUKRS",
+    "AKONT": "AKONT",
+    "FDGRV": "FDGRV",
+    "ZTERM": "ZTERM",
+    "_join_kna1": {
+      "description": "account_group_code (KTOKD) берётся из KNA1 после JOIN по номеру клиента",
+      "left_table": "KNB1",
+      "right_table": "KNA1",
+      "left_key_sap": "KUNNR",
+      "right_key_sap": "KUNNR",
+      "left_key_export": "Customer",
+      "right_key_export": "Customer",
+      "bring_from_kna1": {
+        "account_group_code": "KTOKD",
+        "KTOKD": "KTOKD",
+        "kna.KTOKD": "KTOKD",
+        "b.ktokd": "KTOKD",
+        "b.account_group_code": "KTOKD"
+      }
+    },
+    "_aliases": {
+      "KUNNR": ["Customer", "customer_code", "KUNNR"],
+      "BUKRS": ["CoCd", "company_code", "Company Code", "Co. Code"],
+      "AKONT": ["Recon.acct", "Recon acct", "Reconciliation account", "AKONT"],
+      "FDGRV": ["Plan. Group", "Plan Group", "Planning group", "FDGRV"],
+      "ZTERM": ["PayT", "Payment Terms", "terms_of_payment_code", "ZTERM"]
+    }
+  },
+  "KNB5": {
+    "dunning_procedure_code": "MAHNA",
+    "dunning_block_code": "MANSP",
+    "MAHNA": "MAHNA",
+    "MANSP": "MANSP",
+    "_aliases": {
+      "MAHNA": ["Procedure", "Dunning Procedure", "dunning_procedure_code", "MAHNA"],
+      "MANSP": ["Block", "Dunning Block", "dunning_block_code", "MANSP"]
+    }
+  },
+  "DFKKBPTAXNUM1": {
+    "tax_1_value": "TAXNUM",
+    "taxtype": "TAXTYPE",
+    "TAXNUM1": "TAXNUM",
+    "TAXTYPE1": "TAXTYPE",
+    "TAXNUM": "TAXNUM",
+    "TAXTYPE": "TAXTYPE",
+    "_aliases": {
+      "TAXNUM": ["TAXNUM", "TAXNUM1", "tax_1_value", "Tax Number", "Tax number 1", "Tax Number 1"],
+      "TAXTYPE": ["TAXTYPE", "TAXTYPE1", "Type", "Tax type", "Tax Type 1"]
+    }
+  },
+  "DFKKBPTAXNUM2": {
+    "tax_2_value": "TAXNUM",
+    "TAXNUM2": "TAXNUM",
+    "TAXTYPE2": "TAXTYPE",
+    "TAXNUM": "TAXNUM",
+    "TAXTYPE": "TAXTYPE",
+    "_aliases": {
+      "TAXNUM": ["TAXNUM", "TAXNUM2", "tax_2_value", "Tax Number 2"],
+      "TAXTYPE": ["TAXTYPE", "TAXTYPE2", "Tax Type 2"]
+    }
+  },
+  "DFKKBPTAXNUM3": {
+    "tax_3_value": "TAXNUM",
+    "TAXNUM3": "TAXNUM",
+    "TAXTYPE3": "TAXTYPE",
+    "TAXNUM": "TAXNUM",
+    "TAXTYPE": "TAXTYPE",
+    "_aliases": {
+      "TAXNUM": ["TAXNUM", "TAXNUM3", "tax_3_value", "Tax Number 3"],
+      "TAXTYPE": ["TAXTYPE", "TAXTYPE3", "Tax Type 3"]
+    }
+  },
+  "DFKKBPTAXNUM5": {
+    "tax_5_value": "TAXNUM",
+    "TAXNUM5": "TAXNUM",
+    "TAXTYPE5": "TAXTYPE",
+    "TAXNUM": "TAXNUM",
+    "TAXTYPE": "TAXTYPE",
+    "Tax_Number": "TAXNUM",
+    "Tax_Number_Category": "TAXTYPE",
+    "Tax_Number_Long": "TAXNUM_LONG",
+    "Business_Partner": "PARTNER",
+    "_aliases": {
+      "TAXNUM": ["TAXNUM", "TAXNUM5", "tax_5_value", "Tax Number 5", "Tax_Number", "Tax Number"],
+      "TAXTYPE": ["TAXTYPE", "TAXTYPE5", "Tax Type 5", "Tax_Number_Category", "Tax Number Category"]
+    }
+  },
+  "BUT000": {
+    "organization_1_name": "NAME_ORG1",
+    "organization_2_name": "NAME_ORG2",
+    "organization_3_name": "NAME_ORG3",
+    "organization_4_name": "NAME_ORG4",
+    "legal_name": "NAME_ORG1",
+    "NAME_ORG1": "NAME_ORG1",
+    "NAME_ORG2": "NAME_ORG2",
+    "NAME_ORG3": "NAME_ORG3",
+    "NAME_ORG4": "NAME_ORG4"
+  },
+  "BUT0IS": {
+    "industry_code": "IND_SECTOR",
+    "IND_SECTOR": "IND_SECTOR",
+    "PARTNER": "PARTNER",
+    "_aliases": {
+      "IND_SECTOR": ["IND_SECTOR", "industry_code", "Industry", "Ind. sector"]
+    }
+  },
+  "BUT050": {
+    "customer_partner_code": "PARTNER2",
+    "PARTNER2": "PARTNER2",
+    "PARTNER1": "PARTNER1"
+  },
+  "BUT051": {
+    "client": "CLIENT",
+    "CLIENT": "CLIENT",
+    "Cl_": "CLIENT",
+    "relation_number": "RELNR",
+    "RELNR": "RELNR",
+    "BP_Relation__No_": "RELNR",
+    "partner1": "PARTNER1",
+    "PARTNER1": "PARTNER1",
+    "Business_Partner": "PARTNER1",
+    "partner2": "PARTNER2",
+    "PARTNER2": "PARTNER2",
+    "Business_Partner_1": "PARTNER2",
+    "valid_to": "DATE_TO",
+    "DATE_TO": "DATE_TO",
+    "Valid_To": "DATE_TO",
+    "relation_category": "RELTYP",
+    "RELTYP": "RELTYP",
+    "RelCat": "RELTYP",
+    "reference_indicator": "XRF",
+    "XRF": "XRF",
+    "RD": "XRF",
+    "function_name": "FNCTN",
+    "FNCTN": "FNCTN",
+    "Function_name": "FNCTN",
+    "function_of_partner": "PAFKT",
+    "PAFKT": "PAFKT",
+    "Fct": "PAFKT",
+    "company_department": "DPRTMNT",
+    "DPRTMNT": "DPRTMNT",
+    "Company_department": "DPRTMNT",
+    "department": "ABTNR",
+    "ABTNR": "ABTNR",
+    "Dept": "ABTNR",
+    "authority": "PAAUTH",
+    "PAAUTH": "PAAUTH",
+    "Authority": "PAAUTH",
+    "vip": "PAVIP",
+    "PAVIP": "PAVIP",
+    "VIP": "PAVIP",
+    "remark": "PAREM",
+    "PAREM": "PAREM",
+    "Note": "PAREM",
+    "telephone_number": "TEL_NUMBER",
+    "TEL_NUMBER": "TEL_NUMBER",
+    "Telephone": "TEL_NUMBER",
+    "telephone_extension": "TEL_EXTENS",
+    "TEL_EXTENS": "TEL_EXTENS",
+    "Extension": "TEL_EXTENS",
+    "fax_number": "FAX_NUMBER",
+    "FAX_NUMBER": "FAX_NUMBER",
+    "Fax": "FAX_NUMBER",
+    "fax_extension": "FAX_EXTENS",
+    "FAX_EXTENS": "FAX_EXTENS",
+    "Extension_1": "FAX_EXTENS",
+    "smtp_address": "SMTP_ADDRESS",
+    "SMTP_ADDRESS": "SMTP_ADDRESS",
+    "E-Mail_Address": "SMTP_ADDRESS",
+    "relation_percent": "REL_PER",
+    "REL_PER": "REL_PER",
+    "%": "REL_PER",
+    "relation_amount": "REL_AMO",
+    "REL_AMO": "REL_AMO",
+    "Amount": "REL_AMO",
+    "relation_currency": "REL_CUR",
+    "REL_CUR": "REL_CUR",
+    "Curr_": "REL_CUR",
+    "call_rule_id": "CALL_RULEID",
+    "CALL_RULEID": "CALL_RULEID",
+    "Rule_ID/Call": "CALL_RULEID",
+    "visit_rule_id": "VISIT_RULEID",
+    "VISIT_RULEID": "VISIT_RULEID",
+    "Rule_ID_/_Visit": "VISIT_RULEID",
+    "call_guid": "CALL_GUID",
+    "CALL_GUID": "CALL_GUID",
+    "Calendar_Schema_GUID": "CALL_GUID",
+    "visit_guid": "VISIT_GUID",
+    "VISIT_GUID": "VISIT_GUID",
+    "Calendar_Schema_GUID_1": "VISIT_GUID",
+    "bp_eew_but051": "BP_EEW_BUT051",
+    "BP_EEW_BUT051": "BP_EEW_BUT051",
+    "Dummy_function_in_length_1": "BP_EEW_BUT051",
+    "bp_eew_but051_sp": "BP_EEW_BUT051_SP",
+    "BP_EEW_BUT051_SP": "BP_EEW_BUT051_SP",
+    "Dummy_function_in_length_1_1": "BP_EEW_BUT051_SP",
+    "_aliases": {
+      "CLIENT": ["CLIENT", "Cl_", "Client", "Mandant"],
+      "RELNR": ["RELNR", "BP_Relation__No_", "BP Relation No.", "Relation No."],
+      "PARTNER1": ["PARTNER1", "Business_Partner", "Business Partner", "Partner 1"],
+      "PARTNER2": ["PARTNER2", "Business_Partner_1", "Business Partner 1", "Partner 2"],
+      "DATE_TO": ["DATE_TO", "Valid_To", "Valid To", "Valid to"],
+      "RELTYP": ["RELTYP", "RelCat", "Rel. Cat.", "Relation category"],
+      "XRF": ["XRF", "RD"],
+      "FNCTN": ["FNCTN", "Function_name", "Function name"],
+      "PAFKT": ["PAFKT", "Fct", "function_of_partner", "Function", "Contact Person Role"],
+      "DPRTMNT": ["DPRTMNT", "Company_department", "Company department"],
+      "ABTNR": ["ABTNR", "Dept", "Department"],
+      "PAAUTH": ["PAAUTH", "Authority"],
+      "PAVIP": ["PAVIP", "VIP"],
+      "PAREM": ["PAREM", "Note", "Remark"],
+      "TEL_NUMBER": ["TEL_NUMBER", "Telephone", "Tel. number"],
+      "TEL_EXTENS": ["TEL_EXTENS", "Extension", "Tel. extension"],
+      "FAX_NUMBER": ["FAX_NUMBER", "Fax", "Fax number"],
+      "FAX_EXTENS": ["FAX_EXTENS", "Extension_1", "Fax extension"],
+      "SMTP_ADDRESS": ["SMTP_ADDRESS", "E-Mail_Address", "E-Mail Address", "Email"],
+      "REL_PER": ["REL_PER", "%"],
+      "REL_AMO": ["REL_AMO", "Amount"],
+      "REL_CUR": ["REL_CUR", "Curr_", "Currency"],
+      "CALL_RULEID": ["CALL_RULEID", "Rule_ID/Call", "Rule ID Call"],
+      "VISIT_RULEID": ["VISIT_RULEID", "Rule_ID_/_Visit", "Rule ID Visit"],
+      "CALL_GUID": ["CALL_GUID", "Calendar_Schema_GUID", "Calendar Schema GUID"],
+      "VISIT_GUID": ["VISIT_GUID", "Calendar_Schema_GUID_1"],
+      "BP_EEW_BUT051": ["BP_EEW_BUT051", "Dummy_function_in_length_1"],
+      "BP_EEW_BUT051_SP": ["BP_EEW_BUT051_SP", "Dummy_function_in_length_1_1"]
+    }
+  },
+  "BUT0BK": {
+    "partner": "PARTNER",
+    "business_partner": "PARTNER",
+    "PARTNER": "PARTNER",
+    "Business_Partner": "PARTNER",
+    "BANKS": "BANKS",
+    "bank_country": "BANKS",
+    "C/R": "BANKS",
+    "CLIENT": "CLIENT",
+    "Cl_": "CLIENT",
+    "_aliases": {
+      "PARTNER": ["PARTNER", "Business_Partner", "Business Partner", "BP", "partner"],
+      "BANKS": ["BANKS", "bank_country", "Bank country", "Bank Ctry", "C/R"],
+      "CLIENT": ["CLIENT", "Cl_", "Client", "Mandant"]
+    }
+  },
+  "T005": {
+    "country_code": "C/R",
+    "LAND1": "C/R",
+    "LAND": "C/R",
+    "ISO_Code": "ISO_Code",
+    "C/R": "C/R",
+    "_aliases": {
+      "C/R": ["C/R", "LAND1", "LAND"],
+      "ISO_Code": ["ISO_Code", "ISO Code", "ISO code", "ISO_Code_2"]
+    }
+  },
+  "ZBUT0000P3VVI9": {
+    "partner": "PARTNER",
+    "territory_type": "TYPE",
+    "territory_code": "TERRID",
+    "territory_validity_from": "DATE_FROM",
+    "territory_validity_to": "DATE_TO",
+    "CLIENT": "CLIENT",
+    "PARTNER": "PARTNER",
+    "TYPE": "TYPE",
+    "TERRID": "TERRID",
+    "DATE_FROM": "DATE_FROM",
+    "DATE_TO": "DATE_TO",
+    "_expand_composite_date_to": true,
+    "_aliases": {
+      "PARTNER": ["PARTNER", "partner", "Business_Partner", "Business Partner"],
+      "TYPE": ["TYPE", "territory_type", "Territory Type", "Terr. Type"],
+      "TERRID": ["TERRID", "territory_code", "Territory", "Territory ID", "Terr_ID"],
+      "DATE_FROM": ["DATE_FROM", "territory_validity_from", "Valid from", "Date from", "Valid_from"],
+      "DATE_TO": ["DATE_TO", "territory_validity_to", "Valid to", "Date to", "Valid_to"]
+    }
+  },
+  "ADRC": {
+    "country": "COUNTRY",
+    "region": "REGION",
+    "city": "CITY1",
+    "postal_code": "POST_CODE1",
+    "street": "STREET",
+    "house_number": "HOUSE_NUM1",
+    "COUNTRY": "COUNTRY",
+    "TEL_NUMBER": "TEL_NUMBER"
+  },
+  "ADR2": {
+    "country_code": "COUNTRY",
+    "COUNTRY": "COUNTRY",
+    "Ctry/Reg_": "COUNTRY",
+    "TEL_NUMBER": "TEL_NUMBER",
+    "Telephone": "TEL_NUMBER",
+    "PERSNUMBER": "PERSNUMBER",
+    "Person": "PERSNUMBER",
+    "ADDRNUMBER": "ADDRNUMBER",
+    "Addr__No_": "ADDRNUMBER",
+    "_aliases": {
+      "PERSNUMBER": ["PERSNUMBER", "Person", "Pers.number", "Person number"],
+      "ADDRNUMBER": ["ADDRNUMBER", "Addr__No_", "Addr. No.", "Address number"],
+      "COUNTRY": ["COUNTRY", "country_code", "Ctry/Reg_", "Ctry/Reg.", "Country", "Telephone Country"],
+      "TEL_NUMBER": ["TEL_NUMBER", "Telephone", "Tel. number"]
+    }
+  },
+  "ADR6": {
+    "email": "SMTP_ADDR",
+    "contact_medium_value": "SMTP_ADDR",
+    "SMTP_ADDR": "SMTP_ADDR",
+    "E-Mail_Address": "SMTP_ADDR",
+    "_aliases": {
+      "SMTP_ADDR": ["SMTP_ADDR", "email", "E-Mail_Address", "E-Mail Address", "Email", "SMTP address"]
+    }
+  },
+  "/LOT/GC_ADR": {
+    "longitude": "_LOT_GC_LONGITUD",
+    "latitude": "_LOT_GC_LATITUDE",
+    "_LOT_GC_LONGITUD": "_LOT_GC_LONGITUD",
+    "_LOT_GC_LATITUDE": "_LOT_GC_LATITUDE"
+  }
+}
+
+
+
+
+
+
+
+
+
+
+

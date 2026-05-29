@@ -6,7 +6,7 @@ import pandas as pd
 import re
 import numpy as np
 from datetime import datetime
-from typing import Dict, List, Tuple, Optional, Any
+from typing import Dict, List, Tuple, Optional, Any, Iterable
 from collections import Counter
 
 class TaxNumHandler:
@@ -23,20 +23,31 @@ class TaxNumHandler:
         self.current_result = None
         self.current_errors = []
         
-        # Загружаем конфигурацию форматов и допустимых длин из conf_tax_number_format
+        # Загружаем conf_tax_number_format.json (и при наличии — таблицу в БД)
         try:
             self.tax_formats, self.valid_lengths_by_country = self._load_tax_formats()
+            self._format_regex_by_country = self._build_format_regex_cache()
         except Exception as e:
             print(f"      Ошибка загрузки конфигурации налоговых номеров: {e}")
             self.tax_formats = {'RU': ['[0-9]' * 8, '[0-9]' * 9, '[0-9]' * 10, '[0-9]' * 12]}
             self.valid_lengths_by_country = {'RU': {8, 9, 10, 12}}
+            self._format_regex_by_country = self._build_format_regex_cache()
+        
+        self._apply_export_column_map()
         
         # Определяем какой это TAXNUM (1, 2, 3, 4, 5, 6)
         self.taxnum_type = self._get_taxnum_type(table_name)
         
         initial_len = len(self.df) if self.df is not None and not self.df.empty else 0
-        # В отчёт «всего записей» — только записи данного типа (TAXNUM1 → 100к, TAXNUM2 → своё число и т.д.)
-        if re.search(r'_RU\d$', table_name, re.I) and self.taxnum_type:
+        # Срез по типу: DFKKBPTAXNUM5 / DFKKBPTAXNUM_RU5 — только taxtype=5 (RU5)
+        needs_type_slice = bool(
+            self.taxnum_type
+            and (
+                re.search(r'_RU\d$', table_name, re.I)
+                or re.search(r'DFKKBPTAXNUM\d$', table_name, re.I)
+            )
+        )
+        if needs_type_slice:
             type_col = self._find_taxtype_column()
             if type_col is not None:
                 # Есть колонка типа (TAXTYPE и т.д.) — оставляем только строки с этим типом
@@ -89,12 +100,39 @@ class TaxNumHandler:
         for country, lengths in self.valid_lengths_by_country.items():
             print(f"        {country}: допустимые длины {sorted(lengths)}")
     
+    def _conf_tax_format_json_paths(self) -> List[str]:
+        paths: List[str] = []
+        if hasattr(self.checker, 'rules_file') and self.checker.rules_file:
+            paths.append(
+                os.path.join(
+                    os.path.dirname(self.checker.rules_file),
+                    'conf_tax_number_format.json',
+                )
+            )
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        paths.extend([
+            os.path.join(script_dir, '..', 'json files', 'conf_tax_number_format.json'),
+            os.path.join(script_dir, '..', 'config', 'conf_tax_number_format.json'),
+        ])
+        try:
+            paths.append(os.path.join(os.getcwd(), 'json files', 'conf_tax_number_format.json'))
+        except Exception:
+            pass
+        seen: set[str] = set()
+        out: List[str] = []
+        for p in paths:
+            ap = os.path.abspath(p)
+            if ap not in seen:
+                seen.add(ap)
+                out.append(ap)
+        return out
+
     def _load_tax_formats(self) -> Tuple[Dict[str, List[str]], Dict[str, set]]:
-        """Загружает форматы и допустимые длины из conf_tax_number_format (БД или conf_tax_number_format.json).
-        Возвращает (formats, valid_lengths_by_country). Правило 63.1 использует допустимые длины из конфига."""
-        formats = {}
+        """Загружает форматы из conf_tax_number_format.json (и при наличии — из БД).
+        RCCONF_63.1: IF format not defined for country THEN '' (строка не оценивается)."""
+        formats: Dict[str, List[str]] = {}
         valid_lengths: Dict[str, set] = {}
-        
+
         def add_entry(country: str, tax_format: str, length: Optional[int] = None):
             country = country.upper()
             if not country:
@@ -102,21 +140,53 @@ class TaxNumHandler:
             if country not in formats:
                 formats[country] = []
                 valid_lengths[country] = set()
-            if tax_format:
+            if tax_format and tax_format not in formats[country]:
                 formats[country].append(tax_format)
             if length is not None:
                 valid_lengths[country].add(length)
             elif tax_format:
-                # Длину можно вывести из формата [0-9]...[0-9]
                 n = tax_format.count('[0-9]')
                 if n > 0:
                     valid_lengths[country].add(n)
-        
-        # 1) Из таблицы в БД
+
+        def load_from_records(records: Iterable[Any], source: str) -> int:
+            n = 0
+            for item in records:
+                if isinstance(item, dict):
+                    country = str(item.get('country_code', ''))
+                    tax_format = str(item.get('tax_format', ''))
+                    length = item.get('length')
+                    if length is not None:
+                        try:
+                            length = int(length)
+                        except (TypeError, ValueError):
+                            length = None
+                    add_entry(country, tax_format, length)
+                    n += 1
+                elif hasattr(item, 'get'):
+                    pass
+            if n:
+                print(f"      Загрузка conf_tax_number_format из {source}: {n} записей")
+            return n
+
+        # 1) JSON в проекте (основной источник для RCCONF_63.1)
+        for conf_path in self._conf_tax_format_json_paths():
+            if not os.path.isfile(conf_path):
+                continue
+            try:
+                with open(conf_path, 'r', encoding='utf-8') as f:
+                    conf_list = json.load(f)
+                load_from_records(
+                    conf_list if isinstance(conf_list, list) else [conf_list],
+                    conf_path,
+                )
+            except Exception as e:
+                print(f"      Ошибка загрузки {conf_path}: {e}")
+
+        # 2) Таблица в БД (дополняет JSON)
         try:
             formats_df = self.memory_manager.get_table('conf_tax_number_format')
             if formats_df is not None and not formats_df.empty:
-                print(f"      Загрузка конфигурации из БД: {len(formats_df)} записей")
                 for _, row in formats_df.iterrows():
                     country = str(row.get('country_code', ''))
                     tax_format = str(row.get('tax_format', ''))
@@ -127,30 +197,10 @@ class TaxNumHandler:
                         except (TypeError, ValueError):
                             length = None
                     add_entry(country, tax_format, length)
+                print(f"      Дополнение из БД conf_tax_number_format: {len(formats_df)} строк")
         except Exception as e:
-            print(f"      Ошибка загрузки из БД: {e}")
-        
-        # 2) Если в БД пусто — из conf_tax_number_format.json (источник допустимых длин для правил)
-        if not formats and hasattr(self.checker, 'rules_file') and self.checker.rules_file:
-            conf_path = os.path.join(os.path.dirname(self.checker.rules_file), 'conf_tax_number_format.json')
-            if os.path.isfile(conf_path):
-                try:
-                    with open(conf_path, 'r', encoding='utf-8') as f:
-                        conf_list = json.load(f)
-                    print(f"      Загрузка конфигурации из файла: {conf_path}")
-                    for item in (conf_list if isinstance(conf_list, list) else [conf_list]):
-                        country = str(item.get('country_code', ''))
-                        tax_format = str(item.get('tax_format', ''))
-                        length = item.get('length')
-                        if length is not None:
-                            try:
-                                length = int(length)
-                            except (TypeError, ValueError):
-                                length = None
-                        add_entry(country, tax_format, length)
-                except Exception as e:
-                    print(f"      Ошибка загрузки из файла {conf_path}: {e}")
-        
+            print(f"      conf_tax_number_format в БД недоступна: {e}")
+
         # 3) Дефолт для России, если конфиг не найден
         if not formats:
             default_ru = [
@@ -164,7 +214,52 @@ class TaxNumHandler:
             print(f"      Использована конфигурация по умолчанию для RU: длины {sorted(valid_lengths['RU'])}")
         
         return formats, valid_lengths
-    
+
+    def _build_format_regex_cache(self) -> Dict[str, List[re.Pattern]]:
+        cache: Dict[str, List[re.Pattern]] = {}
+        for country, fmt_list in (self.tax_formats or {}).items():
+            patterns: List[re.Pattern] = []
+            for fmt in fmt_list:
+                try:
+                    patterns.append(self._convert_format_to_regex(fmt))
+                except Exception:
+                    continue
+            if patterns:
+                cache[country.upper()] = patterns
+        return cache
+
+    def _apply_export_column_map(self) -> None:
+        """Шапка выгрузки (Tax_Number, Tax_Number_Category) -> TAXNUM/TAXTYPE для правил."""
+        if self.df is None or self.df.empty:
+            return
+        try:
+            from utils.column_map_resolver import load_column_map, apply_column_headers_for_rules
+            root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            cm = getattr(self.checker, 'column_map', None) or load_column_map(root)
+            if cm:
+                self.df = apply_column_headers_for_rules(
+                    self.df, self.table_name, cm, root, log_renames=False
+                )
+        except Exception as e:
+            print(f"      [WARN] column_map для {self.table_name}: {e}")
+
+    def _country_has_reference_format(self, country: str) -> bool:
+        c = (country or '').strip().upper() or 'RU'
+        return bool(
+            (self._format_regex_by_country or {}).get(c)
+            or (self.valid_lengths_by_country or {}).get(c)
+        )
+
+    def _tax_value_matches_country(self, value: str, country: str) -> bool:
+        c = (country or '').strip().upper() or 'RU'
+        patterns = (self._format_regex_by_country or {}).get(c)
+        if patterns:
+            return any(p.match(value) for p in patterns)
+        lengths = (self.valid_lengths_by_country or {}).get(c)
+        if lengths and value.isdigit():
+            return len(value) in lengths
+        return False
+
     def _get_taxnum_type(self, table_name: str) -> int:
         """Определяет тип TAXNUM из названия таблицы (DFKKBPTAXNUM1 → 1, DFKKBPTAXNUM_RU2 → 2 и т.д.)."""
         m = re.search(r'DFKKBPTAXNUM(\d)$', table_name, re.I)
@@ -286,7 +381,10 @@ class TaxNumHandler:
             except Exception:
                 continue
         # 3) По имени
-        candidates = ['TAXTYPE', 'taxtype', 'TAX_TYPE', 'tax_type', 'TAXNUMTYPE', 'type', 'TYPE']
+        candidates = [
+            'Tax_Number_Category', 'TAXTYPE', 'taxtype', 'TAX_TYPE', 'tax_type',
+            'TAXNUMTYPE', 'type', 'TYPE',
+        ]
         for c in candidates:
             if c in self.df.columns:
                 return c
@@ -322,15 +420,55 @@ class TaxNumHandler:
         return None
     
     def find_column(self, column_name: str) -> Optional[str]:
-        """Находит реальное имя колонки"""
+        """Находит реальное имя колонки (TAXNUM1 в правиле → TAXNUM в DFKKBPTAXNUM1)."""
+        if not column_name or self.df is None or self.df.empty:
+            return None
         if column_name in self.df.columns:
             return column_name
-        
-        column_upper = column_name.upper()
+
+        try:
+            from utils.column_map_resolver import resolve_column_in_df, load_column_map
+            root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            cm = getattr(self.checker, 'column_map', None) or load_column_map(root)
+            found = resolve_column_in_df(
+                self.df, column_name, self.table_name, cm, root
+            )
+            if found:
+                return found
+        except ImportError:
+            pass
+
+        tname = str(self.table_name or "").upper()
+        cname = str(column_name).upper()
+        if tname.startswith("DFKKBPTAXNUM"):
+            if re.match(r"TAXNUM\d$", cname):
+                for prefer in ("Tax_Number", "Tax_Number_Long", "TAXNUM", "TAXNUM_LONG"):
+                    if prefer in self.df.columns:
+                        return prefer
+                for col in self.df.columns:
+                    cu = str(col).strip().upper().replace(" ", "").replace("_", "")
+                    if cu in ("TAXNUMBER", "TAXNUM") and "CATEGORY" not in cu and "LONG" not in cu:
+                        return col
+                    if cu == "TAXNUMBERLONG":
+                        return col
+            if re.match(r"TAXTYPE\d$", cname):
+                for col in self.df.columns:
+                    cu = str(col).strip().upper()
+                    if cu in ("TAXTYPE", "TAXTYP", "TYPE"):
+                        return col
+
+        column_upper = column_name.upper().replace(" ", "").replace("_", "")
         for col in self.df.columns:
-            if column_upper in col.upper() or col.upper() in column_upper:
+            cu = col.upper().replace(" ", "").replace("_", "")
+            if column_upper == cu:
                 return col
-        
+            if column_upper == "TAXNUM" and cu in ("TAXNUMBER", "TAXNUM"):
+                return col
+            if column_upper == "TAXNUM" and cu == "TAXNUMBERLONG":
+                continue
+            if len(column_upper) >= 5 and column_upper == cu:
+                return col
+
         return None
     
     def validate_rule(self, rule: dict):
@@ -343,8 +481,10 @@ class TaxNumHandler:
         self.current_result = None
         self.current_errors = []
         
-        # Находим реальную колонку
+        # Находим реальную колонку (Tax_Number, не Tax_Number_Long)
         real_column = self.find_column(column_to_check)
+        if real_column and real_column not in self.df.columns:
+            real_column = None
         if not real_column:
             print(f"      Колонка '{column_to_check}' не найдена в {self.table_name}")
             self._save_empty_result(rule_code, rule_description, column_to_check, rule)
@@ -362,7 +502,7 @@ class TaxNumHandler:
             
             # Исходный вариант: только правила 63.1 (формат) и 63.7 (уникальность)
             if rule_code == 'RCCONF_63.1':
-                error_count, error_df = self._validate_taxnum_format(real_column)
+                error_count, error_df, total = self._validate_taxnum_format(real_column)
             elif rule_code == 'RCCONF_63.7':
                 error_count, error_df = self._validate_taxnum_uniqueness(real_column)
             else:
@@ -427,6 +567,41 @@ class TaxNumHandler:
         out["DQ_TIMESTAMP"] = ts
         return out
 
+    def _coalesce_tax_number_series(self) -> Tuple[str, pd.Series]:
+        """
+        Номер в выгрузке SAP: Tax_Number и/или Tax_Number_Long (часто заполнено только одно).
+        Не Tax_Number_Category (там RU5 = тип, не значение номера).
+        """
+        short_col = None
+        for name in ("Tax_Number", "TAXNUM", f"tax_{self.taxnum_type}_value" if self.taxnum_type else ""):
+            if name and name in self.df.columns:
+                short_col = name
+                break
+        long_col = None
+        for name in ("Tax_Number_Long", "TAXNUM_LONG"):
+            if name in self.df.columns:
+                long_col = name
+                break
+        if not short_col and not long_col:
+            return "", pd.Series("", index=self.df.index)
+
+        short_s = (
+            self.df[short_col].map(self._normalize_taxnum_to_str)
+            if short_col
+            else pd.Series("", index=self.df.index)
+        )
+        long_s = (
+            self.df[long_col].map(self._normalize_taxnum_to_str)
+            if long_col
+            else pd.Series("", index=self.df.index)
+        )
+        combined = short_s.where(short_s != "", long_s)
+        if short_col and long_col:
+            label = f"{short_col}|{long_col}"
+        else:
+            label = short_col or long_col or ""
+        return label, combined
+
     def _normalize_taxnum_to_str(self, value) -> str:
         """Приводит значение к строке из цифр: число без .0 и научной записи, кавычки с краёв убираем."""
         if pd.isna(value):
@@ -444,119 +619,67 @@ class TaxNumHandler:
             s = s[:-2]
         return s
 
-    def _validate_taxnum_format(self, column_name: str) -> Tuple[int, pd.DataFrame]:
+    def _validate_taxnum_format(self, column_name: str) -> Tuple[int, pd.DataFrame, int]:
         """
-        ПРОСТАЯ РЕАЛИЗАЦИЯ ПРАВИЛА 63.1:
-        
+        RCCONF_63.1 (TAXNUM5 / tax_5_value):
         IF tax_5_value IS NULL or reference format not defined THEN ''
         ELSE IF tax_5_value has correct format THEN '1' ELSE '0'
-        
-        Правильная проверка: 
-        1. NULL значения - не ошибка (пропускаем)
-        2. Не цифры - ошибка
-        3. Цифры, но длина не 8, 9, 10 или 12 - ошибка
-        4. Цифры и длина 8, 9, 10 или 12 - успех
+        Значение: Tax_Number, если пусто — Tax_Number_Long (не Tax_Number_Category/RU5).
         """
-        errors = []
-        if column_name not in self.df.columns:
-            return 0, pd.DataFrame()
-        
-        print(f"      Проверка правила 63.1: TAXNUM должен содержать только цифры и иметь длину 8, 9, 10 или 12")
-        
-        # Статистика для отладки
-        length_stats = Counter()
-        non_digit_count = 0
-        correct_count = 0
-        wrong_length_count = 0
-        
-        for idx, row in self.df.iterrows():
-            taxnum = row.get(column_name)
-            s = self._normalize_taxnum_to_str(taxnum)
-            
-            # Собираем статистику по длине
-            length_stats[len(s)] += 1
-            
-            # IF tax_5_value IS NULL THEN '' (не ошибка)
-            if not s:
-                continue
-            
-            # Определяем страну
-            country = self._get_country_for_row(row)
-            
-            # Проверяем что значение состоит только из цифр
-            if not s.isdigit():
-                non_digit_count += 1
-                desc = f"Содержит не только цифры. Длина: {len(s)} симв. Страна: {country}"
-                errors.append(
-                    self._build_full_error_row(
-                        idx,
-                        {
-                            "DQ_ERROR_DESCRIPTION": desc,
-                            "DQ_EXPECTED_FORMAT": "Только цифры (0-9), длина 8, 9, 10 или 12",
-                            "DQ_TAX_NUMBER_NORMALIZED": s,
-                            "DQ_TAXNUM_LENGTH": len(s),
-                            "DQ_COUNTRY_USED_FOR_RULE": country,
-                            "DQ_CHECKED_COLUMN": column_name,
-                        },
-                    )
+        value_label, ser = self._coalesce_tax_number_series()
+        if not value_label or ser.empty:
+            print(f"      [WARN] RCCONF_63.1: нет Tax_Number / Tax_Number_Long в {self.table_name}")
+            return 0, pd.DataFrame(), 0
+
+        ru_lengths = sorted((self.valid_lengths_by_country or {}).get("RU", set()))
+        if not ru_lengths:
+            ru_lengths = [8, 9, 10, 12]
+        allowed_lengths = set(ru_lengths)
+
+        print(
+            f"      RCCONF_63.1: значение из {value_label} (не Tax_Number_Category) — "
+            f"только цифры, длина in {ru_lengths}"
+        )
+        non_empty = ser != ""
+        evaluated = int(non_empty.sum())
+        if evaluated == 0:
+            print(f"      [INFO] RCCONF_63.1: нет заполненных значений в {column_name}")
+            return 0, pd.DataFrame(), 0
+
+        digits_only = ser.str.match(r"^\d+$", na=False)
+        length_ok = ser.str.len().isin(allowed_lengths)
+        ok_mask = non_empty & digits_only & length_ok
+        error_mask = non_empty & ~ok_mask
+        error_count = int(error_mask.sum())
+        ok_count = int(ok_mask.sum())
+
+        error_df = pd.DataFrame()
+        if error_count > 0:
+            # В файл ошибок — полная строка из DFKKBPTAXNUM* (все колонки выгрузки), без обрезки
+            error_df = self.df.loc[error_mask].copy()
+            error_df["DQ_SOURCE_ROW_INDEX"] = error_df.index
+            norm_ser = ser.loc[error_mask]
+            error_df["DQ_TAX_NUMBER_NORMALIZED"] = norm_ser
+            error_df["DQ_TAXNUM_LENGTH"] = norm_ser.str.len()
+            error_df["DQ_COUNTRY_USED_FOR_RULE"] = "RU"
+            error_df["DQ_CHECKED_COLUMN"] = value_label
+            error_df["DQ_EXPECTED_FORMAT"] = f"conf_tax_number_format RU: lengths {ru_lengths}"
+            error_df["DQ_ERROR_DESCRIPTION"] = error_df["DQ_TAX_NUMBER_NORMALIZED"].map(
+                lambda s: (
+                    f"Недопустимый TAXNUM{self.taxnum_type}: "
+                    f"длина {len(str(s))}, значение {str(s)[:40]}. "
+                    f"Допустимо: только цифры, длина {ru_lengths}"
                 )
-                continue
-            
-            # ПРОСТАЯ ПРОВЕРКА ДЛИНЫ ПО ВАШЕМУ УСЛОВИЮ:
-            # taxnum должен быть длиной 8, 9, 10 или 12 символов
-            if len(s) == 8 or len(s) == 9 or len(s) == 10 or len(s) == 12:
-                # УСПЕХ: правильная длина
-                correct_count += 1
-                # Ничего не делаем - нет ошибки
-            else:
-                # ОШИБКА: любая другая длина (1, 2, 3, 4, 5, 6, 7, 11, 13, 14, ...)
-                wrong_length_count += 1
-                desc = (
-                    f"Недопустимая длина: {len(s)} симв. (только цифры). Страна: {country}. "
-                    f"Допустимо: 8, 9, 10 или 12 символов"
-                )
-                errors.append(
-                    self._build_full_error_row(
-                        idx,
-                        {
-                            "DQ_ERROR_DESCRIPTION": desc,
-                            "DQ_EXPECTED_FORMAT": "Только цифры (0-9), длина 8, 9, 10 или 12",
-                            "DQ_TAX_NUMBER_NORMALIZED": s,
-                            "DQ_TAXNUM_LENGTH": len(s),
-                            "DQ_COUNTRY_USED_FOR_RULE": country,
-                            "DQ_CHECKED_COLUMN": column_name,
-                        },
-                    )
-                )
-        
-        # Выводим детальную статистику
-        print(f"      Статистика проверки:")
-        print(f"        Всего записей: {len(self.df)}")
-        print(f"        Проверено (не NULL/пустых): {correct_count + non_digit_count + wrong_length_count}")
-        print(f"        Успешно (цифры + правильная длина): {correct_count}")
-        print(f"        Ошибок (всего): {len(errors)}")
-        print(f"          - Не цифры: {non_digit_count}")
-        print(f"          - Неправильная длина: {wrong_length_count}")
-        
-        print(f"      Распределение по длинам (все значения):")
-        for length, count in sorted(length_stats.items()):
-            if length == 0:
-                print(f"        Длина 0 (NULL/пустые): {count}")
-            else:
-                print(f"        Длина {length}: {count}")
-        
-        # Если есть ошибки, группируем их по длине для наглядности
-        if errors:
-            error_by_length = Counter()
-            for error in errors:
-                length = error.get("DQ_TAXNUM_LENGTH", error.get("length", 0))
-                error_by_length[length] += 1
-            
-            print(f"      Ошибки по длинам:")
-            for length, count in sorted(error_by_length.items()):
-                print(f"        Длина {length}: {count} ошибок")
-        
-        return len(errors), pd.DataFrame(errors) if errors else pd.DataFrame()
+            )
+            print(f"      [INFO] В файл ошибок: {len(error_df):,} строк, {len(error_df.columns)} колонок (полная строка таблицы)")
+
+        skipped_null = len(self.df) - evaluated
+        print(f"      Статистика RCCONF_63.1:")
+        print(f"        Строк в срезе TAXNUM{self.taxnum_type}: {len(self.df):,}")
+        print(f"        Пропущено (пусто, IF NULL THEN ''): {skipped_null:,}")
+        print(f"        Оценено: {evaluated:,} (успешно: {ok_count:,}, ошибок: {error_count:,})")
+
+        return error_count, error_df, evaluated
     
     def _convert_format_to_regex(self, tax_format: str) -> re.Pattern:
         """Конвертирует формат из конфигурации в regex"""

@@ -58,7 +58,7 @@ class MemoryManager:
     DFKKBPTAXNUM_TABLES = ("DFKKBPTAXNUM1", "DFKKBPTAXNUM2", "DFKKBPTAXNUM3", "DFKKBPTAXNUM4", "DFKKBPTAXNUM5", "DFKKBPTAXNUM6")
 
     # Таблицы, которые при загрузке приводятся к «чистому списку контрагентов»: одна строка на PARTNER (дубли по торговым точкам убираются)
-    TABLES_UNIQUE_PARTNER = ("ZBUT0000P3VVI9", "ZBUT0000P", "ZBUT0000P3VV19", "KNVP")
+    TABLES_UNIQUE_PARTNER = ("ZBUT0000P3VVI9", "ZBUT0000P", "ZBUT0000P3VV19")
 
     # Алиасы имён таблиц: логическое имя (в правилах, например /LOT/GC_ADR) -> физическое имя в БД (LOTGC_ADR). Одна таблица — два имени.
     TABLE_NAME_ALIASES = {
@@ -421,6 +421,19 @@ class MemoryManager:
                 match = next((t for t in all_in_db if str(t).strip().upper() == ref), None)
                 if match:
                     to_load.add(match)
+        # RCCOMP_180.1 и др.: BUT0BK/BUT051 джойнятся к KNA1.KUNNR (в GUI — Customer).
+        kna1_dependent = {"BUT0BK", "BUT051", "KNB1", "KNVV", "KNVP", "KNVH", "ADR2", "ADRC", "BUT050"}
+        kna1_requested = any(str(t).strip().upper() == "KNA1" for t in table_names)
+        if kna1_dependent.intersection({str(t).strip().upper() for t in table_names}) or kna1_requested:
+            match = next((t for t in all_in_db if str(t).strip().upper() == "KNA1"), None)
+            if match:
+                to_load.add(match)
+        # RCCONF_173.1: дата назначения блока из CDHDR/CDPOS
+        if kna1_requested:
+            for ref in ("CDHDR", "CDPOS"):
+                match = next((t for t in all_in_db if str(t).strip().upper() == ref), None)
+                if match:
+                    to_load.add(match)
         # ADRC: подгружаем по имени без учёта регистра (в БД может быть "adrc")
         for t in table_names:
             if str(t).strip().upper() == "ADRC" and not any(str(x).strip().upper() == "ADRC" for x in to_load):
@@ -656,6 +669,16 @@ class MemoryManager:
         )
         return df.loc[~mask].copy()
 
+    @staticmethod
+    def _downcast_numeric(series, *, kind: str = "float"):
+        """downcast без errors='ignore' (deprecated в pandas 2.x). При сбое — исходная серия."""
+        try:
+            if kind == "integer":
+                return pd.to_numeric(series, downcast="integer")
+            return pd.to_numeric(series, downcast="float")
+        except (ValueError, TypeError):
+            return series
+
     def _optimize_dataframe(self, df):
         """Оптимизирует DataFrame: типы данных, категории, downcast чисел. Подавляем RuntimeWarning при cast NaN→int."""
         if len(df) == 0:
@@ -674,9 +697,9 @@ class MemoryManager:
                 if col_type in ['int64', 'int32']:
                     ser = df[col]
                     if ser.notna().all():
-                        df[col] = pd.to_numeric(ser, downcast='integer', errors='ignore')
+                        df[col] = self._downcast_numeric(ser, kind="integer")
                 elif col_type in ['float64', 'float32']:
-                    df[col] = pd.to_numeric(df[col], downcast='float', errors='ignore')
+                    df[col] = self._downcast_numeric(df[col], kind="float")
                 
                 # Оптимизация строковых типов
                 elif col_type == 'object':
@@ -825,6 +848,12 @@ class MemoryManager:
             for ref in ("T005", "ZW2_CMDEMAND", "BUT020", "KNVV"):
                 if ref in all_in_db:
                     to_load.add(ref)
+        kna1_requested = any(str(t).strip().upper() == "KNA1" for t in table_names)
+        if kna1_requested:
+            for ref in ("KNA1", "CDHDR", "CDPOS"):
+                match = next((t for t in all_in_db if str(t).strip().upper() == ref), None)
+                if match:
+                    to_load.add(match)
         to_load = sorted(to_load)
         if not to_load:
             print(f"   {TERMINAL_SYMBOLS_LOCAL['WARNING']} Нет таблиц для загрузки")

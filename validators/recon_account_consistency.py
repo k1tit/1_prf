@@ -1,8 +1,9 @@
 import json
 import os
-import re
 
 import pandas as pd
+
+from utils.sap_account_keys import norm_sap_account_group, norm_sap_recon_account
 
 from .base_validator import BaseValidator
 
@@ -18,33 +19,12 @@ class ReconAccountConsistencyValidator(BaseValidator):
     - ELSE '0'
     """
 
-    EMPTY_TOKENS = {"", "none", "null", "nan", "<na>", "nat", "-", ".", "n/a", "na"}
-
     def _norm(self, v) -> str:
-        if v is None:
-            return ""
-        if isinstance(v, float) and pd.isna(v):
-            return ""
-        # Явный быстрый SKIP для числового нуля
-        if isinstance(v, (int, float)) and v == 0:
-            return ""
-        s = str(v)
-        # Нормализация "невидимых" пробелов/служебных символов из Excel/CSV
-        s = s.replace("\u00a0", " ").replace("\ufeff", "")
-        s = re.sub(r"\s+", " ", s).strip()
-        s = s.strip("'").strip('"').strip()
-        if s in {"''", '""'}:
-            return ""
-        # Частый артефакт загрузки: пустой AKONT превращается в 0 / 0.0
-        if s in {"0", "0.0", "0.00"}:
-            return ""
-        if s.replace("0", "") == "":
-            return ""
-        if re.fullmatch(r"0+(\.0+)?", s):
-            return ""
-        if s.endswith(".0") and s[:-2].isdigit():
-            s = s[:-2]
-        return "" if s.lower() in self.EMPTY_TOKENS else s
+        """AKONT: conf и БД — одна форма (10 цифр, ведущие нули)."""
+        return norm_sap_recon_account(v)
+
+    def _norm_group(self, v) -> str:
+        return norm_sap_account_group(v)
 
     def _load_allowed_pairs(self, reference_path: str = None):
         candidate_paths = []
@@ -69,7 +49,7 @@ class ReconAccountConsistencyValidator(BaseValidator):
                 rows = data.get("conf_recon_accounts", []) if isinstance(data, dict) else []
                 allowed = set()
                 for row in rows:
-                    ag = self._norm(row.get("account_group_code"))
+                    ag = self._norm_group(row.get("account_group_code"))
                     ra = self._norm(row.get("reconciliation_account"))
                     if ag and ra:
                         allowed.add((ag, ra))
@@ -108,7 +88,7 @@ class ReconAccountConsistencyValidator(BaseValidator):
             return 0, 0, None
 
         recon_norm = df[column_name].apply(self._norm)
-        group_norm = df[account_group_col].apply(self._norm)
+        group_norm = df[account_group_col].apply(self._norm_group)
 
         # IF a.reconciliation_account IS NULL OR b.account_group_code IS NULL THEN '' (skip)
         has_recon = recon_norm != ""
@@ -123,12 +103,13 @@ class ReconAccountConsistencyValidator(BaseValidator):
         if total_rows == 0:
             return 0, 0, None
 
-        # Проверяем пары только для оценённых строк
+        eval_idx = df.index[evaluated_mask]
+        pair_keys = pd.Series(
+            list(zip(group_norm.loc[eval_idx], recon_norm.loc[eval_idx])),
+            index=eval_idx,
+        )
         exists_mask = pd.Series(False, index=df.index)
-        for idx in df.index[evaluated_mask]:
-            g = group_norm.loc[idx]
-            r = recon_norm.loc[idx]
-            exists_mask.loc[idx] = (g, r) in allowed_pairs
+        exists_mask.loc[eval_idx] = pair_keys.isin(allowed_pairs)
 
         error_mask = evaluated_mask & (~exists_mask)
         error_count = int(error_mask.sum())
@@ -147,12 +128,24 @@ class ReconAccountConsistencyValidator(BaseValidator):
                 "[ReconAccountConsistencyValidator][WARN] sample raw AKONT/group: "
                 f"{list(zip(sample_raw, sample_group_raw))}"
             )
-        print(f"[ReconAccountConsistencyValidator] error_count={error_count}")
+        if error_count > 0 and total_rows > 0:
+            sample = list(pair_keys.loc[error_mask].head(3))
+            print(
+                f"[ReconAccountConsistencyValidator] error_count={error_count}; "
+                f"sample norm (KTOKD, AKONT) not in conf: {sample}"
+            )
+        else:
+            print(f"[ReconAccountConsistencyValidator] error_count={error_count}")
         if error_count == 0:
             return total_rows, 0, None
 
         error_df = df.loc[error_mask].copy()
         error_df["ACCOUNT_GROUP_CODE"] = group_norm.loc[error_mask].values
+        if account_group_col and account_group_col in df.columns:
+            error_df["KTOKD"] = df.loc[error_mask, account_group_col].astype(str).str.strip().str.replace(
+                r"\.0+$", "", regex=True
+            ).values
+            error_df["KTOKD_SOURCE"] = "KNA1"
         error_df["RECONCILIATION_ACCOUNT"] = recon_norm.loc[error_mask].values
         error_df["DQ_ERROR_TYPE"] = "INVALID_COMBINATION"
         error_df["DQ_RULE_CODE"] = self.rule_info["rule_code"]

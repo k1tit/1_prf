@@ -7,8 +7,21 @@ from datetime import datetime, time
 
 # Базовый каталог проекта (где лежит main.py)
 _PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
 
-from utils.sqlite_safe import resolve_database_path, load_database_config, DB_CONFIG_REL
+try:
+    from utils.sqlite_safe import resolve_database_path, load_database_config, DB_CONFIG_REL
+except ImportError as _imp_err:
+    print(
+        f"[FATAL] Не удалось импортировать utils.sqlite_safe: {_imp_err}\n"
+        f"  Каталог проекта: {_PROJECT_ROOT}\n"
+        f"  Запускайте из папки data_quality_checker:\n"
+        f"    cd {_PROJECT_ROOT}\n"
+        f"    python main.py --help",
+        flush=True,
+    )
+    raise SystemExit(1) from _imp_err
 
 DB_PATH, DB_SOURCE = resolve_database_path(_PROJECT_ROOT)
 RULES_FILE = os.path.join(_PROJECT_ROOT, "json files", "rules.json")
@@ -213,14 +226,14 @@ def parse_reference_date_string(s):
             return datetime.combine(d, time(23, 59, 59))
         except ValueError:
             continue
-    raise ValueError(f"Неверный формат даты: {s!r} (ожидается YYYY-MM-DD или DD.MM.YYYY)")
+    raise ValueError(f"Неверный формат даты: {s!r} (ожидается YYYY-MM-DD)")
 
 
 def prompt_reference_datetime(checker):
     """Интерактивный выбор: текущее время компьютера или введённая дата."""
     print("\nОпорная дата для расчётов «на дату» (например RCCONF_173.1 — срок с даты назначения блока):")
     print("  [Enter] — текущие дата и время компьютера")
-    print("  или введите дату снимка данных: YYYY-MM-DD или DD.MM.YYYY (учёт до конца этого дня)")
+    print("  или введите дату снимка данных: YYYY-MM-DD (учёт до конца этого дня)")
     try:
         s = input("> ").strip()
     except EOFError:
@@ -627,21 +640,34 @@ def main():
             print("Укажите хотя бы одно правило для --only-rules (через запятую).")
     
     else:
-        # Если нет аргументов - запускаем интерактивный режим
-        interactive_mode(checker)
+        # Без аргументов — интерактивное меню (нужен терминал с вводом)
+        if not sys.stdin.isatty():
+            print(
+                "\n[INFO] Запуск без аргументов в неинтерактивной среде "
+                "(Run в IDE, пайп, фон). Меню [L/F/1/N/M] недоступно — укажите режим:\n"
+                "  python main.py --all\n"
+                "  python main.py --table KNA1\n"
+                "  python main.py --tables KNA1 KNVV\n"
+                "  python main.py --list\n"
+                "  python main.py --help"
+            )
+        else:
+            interactive_mode(checker)
     
     print(f"\n{'='*80}")
     print("РАБОТА ПРОГРАММЫ ЗАВЕРШЕНА")
     print(f"{'='*80}")
 
 if __name__ == "__main__":
+    # Первый вывод сразу (если этого нет в консоли — main.py не выполняется или путь к файлу обрезан)
+    print(f"[DQ] Запуск main.py ({_PROJECT_ROOT})", flush=True)
     try:
         main()
     except KeyboardInterrupt:
-        print(f"\n\nПрограмма прервана пользователем.")
+        print("\n\nПрограмма прервана пользователем.", flush=True)
         sys.exit(0)
     except Exception as e:
-        print(f"\n НЕОБРАБОТАННАЯ ОШИБКА: {type(e).__name__}: {e}")
+        print(f"\n[FATAL] НЕОБРАБОТАННАЯ ОШИБКА: {type(e).__name__}: {e}", flush=True)
         import traceback
         traceback.print_exc()
         sys.exit(1)
